@@ -24,10 +24,10 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     public static <T> ALinkedList<T> fromIterator(Iterator<T> it, AEquality equality) {
         return builderFromIterator(it, equality).build();
     }
-    private static <T> ListBuilder<T> builderFromIterator(Iterator<T> it, AEquality equality) {
-        final ListBuilder<T> builder = new ListBuilder<>(equality);
+    private static <T> Builder<T> builderFromIterator(Iterator<T> it, AEquality equality) {
+        final Builder<T> builder = new Builder<>(equality);
         while (it.hasNext()) {
-            builder.append(it.next());
+            builder.add(it.next());
         }
         return builder;
     }
@@ -48,48 +48,55 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> append(T o) {
-        final ListBuilder<T> builder = builderFromIterator(iterator(), equality);
-        builder.append(o);
+        final Builder<T> builder = builderFromIterator(iterator(), equality);
+        builder.add(o);
         return builder.build();
     }
 
-    @Override public ALinkedList<T> prependAll (List<T> other) {
-        return other.reverse().fold(this, ALinkedList<T>::prepend);
+    @Override public ALinkedList<T> concat (Iterator<? extends T> that) {
+        return ALinkedList
+                .<T>builder(equality)
+                .addAll(this)
+                .addAll(that)
+                .build();
+    }
+    @Override public AList<T> concat (Iterable<? extends T> that) {
+        return concat(that.iterator());
     }
 
     @Override public ALinkedList<T> updated (int idx, T o) {
-        final ListBuilder<T> builder = new ListBuilder<>(equality);
+        final Builder<T> builder = new Builder<>(equality);
 
         ALinkedList<T> l = this;
         for(int i=0; i<idx; i++) {
-            builder.append(l.head());
+            builder.add(l.head());
             l = l.tail();
         }
 
-        builder.append(o);
+        builder.add(o);
         l = l.tail();
 
         for (T el: l)
-            builder.append(el);
+            builder.add(el);
         return builder.build();
     }
 
     @Override public ALinkedList<T> patch (int idx, List<T> patch, int numReplaced) {
-        final ListBuilder<T> builder = new ListBuilder<>(equality);
+        final Builder<T> builder = new Builder<>(equality);
 
         ALinkedList<T> l = this;
         for(int i=0; i<idx; i++) {
-            builder.append(l.head());
+            builder.add(l.head());
             l = l.tail();
         }
 
         for (T el: patch)
-            builder.append(el);
+            builder.add(el);
         for (int i=0; i<numReplaced; i++)
             l = l.tail();
 
         for (T el: l)
-            builder.append(el);
+            builder.add(el);
         return builder.build();
     }
 
@@ -119,10 +126,10 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
 
     @Override public ALinkedList<T> take (int n) {
         if (n < 0) throw new IllegalArgumentException();
-        final ListBuilder<T> builder = new ListBuilder<>(equality);
+        final Builder<T> builder = new Builder<>(equality);
         ALinkedList<T> l = this;
         for(int i=0; i<n; i++) {
-            builder.append(l.head());
+            builder.add(l.head());
             l = l.tail();
         }
         return builder.build();
@@ -134,10 +141,10 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> takeWhile (Predicate<T> f) {
-        final ListBuilder<T> builder = new ListBuilder<>(equality);
+        final Builder<T> builder = new Builder<>(equality);
         ALinkedList<T> l = this;
         while(l.nonEmpty() && f.test(l.head())) {
-            builder.append(l.head());
+            builder.add(l.head());
             l = l.tail();
         }
         return builder.build();
@@ -164,10 +171,10 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ACollection<T> filter (Predicate<T> f) {
-        final ListBuilder<T> builder = new ListBuilder<>(equality);
+        final Builder<T> builder = new Builder<>(equality);
         for (T o: this) {
             if (f.test(o))
-                builder.append(o);
+                builder.add(o);
         }
         return builder.build();
     }
@@ -304,9 +311,9 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         }
 
         @Override public <U> ALinkedList<U> map (Function<T, U> f) {
-            final ListBuilder<U> builder = new ListBuilder<>(equality());
+            final Builder<U> builder = new Builder<>(equality());
             for (T o: this) {
-                builder.append(f.apply(o));
+                builder.add(f.apply(o));
             }
             return builder.build();
         }
@@ -349,16 +356,23 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         }
     }
 
-    private static class ListBuilder<T> {
+    public static <T> Builder<T> builder() {
+        return builder(AEquality.EQUALS);
+    }
+    public static <T> Builder<T> builder(AEquality equality) {
+        return new Builder<>(equality);
+    }
+
+    public static class Builder<T> {
         private ALinkedList<T> result;
         private HeadTail<T> last;
         private boolean wasBuilt=false;
 
-        ListBuilder (AEquality equality) {
+        Builder (AEquality equality) {
             result = nil(equality);
         }
 
-        void append(T o) {
+        void add(T o) {
             if (wasBuilt) throw new IllegalStateException();
             if(result.isEmpty()) {
                 last = new HeadTail<>(o, result, result.equality);
@@ -370,6 +384,14 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
                 last = newLast;
             }
         }
+        public Builder<T> addAll(Iterator<? extends T> it) {
+            while(it.hasNext()) add(it.next());
+            return this;
+        }
+        public Builder<T> addAll(Iterable<? extends T> coll) {
+            return addAll(coll.iterator());
+        }
+
 
         ALinkedList<T> build() {
             if (wasBuilt) throw new IllegalStateException();

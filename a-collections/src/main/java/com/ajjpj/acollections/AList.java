@@ -1,6 +1,5 @@
 package com.ajjpj.acollections;
 
-import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Collection;
@@ -12,8 +11,9 @@ import java.util.function.Predicate;
 
 public interface AList<T> extends ACollection<T>, List<T> {
     AList<T> prepend(T o);
-    AList<T> prependAll(List<T> l);
     AList<T> append(T o);
+    AList<T> concat (Iterator<? extends T> that);
+    AList<T> concat (Iterable<? extends T> that);
 
     AList<T> updated(int idx, T o);
     AList<T> patch(int idx, List<T> patch, int numReplaced);

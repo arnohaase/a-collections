@@ -20,7 +20,6 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     private static final AVector EMPTY = new AVectorEquals<>(0, 0, 0);
     private final VectorPointer<T> pointer = new VectorPointer<T>();
 
-
     public static <T> AVector<T> empty() {
         return empty(AEquality.EQUALS);
     }
@@ -42,6 +41,8 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         this.endIndex = endIndex;
         this.focus = focus;
     }
+
+    //TODO toVector
 
     abstract AVector<T> newInstance (int startIndex, int endIndex, int focus);
     public abstract AEquality equality();
@@ -69,10 +70,11 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
      *  {@link #concat(Iterable)}.
      */
     public AVector<T> concat (Iterator<? extends T> that) {
-        final Builder<T> builder = new Builder<>(equality());
-        builder.addAll(this);
-        builder.addAll(that);
-        return builder.build();
+        return AVector
+                .<T>builder()
+                .addAll(this)
+                .addAll(that)
+                .build();
     }
     public AVector<T> concat (Iterable<? extends T> that) {
         if (! that.iterator().hasNext()) return this;
@@ -102,11 +104,6 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     }
 
     //TODO -----------------------------------
-
-    @Override
-    public AList<T> prependAll (List<T> l) {
-        return null;
-    }
 
     @Override
     public AList<T> patch (int idx, List<T> patch, int numReplaced) {
