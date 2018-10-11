@@ -6,14 +6,6 @@ import java.util.function.Predicate;
 
 
 public abstract class AbstractAIterator<T> implements AIterator<T> {
-    static final AIterator<Object> empty = new AbstractAIterator<Object>() {
-        @Override public boolean hasNext () {
-            return false;
-        }
-        @Override public Object next () {
-            throw new NoSuchElementException();
-        }
-    };
 
     public abstract boolean hasNext();
 
@@ -56,6 +48,36 @@ public abstract class AbstractAIterator<T> implements AIterator<T> {
             }
         };
 
+    }
+
+    static final AIterator<Object> empty = new AbstractAIterator<Object>() {
+        @Override public boolean hasNext () {
+            return false;
+        }
+        @Override public Object next () {
+            throw new NoSuchElementException();
+        }
+    };
+
+    static class Single<T> extends AbstractAIterator<T> {
+        private final T el;
+        private boolean hasNext = true;
+
+        Single (T el) {
+            this.el = el;
+        }
+
+        @Override public boolean hasNext () {
+            return hasNext;
+        }
+
+        @Override public T next () {
+            if (!hasNext)
+                throw new NoSuchElementException();
+
+            hasNext = false;
+            return el;
+        }
     }
 
     //TODO concat

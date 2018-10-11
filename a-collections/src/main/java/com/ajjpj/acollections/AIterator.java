@@ -1,11 +1,9 @@
 package com.ajjpj.acollections;
 
-import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -21,7 +19,7 @@ public interface AIterator<T> extends Iterator<T> {
         return (AIterator<T>) AbstractAIterator.empty;
     }
     static <T> AIterator<T> single(T o) {
-        throw new RuntimeException("TODO"); //TODO implement this
+        return new AbstractAIterator.Single<>(o);
     }
 
     default <U> AIterator<U> map(Function<T,U> f) {
