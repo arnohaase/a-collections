@@ -159,15 +159,27 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
                 .build();
     }
 
-    @Override public AIterator<T> reverseIterator () { //TODO
-        return null;
+    @Override public AIterator<T> reverseIterator () {
+        //TODO more efficient implementation along the lines of Itr
+        return new AbstractAIterator<T>() {
+            int i = size();
+
+            @Override public boolean hasNext () {
+                return 0<i;
+            }
+
+            @Override public T next () {
+                if (!hasNext()) throw new NoSuchElementException();
+                return get(i);
+            }
+        };
     }
 
     @Override public boolean endsWith (List<T> that) {
         final Iterator<T> i = this.iterator().drop(size() - that.size());
         final Iterator<T> j = that.iterator();
         while (i.hasNext() && j.hasNext())
-            if (! equality().equals(i.next(), j.next())
+            if (! equality().equals(i.next(), j.next()))
                 return false;
 
         return ! j.hasNext();
