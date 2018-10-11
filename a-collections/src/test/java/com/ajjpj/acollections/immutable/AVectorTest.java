@@ -1,9 +1,14 @@
 package com.ajjpj.acollections.immutable;
 
+import com.ajjpj.acollections.AList;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.Iterator;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 
 @SuppressWarnings("WeakerAccess")
@@ -59,4 +64,24 @@ public class AVectorTest {
 
         assertEquals(expected, result);
     }
+
+    @Test public void testSubList(){
+        AVector.Builder<Integer> builder = AVector.builder();
+        for (int i=0; i<10; i++) {
+            builder.add(i);
+        }
+        AList<Integer> list = builder.build();
+
+        assertEquals(0,list.subList(0, 0).size());
+        assertEquals(10, list.subList(0, 10).size());
+        assertEquals(4, list.subList(5, 9).size());
+
+        Iterator<Integer> subList = list.subList(3, 6).iterator();
+        assertEquals(3,subList.next().intValue());
+        assertEquals(4,subList.next().intValue());
+        assertEquals(5,subList.next().intValue());
+        assertFalse(subList.hasNext());
+    }
+
+
 }

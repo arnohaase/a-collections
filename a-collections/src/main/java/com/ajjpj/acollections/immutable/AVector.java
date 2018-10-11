@@ -247,7 +247,9 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     }
 
     @Override public List<T> subList (int fromIndex, int toIndex) {
-        throw new UnsupportedOperationException();
+        if (fromIndex>toIndex || toIndex>size() || fromIndex<0)
+            throw new IndexOutOfBoundsException();
+        return dropRight(size()-toIndex).takeRight(toIndex-fromIndex);
     }
 
     // Ideally, clients will inline calls to map all the way down, including the iterator/builder methods.
