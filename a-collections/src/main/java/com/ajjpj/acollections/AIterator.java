@@ -1,5 +1,6 @@
 package com.ajjpj.acollections;
 
+import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Comparator;
@@ -17,16 +18,11 @@ public interface AIterator<T> extends Iterator<T> {
 
     static <T> AIterator<T> empty() {
         //noinspection unchecked
-        return (AIterator<T>) empty;
+        return (AIterator<T>) AbstractAIterator.empty;
     }
-    AIterator<Object> empty = new AbstractAIterator<Object>() {
-        @Override public boolean hasNext () {
-            return false;
-        }
-        @Override public Object next () {
-            throw new NoSuchElementException();
-        }
-    };
+    static <T> AIterator<T> single(T o) {
+        throw new RuntimeException("TODO"); //TODO implement this
+    }
 
     default <U> AIterator<U> map(Function<T,U> f) {
         final AIterator<T> inner = this;

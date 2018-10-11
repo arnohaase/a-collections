@@ -6,6 +6,15 @@ import java.util.function.Predicate;
 
 
 public abstract class AbstractAIterator<T> implements AIterator<T> {
+    static final AIterator<Object> empty = new AbstractAIterator<Object>() {
+        @Override public boolean hasNext () {
+            return false;
+        }
+        @Override public Object next () {
+            throw new NoSuchElementException();
+        }
+    };
+
     public abstract boolean hasNext();
 
     @Override public AIterator<T> filter (Predicate<T> f) {

@@ -4,7 +4,7 @@ import com.ajjpj.acollections.ACollection;
 import java.util.Collection;
 
 
-abstract class AbstractImmutableCollection<T> implements ACollection<T> {
+public abstract class AbstractImmutableCollection<T> implements ACollection<T> {
 
     @Override
     public boolean equals (Object o) {
