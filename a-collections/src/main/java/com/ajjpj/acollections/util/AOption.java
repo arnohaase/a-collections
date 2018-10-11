@@ -5,6 +5,8 @@ import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.immutable.AbstractImmutableCollection;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -16,8 +18,15 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> {
     }
 
     public abstract T get();
-    public abstract T getOrElse(T defaultValue);
-    public abstract T getOrElseCalc(Supplier<T> f);
+    public abstract T orElse(T defaultValue);
+    public abstract T orElseGet(Supplier<T> f);
+    public abstract <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X;
+    public abstract Optional<T> toOptional();
+
+    public static <T> AOption<T> of(T o) {
+        if (o != null) return some(o);
+        else return none();
+    }
 
     public static <T> AOption<T> some(T o) {
         return new ASome<>(o);
@@ -34,16 +43,34 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> {
             this.el = el;
         }
 
+        @Override public boolean equals (Object o) {
+            if (o == this) return true;
+            if (! (o instanceof ASome)) return false;
+            return Objects.equals(el, ((ASome) o).el);
+        }
+
+        @Override public int hashCode () {
+            return 1 + 31*Objects.hashCode(el);
+        }
+
         @Override public T get () {
             return el;
         }
 
-        @Override public T getOrElse (T defaultValue) {
+        @Override public T orElse (T defaultValue) {
             return el;
         }
 
-        @Override public T getOrElseCalc (Supplier<T> f) {
+        @Override public T orElseGet (Supplier<T> f) {
             return el;
+        }
+
+        @Override public <X extends Throwable> T orElseThrow (Supplier<? extends X> exceptionSupplier) throws X {
+            return el;
+        }
+
+        @Override public Optional<T> toOptional () {
+            return Optional.of(el);
         }
 
         @Override public AIterator<T> iterator () {
@@ -73,17 +100,33 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> {
         }
     }
 
-    private static final AOption ANone = new AOption() {
+    private static final AOption ANone = new AOption<Object>() {
+        @Override public boolean equals (Object o) {
+            return o == this;
+        }
+
+        @Override public int hashCode () {
+            return -31;
+        }
+
         @Override public Object get () {
             throw new NoSuchElementException();
         }
 
-        @Override public Object getOrElse (Object defaultValue) {
+        @Override public Object orElse (Object defaultValue) {
             return defaultValue;
         }
 
-        @Override public Object getOrElseCalc (Supplier f) {
+        @Override public Object orElseGet (Supplier f) {
             return f.get();
+        }
+
+        @Override public <X extends Throwable> Object orElseThrow (Supplier<? extends X> exceptionSupplier) throws X {
+            throw exceptionSupplier.get();
+        }
+
+        @Override public Optional<Object> toOptional () {
+            return Optional.empty();
         }
 
         @Override public AIterator iterator () {
