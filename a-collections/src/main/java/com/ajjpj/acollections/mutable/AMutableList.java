@@ -59,14 +59,18 @@ public class AMutableList<T> implements AList<T> {
         return this;
     }
 
-    @Override
-    public AList<T> concat(Iterable<? extends T> that) {
-        return null;
-    }
 
     @Override
     public AList<T> concat(Iterator<? extends T> that) {
-        return null;
+        while (that.hasNext()) {
+            inner.add(that.next());
+        }
+        return this;
+    }
+
+    @Override
+    public AList<T> concat(Iterable<? extends T> that) {
+        return concat(that.iterator());
     }
 
     @Override
@@ -79,32 +83,33 @@ public class AMutableList<T> implements AList<T> {
 
     @Override
     public T last () {
-        return null;
+        return inner.get(inner.size()-1);
     }
 
     @Override
     public AOption<T> lastOption () {
-        return null;
+        if (inner.isEmpty()) return AOption.none();
+        return AOption.some(last());
     }
 
     @Override
     public AList<T> init () {
-        return null;
+        return drop(1);
     }
 
     @Override
     public AList<T> tail () {
-        return null;
+        return dropRight(1);
     }
 
     @Override
     public AList<T> takeRight (int n) {
-        return null;
+        return new AMutableList<>(inner.subList(inner.size()-n, inner.size()));
     }
 
     @Override
     public AList<T> dropRight (int n) {
-        return null;
+        return new AMutableList<>(inner.subList(0, n+1));
     }
 
     @Override
