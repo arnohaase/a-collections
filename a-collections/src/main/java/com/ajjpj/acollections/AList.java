@@ -66,37 +66,21 @@ public interface AList<T> extends ACollection<T>, List<T> {
     }
 
     //TODO permutations
-    //TODO combinations
+    //TODO combinations (--> ACollection?)
     //TODO reverseMap
     //TODO indexOfSlice (2x), lastIndexOfSlice (2x), containsSlice
     //TODO corresponds
     //TODO sortWith, sortBy, shuffle
     //TODO indices
     //TODO zip, zipWithIndex
-    //TODO partition, groupBy, slice, splitAt, span, distinct
+    //TODO partition (ACollection?!), groupBy (ACollection?), slice, splitAt, span, distinct (ACollection?!)
 
-    default Object[] toArray () {
-        return toArray(new Object[size()]);
+    @Override default Object[] toArray () {
+        return ACollection.super.toArray();
     }
-    default <T1> T1[] toArray (T1[] a) {
-        final int s = size();
-
-        @SuppressWarnings("unchecked")
-        final T1[] result = a.length >= s ?
-                a :
-                (T1[])java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), s);
-        if (result.length > s) {
-            // if the array is longer than required, then the spec demands the data to be followed by <tt>null</tt>
-            result[s] = null;
-        }
-
-        int idx=0;
-        for (Object o: this) {
-            //noinspection unchecked
-            result[idx] = (T1) o;
-            idx += 1;
-        }
-        return result;
+    @Override default <T1> T1[] toArray (T1[] a) {
+        //noinspection SuspiciousToArrayCall
+        return ACollection.super.toArray(a);
     }
 
     default boolean containsAll (Collection<?> c) {

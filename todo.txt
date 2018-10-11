@@ -5,6 +5,7 @@ todo
   * delegatable implementation for AIterator.filter
   * missing methods
 
+* flatMap, flatten
 * stream()
 * spliterator()
 * AHashSet, AHashMap

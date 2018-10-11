@@ -62,6 +62,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
 
 
 
+    //TODO concat
 
     //TODO -----------------------------------
 
@@ -847,7 +848,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         // make sure there is no aliasing
         // requires structure is at pos index
         // ensures structure is clean and at pos index and writable at all levels except 0
-        public void stabilize(int index) { //TODO fall-through
+        public void stabilize(int index) {
             switch (depth - 1) {
                 case 5:
                     display5 = copyOf(display5);

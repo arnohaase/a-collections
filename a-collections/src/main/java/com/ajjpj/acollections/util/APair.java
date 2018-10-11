@@ -4,7 +4,7 @@ package com.ajjpj.acollections.util;
 import java.util.Objects;
 
 public class APair<T1, T2> {
-    public final T1 _1;
+    public final T1 _1; //TODO better field names?
     public final T2 _2;
 
     public APair (T1 _1, T2 _2) {
