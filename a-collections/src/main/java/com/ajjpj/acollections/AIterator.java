@@ -23,12 +23,10 @@ public interface AIterator<T> extends Iterator<T> {
         @Override public boolean hasNext () {
             return false;
         }
-        @Override public Object doNext () {
+        @Override public Object next () {
             throw new NoSuchElementException();
         }
     };
-
-    T current();
 
     default <U> AIterator<U> map(Function<T,U> f) {
         final AIterator<T> inner = this;
@@ -36,7 +34,7 @@ public interface AIterator<T> extends Iterator<T> {
             @Override public boolean hasNext () {
                 return inner.hasNext();
             }
-            @Override public U doNext () {
+            @Override public U next () {
                 return f.apply(inner.next());
             }
         };

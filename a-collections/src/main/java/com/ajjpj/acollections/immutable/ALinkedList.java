@@ -293,7 +293,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
                     return next != null;
                 }
 
-                @Override public T doNext () {
+                @Override public T next () {
                     if (next == null) throw new NoSuchElementException();
                     cur = next;
                     next = next.isEmpty() ? null : next.tail();

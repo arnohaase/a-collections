@@ -590,7 +590,6 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         private final int endIndex;
         private int endLo;
         private boolean hasNext;
-//        private T current;
 
         Itr (int startIndex, int endIndex) {
             blockIndex = startIndex & ~31;
@@ -624,50 +623,11 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
                 }
             }
 
-//            current = res;
             return res;
         }
 
-        @Override public T current () {
-            return null; //TODO
-        }
-
-        @Override public AIterator<T> filter (Predicate<T> f) { //TODO extract to use common abstraction with AbstractAIterator
-            final AIterator<T> outer = this;
-            return new AbstractAIterator<T>() {
-                private T next;
-                private boolean hasNext;
-
-                {
-                    advance();
-                }
-
-                private void advance() {
-                    //noinspection StatementWithEmptyBody
-                    while (outer.hasNext()) {
-                        final T candidate = outer.next();
-                        if (f.test(candidate)) {
-                            hasNext = true;
-                            next = candidate;
-                            return;
-                        }
-                    }
-                    next = null;
-                    hasNext = false;
-                }
-
-
-                @Override public boolean hasNext () {
-                    return hasNext;
-                }
-
-                @Override public T doNext () {
-                    if (! hasNext) throw new NoSuchElementException();
-                    final T result = next;
-                    advance();
-                    return result;
-                }
-            };
+        @Override public AIterator<T> filter (Predicate<T> f) {
+            return AbstractAIterator.filter(this, f);
         }
     }
 

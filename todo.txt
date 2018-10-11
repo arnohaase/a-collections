@@ -1,8 +1,12 @@
 todo
 ----
+* AVector
+  * efficient Itr incl. 'current'
+  * delegatable implementation for AIterator.filter
+  * missing methods
+
 * stream()
 * spliterator()
-* AVector
 * AHashSet, AHashMap
 * ATreeSet, ATreeMap
 * injected equality (? --> verify performance impact)

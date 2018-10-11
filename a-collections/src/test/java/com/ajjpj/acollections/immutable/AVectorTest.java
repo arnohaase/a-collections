@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SuppressWarnings("WeakerAccess")
-public class AVectorDataTest {
+public class AVectorTest {
     @Test public void testAppendSimple() {
         AVector<Integer> v = AVector.empty();
 
