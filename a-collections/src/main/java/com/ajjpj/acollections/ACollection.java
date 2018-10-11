@@ -39,6 +39,9 @@ public interface ACollection<T> extends Collection<T> {
     }
 
     <U> ACollection<U> map(Function<T,U> f);
+    //TODO flatMap
+    //TODO flatten
+    //TODO newBuilder implementation
 
     ACollection<T> filter(Predicate<T> f);
     default ACollection<T> filterNot(Predicate<T> f) {

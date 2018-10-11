@@ -144,4 +144,14 @@ public interface AIterator<T> extends Iterator<T> {
         sb.append(suffix);
         return sb.toString();
     }
+
+    default AIterator<T> concat(Iterator<? extends T> other) {
+        //noinspection unchecked
+        return AIterator.concat(this, other);
+    }
+
+    @SafeVarargs
+    static <T> AIterator<T> concat(Iterator<? extends T>... inner) {
+        return wrap(new AbstractAIterator.ConcatIterator<>(inner));
+    }
 }

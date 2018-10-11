@@ -80,5 +80,27 @@ public abstract class AbstractAIterator<T> implements AIterator<T> {
         }
     }
 
-    //TODO concat
+    static class ConcatIterator<T> implements Iterator<T> {
+        private final Iterator<? extends T>[] itit;
+        private int curIt = 0;
+
+        @SafeVarargs
+        ConcatIterator (Iterator<? extends T>... inner) {
+            itit = inner;
+        }
+
+        @Override public boolean hasNext () {
+            while(curIt < itit.length) {
+                if (itit[curIt].hasNext()) return true;
+                curIt += 1;
+            }
+            return false;
+        }
+
+        @Override public T next () {
+            if (!hasNext()) throw new NoSuchElementException();
+            // the previous check ensures that we are now on a non-exhausted iterator
+            return itit[curIt].next();
+        }
+    }
 }
