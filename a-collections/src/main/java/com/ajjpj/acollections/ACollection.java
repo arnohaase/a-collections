@@ -7,6 +7,7 @@ import com.ajjpj.acollections.util.AOption;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;

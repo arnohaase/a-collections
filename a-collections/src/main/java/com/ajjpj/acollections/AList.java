@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 
 
 public interface AList<T> extends ACollection<T>, List<T> {
+
     AList<T> prepend(T o);
     AList<T> append(T o);
     AList<T> concat (Iterator<? extends T> that);
