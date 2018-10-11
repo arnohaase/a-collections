@@ -3,11 +3,13 @@ package com.ajjpj.acollections.mutable;
 import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
+import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -87,12 +89,6 @@ public class AMutableList<T> implements AList<T> {
     }
 
     @Override
-    public AOption<T> lastOption () {
-        if (inner.isEmpty()) return AOption.none();
-        return AOption.some(last());
-    }
-
-    @Override
     public AList<T> init () {
         return drop(1);
     }
@@ -114,12 +110,7 @@ public class AMutableList<T> implements AList<T> {
 
     @Override
     public AIterator<T> reverseIterator () {
-        return null;
-    }
-
-    @Override
-    public boolean startsWith (List<T> that) {
-        return false;
+        return AVector.from(this).reverseIterator();
     }
 
     @Override
@@ -234,32 +225,12 @@ public class AMutableList<T> implements AList<T> {
     }
 
     @Override
-    public boolean contains (Object o) {
-        return false;
-    }
-
-    @Override
-    public Object[] toArray () {
-        return new Object[0];
-    }
-
-    @Override
-    public <T1> T1[] toArray (T1[] a) {
-        return null;
-    }
-
-    @Override
     public boolean add (T t) {
         return false;
     }
 
     @Override
     public boolean remove (Object o) {
-        return false;
-    }
-
-    @Override
-    public boolean containsAll (Collection<?> c) {
         return false;
     }
 
@@ -281,5 +252,15 @@ public class AMutableList<T> implements AList<T> {
     @Override
     public void clear () {
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return inner.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return inner.hashCode();
     }
 }
