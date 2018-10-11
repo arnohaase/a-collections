@@ -31,11 +31,10 @@ public interface ACollection<T> extends Collection<T> {
     }
 
     default ALinkedList<T> toLinkedList() {
-        return ALinkedList.fromIterator(iterator());
+        return ALinkedList.from(this, equality());
     }
-
     default AVector<T> toVector() {
-        return AVector.<T>builder().addAll(iterator()).build();
+        return AVector.from(this, equality());
     }
 
     <U> ACollection<U> map(Function<T,U> f);

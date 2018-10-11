@@ -15,10 +15,25 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     private static final int Log2ConcatFaster = 5;
     private static final int TinyAppendFaster = 2;
 
+    public static <T> AVector<T> from(Iterable<T> that) {
+        return fromIterator(that.iterator());
+    }
+    public static <T> AVector<T> from(Iterable<T> that, AEquality equality) {
+        return fromIterator(that.iterator(), equality);
+    }
+
+    public static <T> AVector<T> fromIterator(Iterator<T> it) {
+        return fromIterator(it, AEquality.EQUALS);
+    }
+    public static <T> AVector<T> fromIterator(Iterator<T> it, AEquality equality) {
+        return AVector
+                .<T>builder(equality)
+                .addAll(it)
+                .build();
+    }
 
     @SuppressWarnings("StaticInitializerReferencesSubClass")
     private static final AVector EMPTY = new AVectorEquals<>(0, 0, 0);
-    private final VectorPointer<T> pointer = new VectorPointer<T>();
 
     public static <T> AVector<T> empty() {
         return empty(AEquality.EQUALS);
@@ -29,6 +44,8 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         if (equality == AEquality.IDENTITY) return new AVectorIdentity<>(0, 0, 0);
         return new AVectorCustomEquality<>(0, 0, 0, equality);
     }
+
+    private final VectorPointer<T> pointer = new VectorPointer<T>();
 
     private final int startIndex;
     private final int endIndex;
@@ -42,10 +59,12 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         this.focus = focus;
     }
 
-    //TODO toVector
-
     abstract AVector<T> newInstance (int startIndex, int endIndex, int focus);
     public abstract AEquality equality();
+
+    @Override public AVector<T> toVector () {
+        return this;
+    }
 
     public int size() {
         return endIndex - startIndex;
@@ -71,7 +90,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
      */
     public AVector<T> concat (Iterator<? extends T> that) {
         return AVector
-                .<T>builder()
+                .<T>builder(equality())
                 .addAll(this)
                 .addAll(that)
                 .build();
@@ -105,9 +124,15 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
 
     //TODO -----------------------------------
 
-    @Override
-    public AList<T> patch (int idx, List<T> patch, int numReplaced) {
-        return null;
+    @Override public AVector<T> patch (int idx, List<T> patch, int numReplaced) {
+        final Builder<T> builder = builder();
+        final Iterator<T> it = iterator();
+
+        for (int i=0; i<idx; i++) builder.add(it.next());
+        builder.addAll(patch);
+        for (int i=0; i<numReplaced; i++) it.next(); // drop these elements
+        while (it.hasNext()) builder.add(it.next());
+        return builder.build();
     }
 
     @Override

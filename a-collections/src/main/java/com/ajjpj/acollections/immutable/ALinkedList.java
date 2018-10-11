@@ -18,18 +18,21 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         this.equality = equality;
     }
 
+    public static <T> ALinkedList<T> from(Iterable<T> that) {
+        return fromIterator(that.iterator());
+    }
+    public static <T> ALinkedList<T> from(Iterable<T> that, AEquality equality) {
+        return fromIterator(that.iterator(), equality);
+    }
+
     public static <T> ALinkedList<T> fromIterator(Iterator<T> it) {
         return fromIterator(it, AEquality.EQUALS);
     }
     public static <T> ALinkedList<T> fromIterator(Iterator<T> it, AEquality equality) {
-        return builderFromIterator(it, equality).build();
-    }
-    private static <T> Builder<T> builderFromIterator(Iterator<T> it, AEquality equality) {
-        final Builder<T> builder = new Builder<>(equality);
-        while (it.hasNext()) {
-            builder.add(it.next());
-        }
-        return builder;
+        return ALinkedList
+                .<T>builder(equality)
+                .addAll(it)
+                .build();
     }
 
     public static <T> ALinkedList<T> nil() {
@@ -48,9 +51,11 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> append(T o) {
-        final Builder<T> builder = builderFromIterator(iterator(), equality);
-        builder.add(o);
-        return builder.build();
+        return ALinkedList
+                .<T>builder(equality)
+                .addAll(this)
+                .add(o)
+                .build();
     }
 
     @Override public ALinkedList<T> concat (Iterator<? extends T> that) {
@@ -372,7 +377,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
             result = nil(equality);
         }
 
-        void add(T o) {
+        Builder<T> add(T o) {
             if (wasBuilt) throw new IllegalStateException();
             if(result.isEmpty()) {
                 last = new HeadTail<>(o, result, result.equality);
@@ -383,6 +388,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
                 last.tail = newLast;
                 last = newLast;
             }
+            return this;
         }
         public Builder<T> addAll(Iterator<? extends T> it) {
             while(it.hasNext()) add(it.next());
