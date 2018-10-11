@@ -146,7 +146,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> takeWhile (Predicate<T> f) {
-        final Builder<T> builder = new Builder<>(equality);
+        final Builder<T> builder = builder(equality);
         ALinkedList<T> l = this;
         while(l.nonEmpty() && f.test(l.head())) {
             builder.add(l.head());

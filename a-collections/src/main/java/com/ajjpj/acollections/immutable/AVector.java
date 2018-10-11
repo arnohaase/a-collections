@@ -122,10 +122,8 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         return concat(that.iterator());
     }
 
-    //TODO -----------------------------------
-
     @Override public AVector<T> patch (int idx, List<T> patch, int numReplaced) {
-        final Builder<T> builder = builder();
+        final Builder<T> builder = builder(equality());
         final Iterator<T> it = iterator();
 
         for (int i=0; i<idx; i++) builder.add(it.next());
@@ -135,108 +133,110 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         return builder.build();
     }
 
-    @Override
-    public AList<T> takeWhile (Predicate<T> f) {
+    @Override public AVector<T> takeWhile (Predicate<T> f) {
+        final Builder<T> builder = builder(equality());
+        for (T o: this) {
+            if (!f.test(o)) break;
+            builder.add(o);
+        }
+        return builder.build();
+    }
+
+    @Override public AList<T> dropWhile (Predicate<T> f) {
+        final Builder<T> builder = builder(equality());
+        boolean go = false;
+        for (T o: this) {
+            if (!go && !f.test(o)) go = true;
+            if (go) builder.add(o);
+        }
+        return builder.build();
+    }
+
+    @Override public AList<T> reverse () {
+        return AVector
+                .<T>builder(equality())
+                .addAll(reverseIterator())
+                .build();
+    }
+
+    @Override public AIterator<T> reverseIterator () { //TODO
         return null;
     }
 
-    @Override
-    public AList<T> dropWhile (Predicate<T> f) {
-        return null;
+    @Override public boolean endsWith (List<T> that) {
+        final Iterator<T> i = this.iterator().drop(size() - that.size());
+        final Iterator<T> j = that.iterator();
+        while (i.hasNext() && j.hasNext())
+            if (! equality().equals(i.next(), j.next())
+                return false;
+
+        return ! j.hasNext();
     }
 
-    @Override
-    public AList<T> reverse () {
-        return null;
+    @Override public <U> AVector<U> map (Function<T, U> f) {
+        final Builder<U> builder = builder();
+        for (T o: this) builder.add(f.apply(o));
+        return builder.build();
     }
 
-    @Override
-    public AIterator<T> reverseIterator () {
-        return null;
+    @Override public ACollection<T> filter (Predicate<T> f) {
+        final Builder<T> builder = builder();
+        for (T o: this) if (f.test(o)) builder.add(o);
+        return builder.build();
     }
 
-    @Override
-    public boolean endsWith (List<T> that) {
-        return false;
+    @Override public <U> ACollection<U> collect (Predicate<T> filter, Function<T, U> f) {
+        final Builder<U> builder = builder();
+        for (T o: this) if (filter.test(o)) builder.add(f.apply(o));
+        return builder.build();
     }
 
-    @Override
-    public <U> ACollection<U> map (Function<T, U> f) {
-        return null;
+    @Override public boolean addAll (int index, Collection<? extends T> c) {
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public ACollection<T> filter (Predicate<T> f) {
-        return null;
+    @Override public T set (int index, T element) {
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public <U> ACollection<U> collect (Predicate<T> filter, Function<T, U> f) {
-        return null;
+    @Override public void add (int index, T element) {
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public boolean addAll (int index, Collection<? extends T> c) {
-        return false;
+    @Override public T remove (int index) {
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public T set (int index, T element) {
-        return null;
+    @Override public int indexOf (Object o) {
+        int result = 0;
+        for (T el: this) {
+            if (equality().equals(el, o)) return result;
+            result += 1;
+        }
+        return -1;
     }
 
-    @Override
-    public void add (int index, T element) {
-
+    @Override public int lastIndexOf (Object o) {
+        int result = size()-1;
+        final Iterator<T> it = reverseIterator();
+        while (it.hasNext()) {
+            if (equality().equals(it.next(), o)) return result;
+            result -= 1;
+        }
+        return -1;
     }
 
-    @Override
-    public T remove (int index) {
-        return null;
+    @Override public ListIterator<T> listIterator () {
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public int indexOf (Object o) {
-        return 0;
+    @Override public ListIterator<T> listIterator (int index) {
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public int lastIndexOf (Object o) {
-        return 0;
+    @Override public List<T> subList (int fromIndex, int toIndex) {
+        throw new UnsupportedOperationException();
     }
-
-    @Override
-    public ListIterator<T> listIterator () {
-        return null;
-    }
-
-    @Override
-    public ListIterator<T> listIterator (int index) {
-        return null;
-    }
-
-    @Override
-    public List<T> subList (int fromIndex, int toIndex) {
-        return null;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // Ideally, clients will inline calls to map all the way down, including the iterator/builder methods.
     // In principle, escape analysis could even remove the iterator/builder allocations and do it
