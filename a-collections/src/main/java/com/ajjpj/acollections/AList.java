@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 
 public interface AList<T> extends ACollection<T>, List<T> {
     AList<T> prepend(T o);
-    AList<T> prependAll(AList<T> l);
+    AList<T> prependAll(List<T> l);
     AList<T> append(T o);
 
     AList<T> updated(int idx, T o);
@@ -40,7 +40,7 @@ public interface AList<T> extends ACollection<T>, List<T> {
         return exists(el -> equality().equals(el, o));
     }
 
-    default boolean startsWith(AList<T> that) {
+    default boolean startsWith(List<T> that) {
         if (that.size() > this.size()) return false;
 
         final Iterator<T> itThis = this.iterator();
@@ -50,7 +50,7 @@ public interface AList<T> extends ACollection<T>, List<T> {
         }
         return true;
     }
-    boolean endsWith(AList<T> that);
+    boolean endsWith(List<T> that);
 
     default <U> U foldRight(U zero, BiFunction<U,T,U> f) {
         return reverseIterator().fold(zero, f);

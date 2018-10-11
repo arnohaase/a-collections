@@ -53,7 +53,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         return builder.build();
     }
 
-    @Override public ALinkedList<T> prependAll (AList<T> other) {
+    @Override public ALinkedList<T> prependAll (List<T> other) {
         return other.reverse().fold(this, ALinkedList<T>::prepend);
     }
 
@@ -172,7 +172,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         return builder.build();
     }
 
-    @Override public boolean endsWith (AList<T> that) {
+    @Override public boolean endsWith (List<T> that) {
         if (that.size() > this.size()) return false;
 
         final Iterator<T> itThis = this.iterator().drop(size() - that.size());

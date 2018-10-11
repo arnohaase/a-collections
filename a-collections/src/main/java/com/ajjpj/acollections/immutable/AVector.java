@@ -12,6 +12,10 @@ import java.util.function.Predicate;
 
 
 public abstract class AVector<T> extends AbstractImmutableCollection<T> implements AList<T> {
+    private static final int Log2ConcatFaster = 5;
+    private static final int TinyAppendFaster = 2;
+
+
     @SuppressWarnings("StaticInitializerReferencesSubClass")
     private static final AVector EMPTY = new AVectorEquals<>(0, 0, 0);
     private final VectorPointer<T> pointer = new VectorPointer<T>();
@@ -52,23 +56,55 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         if (s.depth > 1) s.gotoPos(startIndex, startIndex ^ focus);
     }
 
-
     @Override public AIterator<T> iterator() {
         final Itr<T> s = new Itr<T>(startIndex, endIndex);
         initIterator(s);
         return s;
     }
 
+    /**
+     *
+     * Without knowing that's size, we have now way to determine whether element-wise appending is faster than rebuilding the AVector or not.
+     *  To be on the safe side, this implementation rebuilds the entire AVector; for optimized code appending small collections, use
+     *  {@link #concat(Iterable)}.
+     */
+    public AVector<T> concat (Iterator<? extends T> that) {
+        final Builder<T> builder = new Builder<>(equality());
+        builder.addAll(this);
+        builder.addAll(that);
+        return builder.build();
+    }
+    public AVector<T> concat (Iterable<? extends T> that) {
+        if (! that.iterator().hasNext()) return this;
+        if (! (that instanceof Collection)) {
+            // we do not know that's size, so we use the generic builder-based approach
+            return concat(that.iterator());
+        }
 
-
-
-    //TODO concat
+        //noinspection unchecked
+        final int thatSize = ((Collection<? extends T>) that).size();
+        if (thatSize <= TinyAppendFaster || thatSize < (this.size() >>> Log2ConcatFaster)) {
+            // 'that' is very small or at least way smaller than this, so element-wise appending is worth it
+            AVector<T> result = this;
+            for (T o: that) result = result.append(o);
+            return result;
+        }
+        if (that instanceof AVector && (this.size() <= TinyAppendFaster || this.size() < (thatSize >>> Log2ConcatFaster))) {
+            // if 'that' is an AVector too, the same performance optimizations work in reverse
+            //noinspection unchecked
+            AVector<T> result = (AVector<T>) that;
+            final Iterator<T> it = reverseIterator();
+            while (it.hasNext()) result.prepend(it.next());
+            return result;
+        }
+        // both collections are non-trivial in size, and neither dominates the other --> rebuilding the entire AVector
+        return concat(that.iterator());
+    }
 
     //TODO -----------------------------------
 
-
     @Override
-    public AList<T> prependAll (AList<T> l) {
+    public AList<T> prependAll (List<T> l) {
         return null;
     }
 
@@ -98,7 +134,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     }
 
     @Override
-    public boolean endsWith (AList<T> that) {
+    public boolean endsWith (List<T> that) {
         return false;
     }
 
@@ -1143,11 +1179,11 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
             return this;
         }
 
-        public Builder<T> addAll(Iterator<T> it) {
+        public Builder<T> addAll(Iterator<? extends T> it) {
             while(it.hasNext()) add(it.next());
             return this;
         }
-        public Builder<T> addAll(Iterable<T> coll) {
+        public Builder<T> addAll(Iterable<? extends T> coll) {
             return addAll(coll.iterator());
         }
 
