@@ -1,6 +1,7 @@
 package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.immutable.ALinkedList;
+import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
@@ -31,6 +32,10 @@ public interface ACollection<T> extends Collection<T> {
 
     default ALinkedList<T> toLinkedList() {
         return ALinkedList.fromIterator(iterator());
+    }
+
+    default AVector<T> toVector() {
+        return AVector.<T>builder().addAll(iterator()).build();
     }
 
     <U> ACollection<U> map(Function<T,U> f);

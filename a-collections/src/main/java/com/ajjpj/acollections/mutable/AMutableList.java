@@ -8,6 +8,7 @@ import com.ajjpj.acollections.util.AOption;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Function;
@@ -42,27 +43,38 @@ public class AMutableList<T> implements AList<T> {
 
     @Override
     public AList<T> prepend (T o) {
-        return null;
-    }
-
-    @Override
-    public AList<T> prependAll (AList<T> l) {
-        return null;
+        inner.add(0, o);
+        return this;
     }
 
     @Override
     public AList<T> append (T o) {
-        return null;
+        inner.add(o);
+        return this;
     }
 
     @Override
     public AList<T> updated (int idx, T o) {
+        inner.set(idx, o);
+        return this;
+    }
+
+    @Override
+    public AList<T> concat(Iterable<? extends T> that) {
+        return null;
+    }
+
+    @Override
+    public AList<T> concat(Iterator<? extends T> that) {
         return null;
     }
 
     @Override
     public AList<T> patch (int idx, List<T> patch, int numReplaced) {
-        return null;
+        for (int i = 0; i<numReplaced; i++)
+            inner.remove(idx);
+        inner.addAll(idx, patch);
+        return this;
     }
 
     @Override
@@ -101,12 +113,12 @@ public class AMutableList<T> implements AList<T> {
     }
 
     @Override
-    public boolean startsWith (AList<T> that) {
+    public boolean startsWith (List<T> that) {
         return false;
     }
 
     @Override
-    public boolean endsWith (AList<T> that) {
+    public boolean endsWith (List<T> that) {
         return false;
     }
 
