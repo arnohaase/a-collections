@@ -4,16 +4,13 @@ import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
+import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -49,6 +46,156 @@ public class AMutableList<T> implements AList<T> {
 
     //TODO unimplemented below this point
 
+
+    @Override
+    public AOption<T> lastOption () {
+        return null;
+    }
+
+    @Override
+    public boolean contains (Object o) {
+        return false;
+    }
+
+    @Override
+    public boolean startsWith (List<T> that) {
+        return false;
+    }
+
+    @Override
+    public <U> U foldRight (U zero, BiFunction<U, T, U> f) {
+        return null;
+    }
+
+    @Override
+    public T reduceRight (BiFunction<T, T, T> f) {
+        return null;
+    }
+
+    @Override
+    public AOption<T> reduceRightOption (BiFunction<T, T, T> f) {
+        return null;
+    }
+
+    @Override
+    public <U> AList<U> flatMap (Function<T, Iterable<U>> f) {
+        return null;
+    }
+
+    @Override
+    public AList<T> filterNot (Predicate<T> f) {
+        return null;
+    }
+
+    @Override
+    public boolean nonEmpty () {
+        return false;
+    }
+
+    @Override
+    public T head () {
+        return null;
+    }
+
+    @Override
+    public AOption<T> headOption () {
+        return null;
+    }
+
+    @Override
+    public ALinkedList<T> toLinkedList () {
+        return null;
+    }
+
+    @Override
+    public AVector<T> toVector () {
+        return null;
+    }
+
+    @Override
+    public <U> AOption<U> collectFirst (Predicate<T> filter, Function<T, U> f) {
+        return null;
+    }
+
+    @Override
+    public AOption<T> find (Predicate<T> f) {
+        return null;
+    }
+
+    @Override
+    public boolean forall (Predicate<T> f) {
+        return false;
+    }
+
+    @Override
+    public boolean exists (Predicate<T> f) {
+        return false;
+    }
+
+    @Override
+    public int count (Predicate<T> f) {
+        return 0;
+    }
+
+    @Override
+    public T reduceLeft (BiFunction<T, T, T> f) {
+        return null;
+    }
+
+    @Override
+    public AOption<T> reduceLeftOption (BiFunction<T, T, T> f) {
+        return null;
+    }
+
+    @Override
+    public <U> U foldLeft (U zero, BiFunction<U, T, U> f) {
+        return null;
+    }
+
+    @Override
+    public T min () {
+        return null;
+    }
+
+    @Override
+    public T min (Comparator<T> comparator) {
+        return null;
+    }
+
+    @Override
+    public T max () {
+        return null;
+    }
+
+    @Override
+    public T max (Comparator<T> comparator) {
+        return null;
+    }
+
+    @Override
+    public String mkString (String infix) {
+        return null;
+    }
+
+    @Override
+    public String mkString (String prefix, String infix, String suffix) {
+        return null;
+    }
+
+    @Override
+    public Object[] toArray () {
+        return new Object[0];
+    }
+
+    @Override
+    public <T1> T1[] toArray (T1[] a) {
+        return null;
+    }
+
+    @Override
+    public boolean containsAll (Collection<?> c) {
+        return false;
+    }
 
     @Override
     public AList<T> prepend (T o) {

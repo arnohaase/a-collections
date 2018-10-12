@@ -4,6 +4,8 @@ import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.immutable.AbstractImmutableCollection;
+import com.ajjpj.acollections.internal.ACollectionDefaults;
+import com.ajjpj.acollections.internal.ACollectionSupport;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -13,7 +15,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 
-public abstract class AOption<T> extends AbstractImmutableCollection<T> {
+public abstract class AOption<T> extends AbstractImmutableCollection<T> implements ACollectionDefaults<T, AOption<T>> {
     @Override public AEquality equality () {
         return AEquality.EQUALS;
     }
@@ -37,20 +39,32 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> {
         return ANone;
     }
 
-    @Override public ACollectionBuilder<T, AOption<T>> newBuilder () {
+    @Override public <U> ACollection<U> flatMap (Function<T, Iterable<U>> f) {
+        return ACollectionSupport.flatMap(newBuilder(), this, f);
+    }
+
+    @Override public Object[] toArray () {
+        return ACollectionSupport.toArray(this);
+    }
+
+    @Override public <T1> T1[] toArray (T1[] a) {
+        return ACollectionSupport.toArray(this, a);
+    }
+
+    @Override public <U> ACollectionBuilder<U, AOption<U>> newBuilder () {
         // Using a builder for AOption may look weird and is not very efficient, but there is no reason not to have one for compatibility
         //  reasons. There should however be optimized implementation for all generic, builder-based transformation methods.
 
-        return new ACollectionBuilder<T, AOption<T>>() {
-            private AOption<T> result = none();
+        return new ACollectionBuilder<U, AOption<U>>() {
+            private AOption<U> result = none();
 
-            @Override public ACollectionBuilder<T, AOption<T>> add (T el) {
+            @Override public ACollectionBuilder<U, AOption<U>> add (U el) {
                 if (result.nonEmpty()) throw new IllegalStateException("an AOption can hold at most one element");
                 result = some(el);
                 return this;
             }
 
-            @Override public AOption<T> build () {
+            @Override public AOption<U> build () {
                 return result;
             }
         };
@@ -97,16 +111,16 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> {
             return AIterator.single(el);
         }
 
-        @Override public <U> ACollection<U> map (Function<T, U> f) {
+        @Override public <U> AOption<U> map (Function<T, U> f) {
             return AOption.some(f.apply(el));
         }
 
-        @Override public ACollection<T> filter (Predicate<T> f) {
+        @Override public AOption<T> filter (Predicate<T> f) {
             if (f.test(el)) return this;
             else return AOption.none();
         }
 
-        @Override public <U> ACollection<U> collect (Predicate<T> filter, Function<T, U> f) {
+        @Override public <U> AOption<U> collect (Predicate<T> filter, Function<T, U> f) {
             if (filter.test(el)) return map(f);
             else return AOption.none();
         }
@@ -149,19 +163,21 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> {
             return Optional.empty();
         }
 
-        @Override public AIterator iterator () {
+        @Override public AIterator<Object> iterator () {
             return AIterator.empty();
         }
 
-        @Override public ACollection map (Function f) {
+        @SuppressWarnings("unchecked")
+        @Override public AOption map (Function f) {
             return this;
         }
 
-        @Override public ACollection filter (Predicate f) {
+        @Override public AOption<Object> filter (Predicate f) {
             return this;
         }
 
-        @Override public ACollection collect (Predicate filter, Function f) {
+        @SuppressWarnings("unchecked")
+        @Override public AOption collect (Predicate filter, Function f) {
             return this;
         }
 

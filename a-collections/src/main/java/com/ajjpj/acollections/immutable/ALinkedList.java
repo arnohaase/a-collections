@@ -1,6 +1,8 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.*;
+import com.ajjpj.acollections.internal.ACollectionSupport;
+import com.ajjpj.acollections.internal.AListDefaults;
 import com.ajjpj.acollections.util.AEquality;
 
 import java.util.*;
@@ -8,7 +10,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> implements AList<T> {
+public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, ALinkedList<T>> {
     private final AEquality equality;
 
     private ALinkedList (AEquality equality) {
@@ -87,10 +89,6 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         return builder.build();
     }
 
-    @Override public ALinkedList<T> patch (int idx, List<T> patch, int numReplaced) {
-        return (ALinkedList<T>) AList.super.patch(idx, patch, numReplaced);
-    }
-
     @Override public AEquality equality () {
         return equality;
     }
@@ -118,13 +116,9 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         return builder.build();
     }
 
-    @Override public AList<T> takeRight (int n) {
+    @Override public ALinkedList<T> takeRight (int n) {
         if (n < 0) throw new IllegalArgumentException();
         return drop(size() - n);
-    }
-
-    @Override public ALinkedList<T> takeWhile (Predicate<T> f) {
-        return (ALinkedList<T>) AList.super.takeWhile(f);
     }
 
     @Override public ALinkedList<T> drop (int n) {
@@ -141,23 +135,19 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> dropWhile (Predicate<T> f) {
-        // this is a more efficient implementation than the generic, builder-based code from AList
+        // this is a more efficient implementation than the generic, builder-based code from AListDefaults
         ALinkedList<T> l = this;
         while (l.nonEmpty() && f.test(l.head()))
             l = l.tail();
         return l;
     }
 
-    @Override public ALinkedList<T> filter (Predicate<T> f) {
-        return (ALinkedList<T>) AList.super.filter(f);
-    }
-
     @Override public <U> ALinkedList<U> collect (Predicate<T> filter, Function<T, U> f) {
-        return (ALinkedList<U>) AList.super.collect(filter, f);
+        return ACollectionSupport.collect(newBuilder(), this, filter, f);
     }
 
     @Override public ALinkedList<T> reverse () {
-        // This is a more efficient implementation than the generic builder-based code from AList
+        // This is a more efficient implementation than the generic builder-based code from AListDefaults
         ALinkedList<T> result = nil(equality);
         for (T o: this) {
             result = result.prepend(o);
@@ -212,11 +202,20 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     public abstract ALinkedList<T> tail();
 
     @Override public <U> ALinkedList<U> map (Function<T, U> f) {
-        return (ALinkedList<U>) AList.super.map(f);
+        return ACollectionSupport.map(newBuilder(), this, f);
     }
     @Override public <U> ALinkedList<U> flatMap(Function<T, Iterable<U>> f) {
-        return (ALinkedList<U>) AList.super.flatMap(f);
+        return ACollectionSupport.flatMap(newBuilder(), this, f);
     }
+    @Override public Object[] toArray () {
+        return ACollectionSupport.toArray(this);
+    }
+
+    @Override public <T1> T1[] toArray (T1[] a) {
+        return ACollectionSupport.toArray(this, a);
+    }
+
+
     @Override public ALinkedList<T> toLinkedList() {
         return this;
     }

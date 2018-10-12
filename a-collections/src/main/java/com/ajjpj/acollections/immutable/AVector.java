@@ -1,6 +1,8 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.*;
+import com.ajjpj.acollections.internal.ACollectionSupport;
+import com.ajjpj.acollections.internal.AListDefaults;
 import com.ajjpj.acollections.util.AEquality;
 
 import java.util.*;
@@ -8,7 +10,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public abstract class AVector<T> extends AbstractImmutableCollection<T> implements AList<T> {
+public abstract class AVector<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, AVector<T>> {
     private static final int Log2ConcatFaster = 5;
     private static final int TinyAppendFaster = 2;
 
@@ -57,7 +59,8 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     }
 
     abstract AVector<T> newInstance (int startIndex, int endIndex, int focus);
-    public abstract AEquality equality();
+    @Override public abstract AEquality equality();
+    @Override public abstract <U> ACollectionBuilder<U, AVector<U>> newBuilder();
 
     @Override public AVector<T> toVector () {
         return this;
@@ -119,22 +122,6 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         return concat(that.iterator());
     }
 
-    @Override public AVector<T> patch (int idx, List<T> patch, int numReplaced) {
-        return (AVector<T>) AList.super.patch(idx, patch, numReplaced);
-    }
-
-    @Override public AVector<T> takeWhile (Predicate<T> f) {
-        return (AVector<T>) AList.super.takeWhile(f);
-    }
-
-    @Override public AVector<T> dropWhile (Predicate<T> f) {
-        return (AVector<T>) AList.super.dropWhile(f);
-    }
-
-    @Override public AVector<T> reverse () {
-        return (AVector<T>) AList.super.reverse();
-    }
-
     @Override public AIterator<T> reverseIterator () {
         //TODO more efficient implementation along the lines of Itr
         return new AbstractAIterator<T>() {
@@ -152,17 +139,22 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     }
 
     @Override public <U> AVector<U> map (Function<T, U> f) {
-        return (AVector<U>) AList.super.map(f);
+        return ACollectionSupport.map(newBuilder(), this, f);
     }
     @Override public <U> AVector<U> flatMap(Function<T, Iterable<U>> f) {
-        return (AVector<U>) AList.super.flatMap(f);
-    }
-    @Override public AVector<T> filter (Predicate<T> f) {
-        return (AVector<T>) AList.super.filter(f);
+        return ACollectionSupport.flatMap(newBuilder(), this, f);
     }
 
     @Override public <U> AVector<U> collect (Predicate<T> filter, Function<T, U> f) {
-        return (AVector<U>) AList.super.collect(filter, f);
+        return ACollectionSupport.collect(newBuilder(), this, filter, f);
+    }
+
+    @Override public Object[] toArray () {
+        return ACollectionSupport.toArray(this);
+    }
+
+    @Override public <T1> T1[] toArray (T1[] a) {
+        return ACollectionSupport.toArray(this, a);
     }
 
     @Override public boolean addAll (int index, Collection<? extends T> c) {
@@ -184,7 +176,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     @Override public List<T> subList (int fromIndex, int toIndex) {
         if (fromIndex>toIndex || toIndex>size() || fromIndex<0)
             throw new IndexOutOfBoundsException();
-        return dropRight(size()-toIndex).takeRight(toIndex-fromIndex);
+        return dropRight(size()-toIndex).takeRight(toIndex-fromIndex); //TODO return a lazily materialized view
     }
 
     // Ideally, clients will inline calls to map all the way down, including the iterator/builder methods.
@@ -231,15 +223,6 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
 
     @Override public T head() {
         return get(0);
-    }
-    @Override public AVector<T> tail() {
-        return drop(1);
-    }
-    @Override public T last() {
-        return get(size() - 1);
-    }
-    @Override public AVector<T> init() {
-        return dropRight(1);
     }
 
     private AVector<T> slice(int from, int until) {
