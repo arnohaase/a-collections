@@ -238,14 +238,6 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         return -1;
     }
 
-    @Override public ListIterator<T> listIterator () {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override public ListIterator<T> listIterator (int index) {
-        throw new UnsupportedOperationException();
-    }
-
     @Override public List<T> subList (int fromIndex, int toIndex) {
         if (fromIndex>toIndex || toIndex>size() || fromIndex<0)
             throw new IndexOutOfBoundsException();

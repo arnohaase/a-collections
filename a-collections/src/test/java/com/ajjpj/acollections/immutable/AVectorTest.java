@@ -1,11 +1,9 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.AList;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

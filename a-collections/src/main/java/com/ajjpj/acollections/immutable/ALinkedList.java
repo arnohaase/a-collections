@@ -121,14 +121,6 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         return dropRight(1);
     }
 
-    @Override public ListIterator<T> listIterator () {
-        throw new UnsupportedOperationException("ListIterator does not make sense for a linked list");
-    }
-
-    @Override  public ListIterator<T> listIterator (int index) {
-        throw new UnsupportedOperationException("ListIterator does not make sense for a linked list");
-    }
-
     @Override public ALinkedList<T> take (int n) {
         if (n < 0) throw new IllegalArgumentException();
         final Builder<T> builder = new Builder<>(equality);
@@ -302,7 +294,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
                 private ALinkedList<T> next = HeadTail.this;
 
                 @Override public boolean hasNext () {
-                    return next != null;
+                    return next != null && !next.isEmpty();
                 }
 
                 @Override public T next () {
