@@ -290,19 +290,17 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
 
         @Override public AIterator<T> iterator () {
             return new AbstractAIterator<T>() {
-                private ALinkedList<T> cur = null;
                 private ALinkedList<T> next = HeadTail.this;
 
                 @Override public boolean hasNext () {
-                    return next != null && !next.isEmpty();
+                    return next.nonEmpty();
                 }
 
                 @Override public T next () {
-                    if (next == null) throw new NoSuchElementException();
-                    cur = next;
-                    next = next.isEmpty() ? null : next.tail();
-
-                    return cur.head();
+                    if (next.isEmpty()) throw new NoSuchElementException();
+                    final T result = next.head();
+                    next = next.tail();
+                    return result;
                 }
             };
         }

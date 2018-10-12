@@ -1,32 +1,23 @@
 todo
 ----
-* AVector
-  * efficient Itr incl. 'current'
-  * delegatable implementation for AIterator.filter
-  * missing methods
-
-* flatMap, flatten
 * stream()
+* stream integration: collectors
 * spliterator()
+
 * AHashSet, AHashMap
 * ATreeSet, ATreeMap
-* injected equality (? --> verify performance impact)
-* specialization for primitives (?)
-* optimized algorithm
 * ASeq, ASet, AMap
 * ASortedSet, ASortedMap
 * AMap.withDefault, AMap.withDefaultValue
 * toMap (?)
+* CHAMP algorithm
 
 * Bag, MultiSet, MultiMap, ...?
 
-* toVector, toList, toSet
+* toSet
 * static factories a la Java 10
 * factories --> from iterator, from Iterable, from Collection
 
-* mutable collections: ABuffer, AMutableHashSet, AMutableTreeSet, AMutableHashMap, AMutableTreeMap
-
-* stream integration: collectors
 
 * unit tests
 
