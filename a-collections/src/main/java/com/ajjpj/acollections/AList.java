@@ -1,5 +1,6 @@
 package com.ajjpj.acollections;
 
+import com.ajjpj.acollections.internal.ASimpleListIterator;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Collection;
@@ -67,14 +68,12 @@ public interface AList<T> extends ACollection<T>, List<T> {
             return AOption.some(reduceRight(f));
     }
 
-    @Override
-    default ListIterator<T> listIterator() {
+    @Override default ListIterator<T> listIterator() {
         return listIterator(0);
     }
 
-    @Override
-    default ListIterator<T> listIterator(int index) {
-        return new AListIterator<T>(this.iterator(), index);
+    @Override default ListIterator<T> listIterator(int index) {
+        return new ASimpleListIterator<T>(this.iterator(), index);
     }
 
     //TODO permutations
@@ -99,61 +98,5 @@ public interface AList<T> extends ACollection<T>, List<T> {
         for(Object o: c)
             if (! contains(o)) return false;
         return true;
-    }
-
-    class AListIterator<T> implements ListIterator<T> {
-
-        Iterator<T> internalIterator;
-
-        AListIterator(Iterator<T> iterator, int seekIndex){
-            internalIterator = iterator;
-            for (int i=0; i<seekIndex; i++) internalIterator.next();
-        }
-
-        @Override
-        public boolean hasNext() {
-            return internalIterator.hasNext();
-        }
-
-        @Override
-        public T next() {
-            return internalIterator.next();
-        }
-
-        @Override
-        public void remove() {
-            internalIterator.remove();
-        }
-
-        @Override
-        public boolean hasPrevious() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public T previous() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int nextIndex() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int previousIndex() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void set(T t) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void add(T t) {
-            throw new UnsupportedOperationException();
-
-        }
     }
 }

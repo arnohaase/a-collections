@@ -201,12 +201,12 @@ public class AMutableList<T> implements AList<T> {
 
     @Override
     public ListIterator<T> listIterator () {
-        return null;
+        return inner.listIterator();
     }
 
     @Override
     public ListIterator<T> listIterator (int index) {
-        return null;
+        return inner.listIterator(index);
     }
 
     @Override
