@@ -7,7 +7,6 @@ import com.ajjpj.acollections.util.AOption;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -16,6 +15,12 @@ import java.util.function.Predicate;
 public interface ACollection<T> extends Collection<T> {
     AEquality equality();
     @Override AIterator<T> iterator ();
+
+    /**
+     * This is public API, but it was added largely for internal use: Having this method allows generically implementing transformation
+     *  methods like {@link #map(Function)}.
+     */
+    <U> ACollectionBuilder<U, ? extends ACollection<U>> newBuilder();
 
     default boolean nonEmpty() {
         return ! isEmpty();
@@ -38,17 +43,30 @@ public interface ACollection<T> extends Collection<T> {
         return AVector.from(this, equality());
     }
 
-    <U> ACollection<U> map(Function<T,U> f);
+    default <U> ACollection<U> map(Function<T,U> f) {
+        final ACollectionBuilder<U, ? extends ACollection<U>> builder = newBuilder();
+        for (T o: this) builder.add(f.apply(o));
+        return builder.build();
+    }
     //TODO flatMap
     //TODO flatten
     //TODO newBuilder implementation
 
-    ACollection<T> filter(Predicate<T> f);
+    default ACollection<T> filter(Predicate<T> f) {
+        final ACollectionBuilder<T, ? extends ACollection<T>> builder = newBuilder();
+        for (T o: this) if (f.test(o)) builder.add(o);
+        return builder.build();
+
+    }
     default ACollection<T> filterNot(Predicate<T> f) {
         return filter(f.negate());
     }
 
-    <U> ACollection<U> collect(Predicate<T> filter, Function<T,U> f);
+    default <U> ACollection<U> collect(Predicate<T> filter, Function<T,U> f) {
+        final ACollectionBuilder<U, ? extends ACollection<U>> builder = newBuilder();
+        for (T o: this) if (filter.test(o)) builder.add(f.apply(o));
+        return builder.build();
+    }
     default <U> AOption<U> collectFirst(Predicate<T> filter, Function<T,U> f) {
         return iterator().collectFirst(filter, f);
     }

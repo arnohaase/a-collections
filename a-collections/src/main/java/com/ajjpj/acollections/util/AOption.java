@@ -1,6 +1,7 @@
 package com.ajjpj.acollections.util;
 
 import com.ajjpj.acollections.ACollection;
+import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.immutable.AbstractImmutableCollection;
 
@@ -34,6 +35,25 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> {
     public static <T> AOption<T> none() {
         //noinspection unchecked
         return ANone;
+    }
+
+    @Override public ACollectionBuilder<T, AOption<T>> newBuilder () {
+        // Using a builder for AOption may look weird and is not very efficient, but there is no reason not to have one for compatibility
+        //  reasons. There should however be optimized implementation for all generic, builder-based transformation methods.
+
+        return new ACollectionBuilder<T, AOption<T>>() {
+            private AOption<T> result = none();
+
+            @Override public ACollectionBuilder<T, AOption<T>> add (T el) {
+                if (result.nonEmpty()) throw new IllegalStateException("an AOption can hold at most one element");
+                result = some(el);
+                return this;
+            }
+
+            @Override public AOption<T> build () {
+                return result;
+            }
+        };
     }
 
     private static class ASome<T> extends AOption<T> {

@@ -16,7 +16,6 @@ todo
 
 * toSet
 * static factories a la Java 10
-* factories --> from iterator, from Iterable, from Collection
 
 
 * unit tests

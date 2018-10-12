@@ -1,9 +1,6 @@
 package com.ajjpj.acollections.immutable;
 
-import com.ajjpj.acollections.ACollection;
-import com.ajjpj.acollections.AIterator;
-import com.ajjpj.acollections.AList;
-import com.ajjpj.acollections.AbstractAIterator;
+import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.util.AEquality;
 
 import java.util.*;
@@ -123,40 +120,19 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     }
 
     @Override public AVector<T> patch (int idx, List<T> patch, int numReplaced) {
-        final Builder<T> builder = builder(equality());
-        final Iterator<T> it = iterator();
-
-        for (int i=0; i<idx; i++) builder.add(it.next());
-        builder.addAll(patch);
-        for (int i=0; i<numReplaced; i++) it.next(); // drop these elements
-        while (it.hasNext()) builder.add(it.next());
-        return builder.build();
+        return (AVector<T>) AList.super.patch(idx, patch, numReplaced);
     }
 
     @Override public AVector<T> takeWhile (Predicate<T> f) {
-        final Builder<T> builder = builder(equality());
-        for (T o: this) {
-            if (!f.test(o)) break;
-            builder.add(o);
-        }
-        return builder.build();
+        return (AVector<T>) AList.super.takeWhile(f);
     }
 
-    @Override public AList<T> dropWhile (Predicate<T> f) {
-        final Builder<T> builder = builder(equality());
-        boolean go = false;
-        for (T o: this) {
-            if (!go && !f.test(o)) go = true;
-            if (go) builder.add(o);
-        }
-        return builder.build();
+    @Override public AVector<T> dropWhile (Predicate<T> f) {
+        return (AVector<T>) AList.super.dropWhile(f);
     }
 
-    @Override public AList<T> reverse () {
-        return AVector
-                .<T>builder(equality())
-                .addAll(reverseIterator())
-                .build();
+    @Override public AVector<T> reverse () {
+        return (AVector<T>) AList.super.reverse();
     }
 
     @Override public AIterator<T> reverseIterator () {
@@ -175,32 +151,16 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         };
     }
 
-    @Override public boolean endsWith (List<T> that) {
-        final Iterator<T> i = this.iterator().drop(size() - that.size());
-        final Iterator<T> j = that.iterator();
-        while (i.hasNext() && j.hasNext())
-            if (! equality().equals(i.next(), j.next()))
-                return false;
-
-        return ! j.hasNext();
-    }
-
     @Override public <U> AVector<U> map (Function<T, U> f) {
-        final Builder<U> builder = builder();
-        for (T o: this) builder.add(f.apply(o));
-        return builder.build();
+        return (AVector<U>) AList.super.map(f);
     }
 
-    @Override public ACollection<T> filter (Predicate<T> f) {
-        final Builder<T> builder = builder();
-        for (T o: this) if (f.test(o)) builder.add(o);
-        return builder.build();
+    @Override public AVector<T> filter (Predicate<T> f) {
+        return (AVector<T>) AList.super.filter(f);
     }
 
-    @Override public <U> ACollection<U> collect (Predicate<T> filter, Function<T, U> f) {
-        final Builder<U> builder = builder();
-        for (T o: this) if (filter.test(o)) builder.add(f.apply(o));
-        return builder.build();
+    @Override public <U> AVector<U> collect (Predicate<T> filter, Function<T, U> f) {
+        return (AVector<U>) AList.super.collect(filter, f);
     }
 
     @Override public boolean addAll (int index, Collection<? extends T> c) {
@@ -217,25 +177,6 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
 
     @Override public T remove (int index) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override public int indexOf (Object o) {
-        int result = 0;
-        for (T el: this) {
-            if (equality().equals(el, o)) return result;
-            result += 1;
-        }
-        return -1;
-    }
-
-    @Override public int lastIndexOf (Object o) {
-        int result = size()-1;
-        final Iterator<T> it = reverseIterator();
-        while (it.hasNext()) {
-            if (equality().equals(it.next(), o)) return result;
-            result -= 1;
-        }
-        return -1;
     }
 
     @Override public List<T> subList (int fromIndex, int toIndex) {
@@ -1174,7 +1115,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         return new Builder<>(equality);
     }
 
-    public static class Builder<T> {
+    public static class Builder<T> implements ACollectionBuilder<T,AVector<T>> {
         private final VectorPointer<T> pointer = new VectorPointer<T>();
         private final AEquality equality;
 
@@ -1239,9 +1180,12 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
             super(startIndex, endIndex, focus);
         }
 
-        @Override
-        AVector<T> newInstance (int startIndex, int endIndex, int focus) {
+        @Override AVector<T> newInstance (int startIndex, int endIndex, int focus) {
             return new AVectorEquals<>(startIndex, endIndex, focus);
+        }
+
+        @Override public <U> Builder<U> newBuilder () {
+            return new Builder<>(AEquality.EQUALS);
         }
 
         @Override public AEquality equality () {
@@ -1254,9 +1198,12 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
             super(startIndex, endIndex, focus);
         }
 
-        @Override
-        AVector<T> newInstance (int startIndex, int endIndex, int focus) {
+        @Override AVector<T> newInstance (int startIndex, int endIndex, int focus) {
             return new AVectorIdentity<>(startIndex, endIndex, focus);
+        }
+
+        @Override public <U> Builder<U> newBuilder () {
+            return new Builder<>(AEquality.IDENTITY);
         }
 
         @Override public AEquality equality () {
@@ -1272,9 +1219,12 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
             this.equality = equality;
         }
 
-        @Override
-        AVector<T> newInstance (int startIndex, int endIndex, int focus) {
+        @Override AVector<T> newInstance (int startIndex, int endIndex, int focus) {
             return new AVectorEquals<>(startIndex, endIndex, focus);
+        }
+
+        @Override public <U> Builder<U> newBuilder () {
+            return new Builder<>(equality);
         }
 
         @Override public AEquality equality () {

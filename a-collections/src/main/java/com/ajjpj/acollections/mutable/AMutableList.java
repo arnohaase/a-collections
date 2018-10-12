@@ -1,6 +1,7 @@
 package com.ajjpj.acollections.mutable;
 
 import com.ajjpj.acollections.ACollection;
+import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.immutable.AVector;
@@ -38,6 +39,12 @@ public class AMutableList<T> implements AList<T> {
     @Override public AEquality equality () { return equality; }
     public List<T> inner() {
         return inner;
+    }
+
+    @Override public ACollectionBuilder<T, ? extends ACollection<T>> newBuilder () {
+        //TODO differentiate based on inner type, build mutable collection and wrap that, ...
+
+        return AVector.builder(); //TODO this is a temporary work-around
     }
 
     //TODO unimplemented below this point
@@ -129,7 +136,7 @@ public class AMutableList<T> implements AList<T> {
     }
 
     @Override
-    public <U> ACollection<U> collect (Predicate<T> filter, Function<T, U> f) {
+    public <U> AList<U> collect (Predicate<T> filter, Function<T, U> f) {
         return null;
     }
 
@@ -155,12 +162,12 @@ public class AMutableList<T> implements AList<T> {
     }
 
     @Override
-    public <U> ACollection<U> map (Function<T, U> f) {
+    public <U> AList<U> map (Function<T, U> f) {
         return null;
     }
 
     @Override
-    public ACollection<T> filter (Predicate<T> f) {
+    public AList<T> filter (Predicate<T> f) {
         return null;
     }
 

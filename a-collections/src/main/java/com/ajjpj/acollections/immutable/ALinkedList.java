@@ -1,9 +1,6 @@
 package com.ajjpj.acollections.immutable;
 
-import com.ajjpj.acollections.ACollection;
-import com.ajjpj.acollections.AIterator;
-import com.ajjpj.acollections.AList;
-import com.ajjpj.acollections.AbstractAIterator;
+import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.util.AEquality;
 
 import java.util.*;
@@ -44,6 +41,10 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
             //noinspection unchecked
             return Nil.EQUALS;
         return new Nil<>(equality);
+    }
+
+    @Override public <U> Builder<U> newBuilder () {
+        return builder(equality);
     }
 
     @Override public ALinkedList<T> prepend(T o) {
@@ -87,22 +88,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> patch (int idx, List<T> patch, int numReplaced) {
-        final Builder<T> builder = new Builder<>(equality);
-
-        ALinkedList<T> l = this;
-        for(int i=0; i<idx; i++) {
-            builder.add(l.head());
-            l = l.tail();
-        }
-
-        for (T el: patch)
-            builder.add(el);
-        for (int i=0; i<numReplaced; i++)
-            l = l.tail();
-
-        for (T el: l)
-            builder.add(el);
-        return builder.build();
+        return (ALinkedList<T>) AList.super.patch(idx, patch, numReplaced);
     }
 
     @Override public AEquality equality () {
@@ -138,13 +124,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> takeWhile (Predicate<T> f) {
-        final Builder<T> builder = builder(equality);
-        ALinkedList<T> l = this;
-        while(l.nonEmpty() && f.test(l.head())) {
-            builder.add(l.head());
-            l = l.tail();
-        }
-        return builder.build();
+        return (ALinkedList<T>) AList.super.takeWhile(f);
     }
 
     @Override public ALinkedList<T> drop (int n) {
@@ -161,38 +141,23 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> dropWhile (Predicate<T> f) {
+        // this is a more efficient implementation than the generic, builder-based code from AList
         ALinkedList<T> l = this;
         while (l.nonEmpty() && f.test(l.head()))
             l = l.tail();
         return l;
     }
 
-    @Override public ACollection<T> filter (Predicate<T> f) {
-        final Builder<T> builder = new Builder<>(equality);
-        for (T o: this) {
-            if (f.test(o))
-                builder.add(o);
-        }
-        return builder.build();
+    @Override public ALinkedList<T> filter (Predicate<T> f) {
+        return (ALinkedList<T>) AList.super.filter(f);
     }
 
-    @Override public boolean endsWith (List<T> that) {
-        if (that.size() > this.size()) return false;
-
-        final Iterator<T> itThis = this.iterator().drop(size() - that.size());
-        final Iterator<T> itThat = that.iterator();
-        while (itThis.hasNext()) {
-            if (!equality.equals(itThis.next(), itThat.next()))
-                return false;
-        }
-        return true;
-    }
-
-    @Override public <U> ACollection<U> collect (Predicate<T> filter, Function<T, U> f) {
-        return fromIterator(iterator().collect(filter, f));
+    @Override public <U> ALinkedList<U> collect (Predicate<T> filter, Function<T, U> f) {
+        return (ALinkedList<U>) AList.super.collect(filter, f);
     }
 
     @Override public ALinkedList<T> reverse () {
+        // This is a more efficient implementation than the generic builder-based code from AList
         ALinkedList<T> result = nil(equality);
         for (T o: this) {
             result = result.prepend(o);
@@ -201,7 +166,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public AIterator<T> reverseIterator () {
-        return reverse().iterator();
+        return toVector().reverseIterator();
     }
 
     @Override public ALinkedList<T> subList (int fromIndex, int toIndex) {
@@ -212,8 +177,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public T get (int index) {
+    @Override public T get (int index) {
         ALinkedList<T> l = this;
         for (int i=0; i<index; i++) {
             l = l.tail();
@@ -233,18 +197,8 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         throw new UnsupportedOperationException();
     }
 
-    @Override public int indexOf (Object o) {
-        int idx=0;
-        ALinkedList<T> l = this;
-        while(l.nonEmpty()) {
-            if (equality.equals(head(), o)) return idx;
-            l = l.tail();
-        }
-
-        return -1;
-    }
-
     @Override public int lastIndexOf (Object o) {
+        // this is inefficient but more efficient than traversing in reverse order...
         int idx=0;
         int result = -1;
         for (T candidate: this) {
@@ -257,7 +211,9 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
 
     public abstract ALinkedList<T> tail();
 
-    @Override public abstract <U> ALinkedList<U> map (Function<T, U> f);
+    @Override public <U> ALinkedList<U> map (Function<T, U> f) {
+        return (ALinkedList<U>) AList.super.map(f);
+    }
 
     @Override public ALinkedList<T> toLinkedList() {
         return this;
@@ -305,14 +261,6 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
             };
         }
 
-        @Override public <U> ALinkedList<U> map (Function<T, U> f) {
-            final Builder<U> builder = new Builder<>(equality());
-            for (T o: this) {
-                builder.add(f.apply(o));
-            }
-            return builder.build();
-        }
-
         @Override public int size () {
             return this.size;
         }
@@ -358,7 +306,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         return new Builder<>(equality);
     }
 
-    public static class Builder<T> {
+    public static class Builder<T> implements ACollectionBuilder<T, ALinkedList<T>> {
         private ALinkedList<T> result;
         private HeadTail<T> last;
         private boolean wasBuilt=false;
@@ -367,7 +315,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
             result = nil(equality);
         }
 
-        Builder<T> add(T o) {
+        public Builder<T> add(T o) {
             if (wasBuilt) throw new IllegalStateException();
             if(result.isEmpty()) {
                 last = new HeadTail<>(o, result, result.equality);
@@ -389,7 +337,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         }
 
 
-        ALinkedList<T> build() {
+        public ALinkedList<T> build() {
             if (wasBuilt) throw new IllegalStateException();
             wasBuilt = true;
             return result;
