@@ -214,7 +214,9 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     @Override public <U> ALinkedList<U> map (Function<T, U> f) {
         return (ALinkedList<U>) AList.super.map(f);
     }
-
+    @Override public <U> ALinkedList<U> flatMap(Function<T, Iterable<U>> f) {
+        return (ALinkedList<U>) AList.super.flatMap(f);
+    }
     @Override public ALinkedList<T> toLinkedList() {
         return this;
     }

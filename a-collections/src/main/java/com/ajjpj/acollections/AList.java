@@ -126,6 +126,9 @@ public interface AList<T> extends ACollection<T>, List<T> {
     default <U> AList<U> map(Function<T,U> f) {
         return (AList<U>) ACollection.super.map(f);
     }
+    default <U> AList<U> flatMap(Function<T, Iterable<U>> f) {
+        return (AList<U>) ACollection.super.flatMap(f);
+    }
     default AList<T> filter(Predicate<T> f) {
         return (AList<T>) ACollection.super.filter(f);
     }

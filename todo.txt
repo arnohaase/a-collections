@@ -4,6 +4,8 @@ todo
 * stream integration: collectors
 * spliterator()
 
+* separate ACollectionDefaults, AListDefaults interface --> parameterized with collection type
+
 * AHashSet, AHashMap
 * ATreeSet, ATreeMap
 * ASeq, ASet, AMap

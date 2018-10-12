@@ -154,7 +154,9 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     @Override public <U> AVector<U> map (Function<T, U> f) {
         return (AVector<U>) AList.super.map(f);
     }
-
+    @Override public <U> AVector<U> flatMap(Function<T, Iterable<U>> f) {
+        return (AVector<U>) AList.super.flatMap(f);
+    }
     @Override public AVector<T> filter (Predicate<T> f) {
         return (AVector<T>) AList.super.filter(f);
     }

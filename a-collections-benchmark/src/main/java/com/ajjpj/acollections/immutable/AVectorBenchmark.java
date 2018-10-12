@@ -24,7 +24,7 @@ public class AVectorBenchmark {
         bh.consume(v);
     }
 
-//    @Benchmark
+    @Benchmark
     public void testPrependDexx(Blackhole bh) {
         com.github.andrewoma.dexx.collection.Vector<Integer> v = com.github.andrewoma.dexx.collection.Vector.empty();
         for (int i=0; i<numElements; i++) {
@@ -32,7 +32,7 @@ public class AVectorBenchmark {
         }
         bh.consume(v);
     }
-//    @Benchmark
+    @Benchmark
     public void testPrependAVector(Blackhole bh) {
         AVector<Integer> v = AVector.empty();
         for (int i=0; i<numElements; i++) {
@@ -49,7 +49,7 @@ public class AVectorBenchmark {
         }
         bh.consume(v);
     }
-//    @Benchmark
+    @Benchmark
     public void testAppendAVector(Blackhole bh) {
         AVector<Integer> v = AVector.empty();
         for (int i=0; i<numElements; i++) {
@@ -58,7 +58,7 @@ public class AVectorBenchmark {
         bh.consume(v);
     }
 
-//    @Benchmark
+    @Benchmark
     public void testBuildDexx(Blackhole bh) {
         Builder<Integer, Vector<Integer>> builder = Vector.<Integer>factory().newBuilder();
         for (int i=0; i<numElements; i++) {
@@ -66,7 +66,7 @@ public class AVectorBenchmark {
         }
         bh.consume(builder.build());
     }
-//    @Benchmark
+    @Benchmark
     public void testBuildAVector(Blackhole bh) {
         AVector.Builder<Integer> builder = AVector.builder();
         for (int i=0; i<numElements; i++) {
@@ -75,7 +75,7 @@ public class AVectorBenchmark {
         bh.consume(builder.build());
     }
 
-//    @Benchmark
+    @Benchmark
     public void testRandomAccessDexx(Blackhole bh) {
         Builder<Integer, Vector<Integer>> builder = Vector.<Integer>factory().newBuilder();
         for (int i=0; i<numElements; i++) {
@@ -86,7 +86,7 @@ public class AVectorBenchmark {
         for (int i=0; i<numElements; i++) result += v.get(i);
         bh.consume(result);
     }
-//    @Benchmark
+    @Benchmark
     public void testRandomAccessAVector(Blackhole bh) {
         AVector.Builder<Integer> builder = AVector.builder();
         for (int i=0; i<numElements; i++) {

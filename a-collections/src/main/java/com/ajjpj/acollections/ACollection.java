@@ -48,9 +48,12 @@ public interface ACollection<T> extends Collection<T> {
         for (T o: this) builder.add(f.apply(o));
         return builder.build();
     }
-    //TODO flatMap
+    default <U> ACollection<U> flatMap(Function<T, Iterable<U>> f) {
+        final ACollectionBuilder<U, ? extends ACollection<U>> builder = newBuilder();
+        for (T o: this) builder.addAll(f.apply(o));
+        return builder.build();
+    }
     //TODO flatten
-    //TODO newBuilder implementation
 
     default ACollection<T> filter(Predicate<T> f) {
         final ACollectionBuilder<T, ? extends ACollection<T>> builder = newBuilder();
