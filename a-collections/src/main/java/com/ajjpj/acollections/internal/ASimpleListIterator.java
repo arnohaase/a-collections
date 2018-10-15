@@ -1,5 +1,7 @@
 package com.ajjpj.acollections.internal;
 
+import com.ajjpj.acollections.AbstractAIterator;
+
 import java.util.Iterator;
 import java.util.ListIterator;
 
@@ -8,9 +10,9 @@ import java.util.ListIterator;
  * {@link ListIterator} is rarely used any more as other APIs like the stream API appeared. It is however used by some
  *  library code (e.g. {@link java.util.AbstractList#equals(Object)}, so we provide a rudimentary implementation.
  */
-public class ASimpleListIterator<T> implements ListIterator<T> {
+public class ASimpleListIterator<T> extends AbstractAIterator<T> implements ListIterator<T> {
     private final Iterator<T> internalIterator;
-    private int curIndex = -1;
+    private int curIndex;
 
     public ASimpleListIterator(Iterator<T> iterator, int seekIndex){
         internalIterator = iterator;

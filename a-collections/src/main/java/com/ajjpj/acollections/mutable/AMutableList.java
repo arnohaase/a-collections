@@ -7,6 +7,7 @@ import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.internal.ACollectionSupport;
+import com.ajjpj.acollections.internal.AListIterator;
 import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
@@ -304,141 +305,159 @@ public class AMutableList<T> implements AList<T> {
         return ! j.hasNext();
     }
 
-    //TODO unimplemented below this point
     @Override
     public AList<T> takeWhile (Predicate<T> f) {
-        return null;
+        List<T> updatedInner = new ArrayList<>();
+        for (T o: this) {
+            if (!f.test(o)) break;
+            updatedInner.add(o);
+        }
+        return new AMutableList<>(updatedInner, equality);
     }
 
     @Override
     public AList<T> dropWhile (Predicate<T> f) {
-        return null;
+        List<T> updatedInner = new ArrayList<>();
+        boolean go = false;
+        for (T o: this) {
+            if (!go && !f.test(o)) go = true;
+            if (go) updatedInner.add(o);
+        }
+        return new AMutableList<>(updatedInner, equality);
     }
 
     @Override
     public <U> AList<U> collect (Predicate<T> filter, Function<T, U> f) {
-        return null;
+        List<U> updatedInner = inner.stream()
+                .filter(filter)
+                .map(f)
+                .collect(Collectors.toList());
+        return new AMutableList<>(updatedInner, equality);
     }
 
     @Override
     public AList<T> take (int n) {
-        return null;
+        return new AMutableList<>(inner.subList(0, n-1), equality);
     }
 
     @Override
     public AList<T> drop (int n) {
-        return null;
+        return new AMutableList<>(inner.subList(n, inner.size()-1), equality);
     }
 
     @Override
     public AList<T> reverse () {
-        return null;
+        List<T> updatedInner = new ArrayList<>();
+        for (T e: inner) updatedInner.add(0, e);
+        return new AMutableList<>(updatedInner, equality);
     }
 
 
     @Override
     public AIterator<T> iterator () {
-        return null;
+        return new AListIterator<>(inner.listIterator());
     }
 
     @Override
     public <U> AList<U> map (Function<T, U> f) {
-        return null;
+        List<U> updatedInner = inner.stream().map(f).collect(Collectors.toList());
+        return new AMutableList<>(updatedInner, equality);
     }
 
     @Override
     public AList<T> filter (Predicate<T> f) {
-        return null;
+        List<T> updatedInner = inner.stream().filter(f).collect(Collectors.toList());
+        return new AMutableList<>(updatedInner, equality);
     }
 
     @Override
     public boolean addAll (int index, Collection<? extends T> c) {
-        return false;
+        return inner.addAll(index, c);
     }
 
     @Override
     public T get (int index) {
-        return null;
+        return inner.get(index);
     }
 
     @Override
     public T set (int index, T element) {
-        return null;
+        return inner.set(index, element);
     }
 
     @Override
     public void add (int index, T element) {
-
+        inner.add(index, element);
     }
 
     @Override
     public T remove (int index) {
-        return null;
+        return inner.remove(index);
     }
 
     @Override
     public int indexOf (Object o) {
-        return 0;
+        return inner.indexOf(o);
     }
 
     @Override
     public int lastIndexOf (Object o) {
-        return 0;
+        return inner.lastIndexOf(o);
     }
 
     @Override
-    public ListIterator<T> listIterator () {
-        return inner.listIterator();
+    public AListIterator<T> listIterator () {
+        return new AListIterator<>(inner.listIterator());
     }
 
     @Override
-    public ListIterator<T> listIterator (int index) {
-        return inner.listIterator(index);
+    public AListIterator<T> listIterator (int index) {
+        return new AListIterator<>(inner.listIterator());
     }
 
     @Override
     public List<T> subList (int fromIndex, int toIndex) {
-        return null;
+        return new AMutableList<>(inner.subList(fromIndex,toIndex ), equality);
     }
 
     @Override
     public int size () {
-        return 0;
+        return inner.size();
     }
 
     @Override
     public boolean isEmpty () {
-        return false;
+        return inner.isEmpty();
     }
 
     @Override
     public boolean add (T t) {
-        return false;
+        return inner.add(t);
     }
 
     @Override
     public boolean remove (Object o) {
-        return false;
+        return inner.remove(o);
     }
 
     @Override
     public boolean addAll (Collection<? extends T> c) {
-        return false;
+        return inner.addAll(c);
     }
 
     @Override
     public boolean removeAll (Collection<?> c) {
-        return false;
+        return inner.removeAll(c);
     }
 
     @Override
     public boolean retainAll (Collection<?> c) {
-        return false;
+        return inner.retainAll(c);
     }
 
     @Override
     public void clear () {
-
+        inner.clear();
     }
 
     @Override
