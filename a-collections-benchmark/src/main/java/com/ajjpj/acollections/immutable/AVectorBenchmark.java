@@ -9,13 +9,13 @@ import java.util.concurrent.TimeUnit;
 
 @Warmup(iterations = 3, time=10, timeUnit = TimeUnit.SECONDS)
 @BenchmarkMode(Mode.AverageTime)
-@Measurement(iterations = 3, time=8, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 10, time=10, timeUnit = TimeUnit.SECONDS)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Fork(2)
+@Fork(3)
 public class AVectorBenchmark {
     private static final int numElements = 10_000_000;
 
-//    @Benchmark
+    @Benchmark
     public void testPrependScala(Blackhole bh) {
         scala.collection.immutable.Vector<Integer> v = (scala.collection.immutable.Vector)scala.collection.immutable.Vector.empty();
         for (int i=0; i<numElements; i++) {
@@ -41,7 +41,7 @@ public class AVectorBenchmark {
         bh.consume(v);
     }
 
-//    @Benchmark
+    @Benchmark
     public void testAppendDexx(Blackhole bh) {
         com.github.andrewoma.dexx.collection.Vector<Integer> v = com.github.andrewoma.dexx.collection.Vector.empty();
         for (int i=0; i<numElements; i++) {

@@ -4,24 +4,24 @@ todo
 * stream integration: collectors
 * spliterator()
 
-* separate ACollectionDefaults, AListDefaults interface --> parameterized with collection type
-
 * AHashSet, AHashMap
+  * add full API
+
 * ATreeSet, ATreeMap
-* ASeq, ASet, AMap
-* ASortedSet, ASortedMap
-* AMap.withDefault, AMap.withDefaultValue
+* ASet, AMap, ASortedSet, ASortedMap
+* AMap.withDerivedDefault, AMap.withDefaultValue
+* toSet, toBuffer (mutable)
 * toMap (?)
 * CHAMP algorithm
 
+* Serializable
+  * readResolve
+  * uniqueness for None, empty, ...
+
 * Bag, MultiSet, MultiMap, ...?
 
-* toSet
 * static factories a la Java 10
 
-
 * unit tests
-
-* exception handling (?)
 
 * Range

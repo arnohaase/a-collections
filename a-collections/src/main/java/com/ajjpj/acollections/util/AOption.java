@@ -1,12 +1,12 @@
 package com.ajjpj.acollections.util;
 
-import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.immutable.AbstractImmutableCollection;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 
+import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,6 +23,7 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
     public abstract T get();
     public abstract T orElse(T defaultValue);
     public abstract T orElseGet(Supplier<T> f);
+    public abstract T orNull();
     public abstract <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X;
     public abstract Optional<T> toOptional();
 
@@ -39,8 +40,15 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
         return ANone;
     }
 
-    @Override public <U> ACollection<U> flatMap (Function<T, Iterable<U>> f) {
+    @Override public abstract <U> AOption<U> map (Function<T,U> f);
+    @Override public <U> AOption<U> flatMap (Function<T, Iterable<U>> f) {
         return ACollectionSupport.flatMap(newBuilder(), this, f);
+    }
+    @Override public abstract <U> AOption<U> collect (Predicate<T> filter, Function<T, U> f);
+
+    @Override public abstract AOption<T> filter (Predicate<T> f);
+    @Override public AOption<T> filterNot (Predicate<T> f) {
+        return ACollectionDefaults.super.filterNot(f);
     }
 
     @Override public Object[] toArray () {
@@ -49,6 +57,12 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
 
     @Override public <T1> T1[] toArray (T1[] a) {
         return ACollectionSupport.toArray(this, a);
+    }
+
+    @Override public abstract boolean contains(Object o);
+    
+    @Override public boolean containsAll (Collection<?> c) {
+        return ACollectionDefaults.super.containsAll(c);
     }
 
     @Override public <U> ACollectionBuilder<U, AOption<U>> newBuilder () {
@@ -68,6 +82,8 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
                 return result;
             }
         };
+
+
     }
 
     private static class ASome<T> extends AOption<T> {
@@ -103,6 +119,10 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
             return el;
         }
 
+        @Override public T orNull() {
+            return el;
+        }
+
         @Override public Optional<T> toOptional () {
             return Optional.of(el);
         }
@@ -123,6 +143,10 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
         @Override public <U> AOption<U> collect (Predicate<T> filter, Function<T, U> f) {
             if (filter.test(el)) return map(f);
             else return AOption.none();
+        }
+
+        @Override public boolean contains (Object o) {
+            return Objects.equals(el, o);
         }
 
         @Override public int size () {
@@ -159,6 +183,11 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
             throw exceptionSupplier.get();
         }
 
+        @Override public Object orNull() {
+            return null;
+        }
+
+
         @Override public Optional<Object> toOptional () {
             return Optional.empty();
         }
@@ -175,10 +204,17 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
         @Override public AOption<Object> filter (Predicate f) {
             return this;
         }
+        @Override public AOption<Object> filterNot (Predicate f) {
+            return this;
+        }
 
         @SuppressWarnings("unchecked")
         @Override public AOption collect (Predicate filter, Function f) {
             return this;
+        }
+
+        @Override public boolean contains (Object o) {
+            return false;
         }
 
         @Override public int size () {

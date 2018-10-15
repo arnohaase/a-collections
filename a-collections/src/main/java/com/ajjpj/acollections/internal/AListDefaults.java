@@ -124,7 +124,7 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
     default C filter(Predicate<T> f) {
         return ACollectionDefaults.super.filter(f);
     }
-    default AList<T> filterNot(Predicate<T> f) {
+    default C filterNot(Predicate<T> f) {
         return filter(f.negate());
     }
 

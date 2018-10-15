@@ -10,7 +10,7 @@ import java.util.Iterator;
  * @param <T> the element type that can be added
  * @param <R> the built result type
  */
-public interface ACollectionBuilder<T, R extends ACollection<T>> {
+public interface ACollectionBuilder<T, R extends ACollectionOps<T>> {
     ACollectionBuilder<T,R> add(T el);
     R build();
 

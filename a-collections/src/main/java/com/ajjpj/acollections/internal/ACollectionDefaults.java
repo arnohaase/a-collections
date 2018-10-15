@@ -2,6 +2,7 @@ package com.ajjpj.acollections.internal;
 
 import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
+import com.ajjpj.acollections.ACollectionOps;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.util.AOption;
@@ -24,7 +25,7 @@ import java.util.function.Predicate;
  * @param <T> the collections's element type
  * @param <C> the collection class' concrete type
  */
-public interface ACollectionDefaults<T, C extends ACollection<T>> extends ACollection<T> {
+public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACollectionOps<T>, Iterable<T> {
     default boolean nonEmpty() {
         return ! isEmpty();
     }
@@ -55,7 +56,7 @@ public interface ACollectionDefaults<T, C extends ACollection<T>> extends AColle
         return (C) builder.build();
 
     }
-    @Override default ACollection<T> filterNot(Predicate<T> f) {
+    @Override default C filterNot(Predicate<T> f) {
         return filter(f.negate());
     }
 
@@ -116,7 +117,7 @@ public interface ACollectionDefaults<T, C extends ACollection<T>> extends AColle
         return iterator().mkString(prefix, infix, suffix);
     }
 
-    @Override default boolean containsAll (Collection<?> c) {
+    default boolean containsAll (Collection<?> c) {
         for(Object o: c)
             if (! contains(o)) return false;
         return true;

@@ -34,6 +34,14 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
                 .build();
     }
 
+    public static <T> ALinkedList<T> of(T o) {
+        return ALinkedList.<T>nil().prepend(o);
+    }
+    public static <T> ALinkedList<T> of(T o1, T o2) {
+        return ALinkedList.<T>nil().prepend(o2).prepend(o1);
+    }
+
+
     public static <T> ALinkedList<T> nil() {
         return nil(AEquality.EQUALS);
     }
@@ -220,15 +228,16 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         return this;
     }
 
+    @Override public String toString () {
+        return ACollectionSupport.toString(ALinkedList.class, this);
+    }
 
     private static class HeadTail<T> extends ALinkedList<T> {
-        private final int size;
         private final T head;
         private ALinkedList<T> tail; // mutable only during construction - this allows for some optimizations
 
         HeadTail (T head, ALinkedList<T> tail, AEquality equality) {
             super(equality);
-            size = tail.size() + 1;
             this.head = head;
             this.tail = tail;
         }
@@ -263,7 +272,13 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         }
 
         @Override public int size () {
-            return this.size;
+            int result = 1;
+            ALinkedList<T> l = this;
+            while (l.tail().nonEmpty()) {
+                l = l.tail();
+                result += 1;
+            }
+            return result;
         }
     }
 
