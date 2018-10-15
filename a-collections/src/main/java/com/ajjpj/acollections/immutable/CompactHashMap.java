@@ -9,14 +9,10 @@ import java.util.*;
 /**
  * inspired by dexx
  */
-class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
-    interface MapEntryWithEquality<K,V> extends Map.Entry<K,V> {
-        boolean hasEqualKey(MapEntryWithEquality<K,V> other);
+class CompactHashMap<X extends CompactHashMap.EntryWithEquality> {
+    interface EntryWithEquality {
+        boolean hasEqualKey(EntryWithEquality other);
         int keyHash();
-
-        @Override default V setValue (V value) {
-            throw new UnsupportedOperationException();
-        }
     }
 
     protected static final CompactHashMap EMPTY = new CompactHashMap();
@@ -33,7 +29,7 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V, X extends MapEntryWithEquality<K,V>> CompactHashMap<K,V,X> empty() {
+    public static <K, V, X extends EntryWithEquality> CompactHashMap<X> empty() {
         return EMPTY;
     }
 
@@ -41,16 +37,16 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
         return null;
     }
 
-    protected CompactHashMap<K,V,X> updated0(X kv, int level) {
+    protected CompactHashMap<X> updated0(X kv, int level) {
         return new HashMap1<>(kv);
     }
 
-    protected CompactHashMap<K,V,X> removed0(X kv, int level) { // entry instead of key as an optimization
+    protected CompactHashMap<X> removed0(X kv, int level) { // entry instead of key as an optimization
         return this;
     }
 
     // utility method to create a HashTrieMap from two leaf CompactHashMaps (HashMap1 or CompactHashMapCollision1) with non-colliding hash code)
-    static <K,V,X extends MapEntryWithEquality<K, V>> HashTrieMap<K,V,X> makeHashTrieMap(int hash0, CompactHashMap<K,V,X> elem0, int hash1, CompactHashMap<K,V,X> elem1, int level, int size) {
+    static <X extends EntryWithEquality> HashTrieMap<X> makeHashTrieMap(int hash0, CompactHashMap<X> elem0, int hash1, CompactHashMap<X> elem1, int level, int size) {
         int index0 = (hash0 >>> level) & 0x1f;
         int index1 = (hash1 >>> level) & 0x1f;
         if (index0 != index1) {
@@ -74,7 +70,7 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
         }
     }
 
-    static class HashMap1<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> extends CompactHashMap<K,V,X> {
+    static class HashMap1<X extends EntryWithEquality> extends CompactHashMap<X> {
         private final X kv;
 
         HashMap1(X kv) {
@@ -95,7 +91,7 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
                 return null;
         }
 
-        @Override protected CompactHashMap<K,V,X> updated0(X kv, int level) {
+        @Override protected CompactHashMap<X> updated0(X kv, int level) {
             if (this.kv.hasEqualKey(kv)) {
                 return new HashMap1<>(kv);
             } else {
@@ -104,12 +100,12 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
                     return makeHashTrieMap(this.kv.keyHash(), this, kv.keyHash(), new HashMap1<>(kv), level, 2);
                 } else {
                     // 32-bit hash collision (rare, but not impossible)
-                    return new HashMapCollision1<>(kv.keyHash(), CompactListMap.<K,V,X>empty().updated(this.kv).updated(kv));
+                    return new HashMapCollision1<>(kv.keyHash(), CompactListMap.<X>empty().updated(this.kv).updated(kv));
                 }
             }
         }
 
-        @Override protected CompactHashMap<K,V,X> removed0(X entry, int level) {
+        @Override protected CompactHashMap<X> removed0(X entry, int level) {
             if (this.kv.hasEqualKey(entry))
                 return CompactHashMap.empty();
             else
@@ -121,11 +117,11 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
         }
     }
 
-    static class HashMapCollision1<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> extends CompactHashMap<K,V,X> {
+    static class HashMapCollision1<X extends EntryWithEquality> extends CompactHashMap<X> {
         private final int hash;
-        private final CompactListMap<K,V,X> kvs;
+        private final CompactListMap<X> kvs;
 
-        HashMapCollision1(int hash, CompactListMap<K,V,X> kvs) {
+        HashMapCollision1(int hash, CompactListMap<X> kvs) {
             this.hash = hash; //TODO look up hash?
             this.kvs = kvs;
         }
@@ -142,7 +138,7 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
             return kvs.get(kv);
         }
 
-        @Override protected CompactHashMap<K,V,X> updated0(X kv, int level) {
+        @Override protected CompactHashMap<X> updated0(X kv, int level) {
             if (kv.keyHash() == this.hash) {
                 return new HashMapCollision1<>(hash, kvs.updated(kv));
             } else {
@@ -150,9 +146,9 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
             }
         }
 
-        @Override protected CompactHashMap<K,V,X> removed0(X entry, int level) {
+        @Override protected CompactHashMap<X> removed0(X entry, int level) {
             if (entry.keyHash() == this.hash) {
-                final CompactListMap<K,V,X> m = kvs.removed(entry);
+                final CompactListMap<X> m = kvs.removed(entry);
                 if (m.isEmpty()) return CompactHashMap.empty();
                 if (m.tail().isEmpty()) return new HashMap1<>(m.head());
                 return new HashMapCollision1<>(hash, m);
@@ -164,7 +160,7 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
 
         @Override public AIterator<X> iterator() {
             return new AbstractAIterator<X>() {
-                CompactListMap<K,V,X> next = kvs;
+                CompactListMap<X> next = kvs;
 
                 @Override public boolean hasNext () {
                     return next.nonEmpty();
@@ -179,33 +175,35 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
         }
     }
 
-    static abstract class CompactListMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
-        static <K,V,X extends MapEntryWithEquality<K,V>> CompactListMap<K,V,X> empty() {
+    static abstract class CompactListMap<X extends EntryWithEquality> {
+        static <X extends EntryWithEquality> CompactListMap<X> empty() {
             //noinspection unchecked
-            return (CompactListMap<K,V,X>) EMPTY;
+            return (CompactListMap<X>) EMPTY;
         }
 
         abstract X head();
-        abstract CompactListMap<K,V,X> tail();
+        abstract CompactListMap<X> tail();
         abstract X get (X key);
         abstract int size();
         boolean isEmpty() {
             return ! nonEmpty();
         }
         abstract boolean nonEmpty(); // is way more efficient than size()
-        abstract CompactListMap<K,V,X> updated(X entry);
-        abstract CompactListMap<K,V,X> removed(X entry); // only key is used - 'entry' is used as an optimization
+        abstract CompactListMap<X> updated(X entry);
+        abstract CompactListMap<X> removed(X entry); // only key is used - 'entry' is used as an optimization
 
         private static final CompactListMap EMPTY = new CompactListMap() {
-            @Override MapEntryWithEquality head () {
+            @Override
+            EntryWithEquality head () {
                 throw new UnsupportedOperationException();
             }
 
             @Override
-            CompactListMap<Object, Object, ?> tail () {
+            CompactListMap<?> tail () {
                 throw new UnsupportedOperationException();
             }
-            @Override MapEntryWithEquality get (MapEntryWithEquality key) {
+            @Override
+            EntryWithEquality get (EntryWithEquality key) {
                 return null;
             }
             @Override int size () {
@@ -215,20 +213,20 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
                 return false;
             }
 
-            @Override CompactListMap updated (MapEntryWithEquality entry) {
+            @Override CompactListMap updated (EntryWithEquality entry) {
                 //noinspection unchecked
                 return new CompactListMap.Node(entry, this);
             }
-            @Override CompactListMap removed (MapEntryWithEquality entry) {
+            @Override CompactListMap removed (EntryWithEquality entry) {
                 return this;
             }
         };
 
-        private static class Node<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> extends CompactListMap<K,V,X> {
+        private static class Node<X extends EntryWithEquality> extends CompactListMap<X> {
             private final X entry;
-            private final CompactListMap<K,V,X> tail;
+            private final CompactListMap<X> tail;
 
-            Node (X entry, CompactListMap<K,V,X> tail) {
+            Node (X entry, CompactListMap<X> tail) {
                 this.entry = entry;
                 this.tail = tail;
             }
@@ -237,11 +235,11 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
                 return entry;
             }
 
-            @Override CompactListMap<K,V,X> tail () {
+            @Override CompactListMap<X> tail () {
                 return tail;
             }
             @Override X get (X kv) {
-                CompactListMap<K,V,X> m = this;
+                CompactListMap<X> m = this;
                 while(m.nonEmpty()) {
                     if(m.head().hasEqualKey(kv)) {
                         return m.head();
@@ -252,7 +250,7 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
             }
             @Override int size() {
                 int result = 1;
-                CompactListMap<K,V,X> m = this;
+                CompactListMap<X> m = this;
                 while(m.tail().nonEmpty()) {
                     m = m.tail();
                     result += 1;
@@ -264,14 +262,14 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
                 return true;
             }
 
-            @Override CompactListMap<K,V,X> updated (X entry) {
+            @Override CompactListMap<X> updated (X entry) {
                 return new CompactListMap.Node<>(entry, removed(entry));
             }
-            @Override CompactListMap<K,V,X> removed (X entry) {
+            @Override CompactListMap<X> removed (X entry) {
                 int idx = 0;
                 boolean hasMatch = false;
 
-                CompactListMap<K,V,X> remaining = this;
+                CompactListMap<X> remaining = this;
                 while(remaining.nonEmpty()) {
                     if (entry.hasEqualKey(remaining.head())) {
                         remaining = remaining.tail();
@@ -283,8 +281,8 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
                 }
                 if (! hasMatch) return this;
 
-                CompactListMap<K,V,X> result = remaining;
-                CompactListMap<K,V,X> iter = this;
+                CompactListMap<X> result = remaining;
+                CompactListMap<X> iter = this;
                 for (int i=0; i<idx; i++) {
                     result = new CompactListMap.Node<>(iter.head(), result);
                     iter = iter.tail ();
@@ -296,7 +294,7 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
     }
 
 
-    static class HashTrieMap<K,V,X extends MapEntryWithEquality<K,V>> extends CompactHashMap<K,V,X> {
+    static class HashTrieMap<X extends EntryWithEquality> extends CompactHashMap<X> {
         private final int bitmap;
         private final Object[] elems;
         private final int size;
@@ -318,9 +316,9 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
             return elems;
         }
 
-        private CompactHashMap<K,V,X> getElem(int index) {
+        private CompactHashMap<X> getElem(int index) {
             //noinspection unchecked
-            return (CompactHashMap<K,V,X>) elems[index];
+            return (CompactHashMap<X>) elems[index];
         }
 
         @Override protected X get0(X kv, int level) {
@@ -338,13 +336,13 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
             }
         }
 
-        @Override protected CompactHashMap<K,V,X> updated0(X kv, int level) {
+        @Override protected CompactHashMap<X> updated0(X kv, int level) {
             final int index = (kv.keyHash() >>> level) & 0x1f;
             final int mask = (1 << index);
             final int offset = Integer.bitCount(bitmap & (mask - 1));
             if ((bitmap & mask) != 0) {
-                final CompactHashMap<K,V,X> sub = getElem(offset);
-                final CompactHashMap<K,V,X> subNew = sub.updated0(kv, level + 5);
+                final CompactHashMap<X> sub = getElem(offset);
+                final CompactHashMap<X> subNew = sub.updated0(kv, level + 5);
                 if (subNew.equals(sub)) {
                     return this;
                 }
@@ -366,13 +364,13 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
             }
         }
 
-        @Override protected CompactHashMap<K,V,X> removed0(X kv, int level) {
+        @Override protected CompactHashMap<X> removed0(X kv, int level) {
             final int index = (kv.keyHash() >>> level) & 0x1f;
             final int mask = (1 << index);
             final int offset = Integer.bitCount(bitmap & (mask - 1));
             if ((bitmap & mask) != 0) {
-                final CompactHashMap<K,V,X> sub = getElem(offset);
-                final CompactHashMap<K,V,X> subNew = sub.removed0(kv, level + 5);
+                final CompactHashMap<X> sub = getElem(offset);
+                final CompactHashMap<X> subNew = sub.removed0(kv, level + 5);
                 if (subNew.equals(sub)) {
                     return this;
                 }
@@ -386,7 +384,7 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
                         final int sizeNew = size - sub.size();
                         if (elemsNew.length == 1 && !(elemsNew[0] instanceof HashTrieMap)) {
                             //noinspection unchecked
-                            return (CompactHashMap<K,V,X>) elemsNew[0];
+                            return (CompactHashMap<X>) elemsNew[0];
                         }
                         else {
                             return new HashTrieMap<>(bitmapNew, elemsNew, sizeNew);
@@ -416,7 +414,7 @@ class CompactHashMap<K,V,X extends CompactHashMap.MapEntryWithEquality<K,V>> {
         }
     }
 
-    static class Itr<K,V,X extends MapEntryWithEquality<K,V>> extends AbstractAIterator<X> {
+    static class Itr<X extends EntryWithEquality> extends AbstractAIterator<X> {
         private final ArrayDeque<Snapshot> stack = new ArrayDeque<>();
 
         private Iterator<X> subIterator;

@@ -4,11 +4,9 @@ todo
 * stream integration: collectors
 * spliterator()
 
-* AHashSet, AHashMap
-  * add full API
+* static factories in interfaces
 
 * ATreeSet, ATreeMap
-* ASet, AMap, ASortedSet, ASortedMap
 * AMap.withDerivedDefault, AMap.withDefaultValue
 * toSet, toBuffer (mutable)
 * toMap (?)

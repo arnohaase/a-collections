@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 
 
 public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Map.Entry<K,V>, AHashMap<K,V>> {
-    private final CompactHashMap<K,V,EntryWithEquality<K,V>> compactHashMap;
+    private final CompactHashMap<MapEntryWithEquality> compactHashMap;
 
     public static <K,V> AHashMap<K,V> empty() {
         return empty(AEquality.EQUALS);
@@ -27,10 +27,12 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         return new AHashMapCustom<>(CompactHashMap.EMPTY, equality);
     }
 
+    //TODO fromIterator, fromIterable, of, fromMap, ...
+
     AHashMap () {
         this (new CompactHashMap<>());
     }
-    AHashMap (CompactHashMap<K,V,EntryWithEquality<K,V>> compactHashMap) {
+    AHashMap (CompactHashMap<MapEntryWithEquality> compactHashMap) {
         this.compactHashMap = compactHashMap;
     }
 
@@ -41,8 +43,8 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         return newInstance(compactHashMap.removed0(newEntry(key, null), 0));
     }
 
-    abstract AHashMap<K,V> newInstance(CompactHashMap<K,V,EntryWithEquality<K,V>> compact);
-    abstract EntryWithEquality<K,V> newEntry(K key, V value);
+    abstract AHashMap<K,V> newInstance(CompactHashMap<MapEntryWithEquality> compact);
+    abstract MapEntryWithEquality newEntry(K key, V value);
 
     public static <K,V> ACollectionBuilder<Map.Entry<K,V>, AHashMap<K,V>> builder() {
         return builder(AEquality.EQUALS);
@@ -66,7 +68,7 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
 
     @Override public V get (Object key) {
         //noinspection unchecked
-        final EntryWithEquality<K,V> raw = compactHashMap.get0(newEntry((K)key, null), 0);
+        final MapEntryWithEquality<K,V> raw = compactHashMap.get0(newEntry((K)key, null), 0);
         if (raw != null)
             return raw.getValue();
         else
@@ -74,8 +76,9 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
     }
 
     @Override public AOption<V> getOptional (K key) {
-        final EntryWithEquality<K,V> raw = compactHashMap.get0(newEntry(key, null), 0);
-        return AOption.of(raw).map(EntryWithEquality::getValue);
+        //noinspection unchecked
+        final MapEntryWithEquality<K,V> raw = compactHashMap.get0(newEntry(key, null), 0);
+        return AOption.of(raw).map(MapEntryWithEquality::getValue);
     }
 
     @Override public AIterator<Entry<K, V>> iterator () {
@@ -89,7 +92,7 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         for (Map.Entry<K,V> kv: this) {
             if(f.test(kv)) {
                 //noinspection unchecked
-                result = result.updated0((EntryWithEquality) kv, 0);
+                result = result.updated0((MapEntryWithEquality) kv, 0);
             }
         }
         //noinspection unchecked
@@ -136,16 +139,19 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         throw new UnsupportedOperationException("unsupported for persistent collection");
     }
 
+    //TODO
     @Override public Set<K> keySet () {
-        return null; //TODO
+        return null;
     }
 
+    //TODO
     @Override public Collection<V> values () {
-        return null; //TODO
+        return null;
     }
 
+    //TODO
     @Override public Set<Entry<K, V>> entrySet () {
-        return null; //TODO
+        return null;
     }
 
     static class Builder<K,V> implements ACollectionBuilder<Map.Entry<K,V>, AHashMap<K,V>> {
@@ -167,16 +173,17 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
 
 
     static class AHashMapEquals<K,V> extends AHashMap<K,V> {
-        AHashMapEquals (CompactHashMap<K, V, EntryWithEquality<K, V>> compactHashMap) {
+        AHashMapEquals (CompactHashMap<MapEntryWithEquality> compactHashMap) {
             super(compactHashMap);
         }
 
-        @Override AHashMap<K, V> newInstance (CompactHashMap<K, V, EntryWithEquality<K, V>> compactHashMap) {
+        @Override AHashMap<K,V> newInstance (CompactHashMap<MapEntryWithEquality> compactHashMap) {
             return new AHashMapEquals<>(compactHashMap);
         }
 
-        @Override EntryWithEquality<K, V> newEntry (K key, V value) {
-            return new EntryWithEquals<>(key, value);
+        @Override
+        MapEntryWithEquality newEntry (K key, V value) {
+            return new MapEntryWithEquals<>(key, value);
         }
 
         @Override public AEquality keyEquality () {
@@ -184,16 +191,17 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         }
     }
     static class AHashMapIdentity<K,V> extends AHashMap<K,V> {
-        AHashMapIdentity (CompactHashMap<K, V, EntryWithEquality<K, V>> compactHashMap) {
+        AHashMapIdentity (CompactHashMap<MapEntryWithEquality> compactHashMap) {
             super(compactHashMap);
         }
 
-        @Override AHashMap<K, V> newInstance (CompactHashMap<K, V, EntryWithEquality<K, V>> compactHashMap) {
+        @Override AHashMap<K,V> newInstance (CompactHashMap<MapEntryWithEquality> compactHashMap) {
             return new AHashMapIdentity<>(compactHashMap);
         }
 
-        @Override EntryWithEquality<K, V> newEntry (K key, V value) {
-            return new EntryWithIdentity<>(key, value);
+        @Override
+        MapEntryWithEquality newEntry (K key, V value) {
+            return new MapEntryWithIdentity<>(key, value);
         }
 
         @Override public AEquality keyEquality () {
@@ -203,17 +211,18 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
     static class AHashMapCustom<K,V> extends AHashMap<K,V> {
         private final AEquality keyEquality;
 
-        AHashMapCustom (CompactHashMap<K, V, EntryWithEquality<K, V>> compactHashMap, AEquality keyEquality) {
+        AHashMapCustom (CompactHashMap<MapEntryWithEquality> compactHashMap, AEquality keyEquality) {
             super(compactHashMap);
             this.keyEquality = keyEquality;
         }
 
-        @Override AHashMap<K, V> newInstance (CompactHashMap<K, V, EntryWithEquality<K, V>> compactHashMap) {
+        @Override AHashMap<K,V> newInstance (CompactHashMap<MapEntryWithEquality> compactHashMap) {
             return new AHashMapCustom<>(compactHashMap, keyEquality);
         }
 
-        @Override EntryWithEquality<K, V> newEntry (K key, V value) {
-            return new EntryWithConfiguredEquality<>(key, value, keyEquality);
+        @Override
+        MapEntryWithEquality newEntry (K key, V value) {
+            return new MapEntryWithConfiguredEquality<>(key, value, keyEquality);
         }
 
         @Override public AEquality keyEquality () {
@@ -222,29 +231,33 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
     }
 
 
-    private static abstract class EntryWithEquality<K,V> implements CompactHashMap.MapEntryWithEquality<K,V> {
+    private static abstract class MapEntryWithEquality<K,V> implements CompactHashMap.EntryWithEquality, Map.Entry<K,V> {
         final K key;
         final V value;
 
-        EntryWithEquality (K key, V value) {
+        MapEntryWithEquality (K key, V value) {
             this.key = key;
             this.value = value;
         }
 
-        public K getKey () { return key; }
-        public V getValue () { return value; }
+        @Override public K getKey () { return key; }
+        @Override public V getValue () { return value; }
+
+        @Override public V setValue (V value) {
+            throw new UnsupportedOperationException();
+        }
     }
 
-    private static class EntryWithConfiguredEquality<K,V> extends EntryWithEquality<K,V> {
+    private static class MapEntryWithConfiguredEquality<K,V> extends MapEntryWithEquality<K,V> {
         private final AEquality equality;
 
-        public EntryWithConfiguredEquality (K key, V value, AEquality equality) {
+        MapEntryWithConfiguredEquality (K key, V value, AEquality equality) {
             super(key, value);
             this.equality = equality;
         }
 
-        @Override public boolean hasEqualKey (CompactHashMap.MapEntryWithEquality<K, V> other) {
-            return equality.equals(this.getKey(), other.getKey());
+        @Override public boolean hasEqualKey (CompactHashMap.EntryWithEquality other) {
+            return equality.equals(this.getKey(), ((MapEntryWithEquality) other).getKey());
         }
 
         @Override public int keyHash () {
@@ -252,14 +265,14 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         }
     }
 
-    private static class EntryWithEquals<K,V> extends EntryWithIdentity<K,V> {
+    private static class MapEntryWithEquals<K,V> extends MapEntryWithIdentity<K,V> {
         private int keyHash = -123; // 'safe data race' - see String.hashCode() implementation
 
-        EntryWithEquals (K key, V value) { super(key, value); }
+        MapEntryWithEquals (K key, V value) { super(key, value); }
 
-        @Override public boolean hasEqualKey (CompactHashMap.MapEntryWithEquality<K, V> other) {
+        @Override public boolean hasEqualKey (CompactHashMap.EntryWithEquality other) {
             // compare hash for safety and as an optimization
-            return keyHash() == other.keyHash() && Objects.equals(key, other.getKey());
+            return keyHash() == other.keyHash() && Objects.equals(key, ((MapEntryWithEquality) other).getKey());
         }
 
         private int improve(int hashCode) {
@@ -277,11 +290,11 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
             return keyHash;
         }
     }
-    private static class EntryWithIdentity<K,V> extends EntryWithEquality<K,V> {
-        EntryWithIdentity (K key, V value) { super (key, value); }
+    private static class MapEntryWithIdentity<K,V> extends MapEntryWithEquality<K,V> {
+        MapEntryWithIdentity (K key, V value) { super (key, value); }
 
-        @Override public boolean hasEqualKey (CompactHashMap.MapEntryWithEquality<K, V> other) {
-            return this.key == other.getKey();
+        @Override public boolean hasEqualKey (CompactHashMap.EntryWithEquality other) {
+            return this.key == ((MapEntryWithEquality) other).getKey();
         }
 
         @Override public int keyHash () {
