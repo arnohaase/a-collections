@@ -8,9 +8,11 @@ todo
 
 * add mutable JU code to benchmarks
 
+* partial order
+
 * ATreeSet, ATreeMap
 * AMap.withDerivedDefault, AMap.withDefaultValue
-* toSet, toBuffer (mutable)
+* toBuffer (mutable)
 * toMap (?)
 * CHAMP algorithm
 

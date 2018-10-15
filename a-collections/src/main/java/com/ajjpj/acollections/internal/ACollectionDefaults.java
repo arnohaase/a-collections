@@ -3,6 +3,7 @@ package com.ajjpj.acollections.internal;
 import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.ACollectionOps;
+import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.util.AOption;
@@ -45,6 +46,9 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
     }
     @Override default AVector<T> toVector() {
         return AVector.from(this, equality());
+    }
+    @Override default AHashSet<T> toSet() {
+        return AHashSet.from(this, equality());
     }
 
     //TODO flatten

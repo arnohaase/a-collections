@@ -1,6 +1,7 @@
 package com.ajjpj.acollections;
 
 
+import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.util.AEquality;
@@ -38,6 +39,7 @@ public interface ACollectionOps<T> {
 
     ALinkedList<T> toLinkedList();
     AVector<T> toVector();
+    AHashSet<T> toSet();
 
     <U> ACollection<U> map(Function<T,U> f);
     <U> ACollection<U> flatMap(Function<T, Iterable<U>> f);

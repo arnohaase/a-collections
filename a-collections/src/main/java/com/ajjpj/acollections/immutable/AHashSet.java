@@ -8,6 +8,7 @@ import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.util.AEquality;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -24,8 +25,37 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
         return new CustomHashSet<>(CompactHashMap.empty(), equality);
     }
 
-    //TODO benchmark
-    //TODO fromIterator, fromIterable, of, ...
+    public static <T> AHashSet<T> of(T o) {
+        return AHashSet
+                .<T>builder()
+                .add(o)
+                .build();
+    }
+    public static <T> AHashSet<T> of(T o1, T o2) {
+        return AHashSet
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .build();
+    }
+
+    public static <T> AHashSet<T> from(Iterable<T> that) {
+        return from(that, AEquality.EQUALS);
+    }
+    public static <T> AHashSet<T> from(Iterable<T> that, AEquality equality) {
+        return AHashSet.<T>builder(equality)
+                .addAll(that)
+                .build();
+    }
+
+    public static <T> AHashSet<T> fromIterator(Iterator<T> it) {
+        return fromIterator(it, AEquality.EQUALS);
+    }
+    public static <T> AHashSet<T> fromIterator(Iterator<T> it, AEquality equality) {
+        return AHashSet.<T>builder(equality)
+                .addAll(it)
+                .build();
+    }
 
     AHashSet (CompactHashMap<SetEntryWithEquality<T>> compactHashMap) {
         this.compactHashMap = compactHashMap;
@@ -34,6 +64,10 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
     abstract AHashSet<T> newInstance(CompactHashMap<SetEntryWithEquality<T>> compactHashMap);
     abstract SetEntryWithEquality<T> newEntry(Object o);
     @Override public abstract <U> ACollectionBuilder<U, AHashSet<U>> newBuilder();
+
+    @Override public AHashSet<T> toSet () {
+        return this;
+    }
 
     @Override public AHashSet<T> added (T o) {
         return newInstance(compactHashMap.updated0(newEntry(o), 0));
