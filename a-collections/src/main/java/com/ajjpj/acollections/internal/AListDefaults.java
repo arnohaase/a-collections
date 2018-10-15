@@ -89,7 +89,7 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
 
         final Iterator<T> itThis = this.iterator();
         for (T aThat: that) {
-            if (!equality().equals(itThis.next(), aThat))
+            if (equality().notEquals(itThis.next(), aThat))
                 return false;
         }
         return true;
@@ -98,7 +98,7 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
         final Iterator<T> i = this.iterator().drop(size() - that.size());
         final Iterator<T> j = that.iterator();
         while (i.hasNext() && j.hasNext())
-            if (! equality().equals(i.next(), j.next()))
+            if (equality().notEquals(i.next(), j.next()))
                 return false;
 
         return ! j.hasNext();
