@@ -6,6 +6,7 @@ import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
@@ -43,6 +44,7 @@ public class AMutableList<T> implements AList<T> {
 
     @Override public ACollectionBuilder<T, ? extends ACollection<T>> newBuilder () {
         //TODO differentiate based on inner type, build mutable collection and wrap that, ...
+        //TODO when using a good builder make use of ACollectionSupport.flatMap instead of own implementation here.
 
         return AVector.builder(); //TODO this is a temporary work-around
     }
@@ -135,90 +137,89 @@ public class AMutableList<T> implements AList<T> {
         return AVector.from(this, equality);
     }
 
-    //TODO unimplemented below this point
     @Override
     public <U> AOption<U> collectFirst (Predicate<T> filter, Function<T, U> f) {
-        return null;
+        return iterator().collectFirst(filter, f);
     }
 
     @Override
     public AOption<T> find (Predicate<T> f) {
-        return null;
+        return iterator().find(f);
     }
 
     @Override
     public boolean forall (Predicate<T> f) {
-        return false;
+        return iterator().forall(f);
     }
 
     @Override
     public boolean exists (Predicate<T> f) {
-        return false;
+        return iterator().exists(f);
     }
 
     @Override
     public int count (Predicate<T> f) {
-        return 0;
+        return iterator().count(f);
     }
 
     @Override
     public T reduceLeft (BiFunction<T, T, T> f) {
-        return null;
+        return iterator().reduce(f);
     }
 
     @Override
     public AOption<T> reduceLeftOption (BiFunction<T, T, T> f) {
-        return null;
+        return iterator().reduceOption(f);
     }
 
     @Override
     public <U> U foldLeft (U zero, BiFunction<U, T, U> f) {
-        return null;
+        return iterator().fold(zero, f);
     }
 
     @Override
     public T min () {
-        return null;
+        return iterator().min();
     }
 
     @Override
     public T min (Comparator<T> comparator) {
-        return null;
+        return iterator().min(comparator);
     }
 
     @Override
     public T max () {
-        return null;
+        return iterator().max();
     }
 
     @Override
     public T max (Comparator<T> comparator) {
-        return null;
+        return iterator().max(comparator);
     }
 
     @Override
     public String mkString (String infix) {
-        return null;
+        return iterator().mkString(infix);
     }
 
     @Override
     public String mkString (String prefix, String infix, String suffix) {
-        return null;
+        return iterator().mkString(prefix, infix, suffix);
     }
 
     @Override
     public Object[] toArray () {
-        return new Object[0];
+        return ACollectionSupport.toArray(this);
     }
 
     @Override
     public <T1> T1[] toArray (T1[] a) {
-        return null;
+        return ACollectionSupport.toArray(this, a);
     }
 
     @Override
     public boolean containsAll (Collection<?> c) {
-        return false;
+        return inner.containsAll(c);
     }
 
     @Override
@@ -293,9 +294,17 @@ public class AMutableList<T> implements AList<T> {
 
     @Override
     public boolean endsWith (List<T> that) {
-        return false;
+        if (inner.size() <that.size())return false;
+        final Iterator<T> i = inner.listIterator(inner.size() - that.size());
+        final Iterator<T> j = that.iterator();
+        while (i.hasNext() && j.hasNext())
+            if (equality().notEquals(i.next(), j.next()))
+                return false;
+
+        return ! j.hasNext();
     }
 
+    //TODO unimplemented below this point
     @Override
     public AList<T> takeWhile (Predicate<T> f) {
         return null;
