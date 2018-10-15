@@ -6,6 +6,8 @@ todo
 
 * static factories in interfaces
 
+* add mutable JU code to benchmarks
+
 * ATreeSet, ATreeMap
 * AMap.withDerivedDefault, AMap.withDefaultValue
 * toSet, toBuffer (mutable)

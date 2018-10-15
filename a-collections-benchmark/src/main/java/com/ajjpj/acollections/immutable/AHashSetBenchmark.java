@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 @Measurement(iterations = 10, time=10, timeUnit = TimeUnit.SECONDS)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(3)
-public class AHashMapBenchmark {
+public class AHashSetBenchmark {
     private static final int size = 100_000;
     private static final int numIter = 10_000_000;
 
@@ -23,14 +23,14 @@ public class AHashMapBenchmark {
     @Benchmark
     public void testModifyScala(Blackhole bh) {
         final Random rand = new Random(12345);
-        scala.collection.immutable.HashMap<Integer,Integer> m = new scala.collection.immutable.HashMap<>();
+        scala.collection.immutable.HashSet<Integer> m = new scala.collection.immutable.HashSet<>();
 
         for(int i=0; i<numIter; i++) {
             final int key = rand.nextInt(size);
             final boolean add = rand.nextBoolean();
 
             if(add)
-                m=m.$plus(new Tuple2<>(key, key));
+                m=m.$plus(key);
             else
                 m=m.$minus(key);
         }
@@ -40,30 +40,30 @@ public class AHashMapBenchmark {
     @Benchmark
     public void testModifyDexx(Blackhole bh) {
         final Random rand = new Random(12345);
-        com.github.andrewoma.dexx.collection.HashMap<Integer,Integer> m = new com.github.andrewoma.dexx.collection.HashMap<>();
+        com.github.andrewoma.dexx.collection.HashSet<Integer> m = com.github.andrewoma.dexx.collection.HashSet.empty();
 
         for(int i=0; i<numIter; i++) {
             final int key = rand.nextInt(size);
             final boolean add = rand.nextBoolean();
 
             if(add)
-                m=m.put(key, key);
+                m=m.add(key);
             else
                 m=m.remove(key);
         }
         bh.consume(m);
     }
     @Benchmark
-    public void testModifyAHashMap(Blackhole bh) {
+    public void testModifyAHashSet(Blackhole bh) {
         final Random rand = new Random(12345);
-        AHashMap<Integer,Integer> m = AHashMap.empty();
+        AHashSet<Integer> m = AHashSet.empty();
 
         for(int i=0; i<numIter; i++) {
             final int key = rand.nextInt(size);
             final boolean add = rand.nextBoolean();
 
             if(add)
-                m=m.updated(key, key);
+                m=m.added(key);
             else
                 m=m.removed(key);
         }
@@ -72,43 +72,43 @@ public class AHashMapBenchmark {
 
     @Benchmark
     public void testIterateScala(Blackhole bh) {
-        scala.collection.immutable.HashMap<Integer,Integer> m = new scala.collection.immutable.HashMap<>();
+        scala.collection.immutable.HashSet<Integer> m = new scala.collection.immutable.HashSet<>();
 
         for(int i=0; i<size; i++) { //TODO use builder (here and for the Java implementations)
-            m=m.$plus(new Tuple2<>(i, i));
+            m=m.$plus(i);
         }
 
         int sum=0;
-        final Iterator<Tuple2<Integer, Integer>> it = m.iterator();
+        final Iterator<Integer> it = m.iterator();
         while (it.hasNext()) {
-            sum += it.next()._2;
+            sum += it.next();
         }
         bh.consume(sum);
     }
 
     @Benchmark
     public void testIterateDexx(Blackhole bh) {
-        com.github.andrewoma.dexx.collection.HashMap<Integer,Integer> m = new com.github.andrewoma.dexx.collection.HashMap<>();
+        com.github.andrewoma.dexx.collection.HashSet<Integer> m = com.github.andrewoma.dexx.collection.HashSet.empty();
 
         for(int i=0; i<size; i++) {
-            m=m.put(i, i);
+            m=m.add(i);
         }
         int sum=0;
-        for (Pair<Integer, Integer> el: m) {
-            sum += el.component2();
+        for (Integer el: m) {
+            sum += el;
         }
         bh.consume(sum);
     }
     @Benchmark
-    public void testIterateAHashMap(Blackhole bh) {
-        AHashMap<Integer,Integer> m = AHashMap.empty();
+    public void testIterateAHashSet(Blackhole bh) {
+        AHashSet<Integer> m = AHashSet.empty();
 
         for(int i=0; i<size; i++) {
-            m=m.updated(i, i);
+            m=m.added(i);
         }
         int sum=0;
-        for (Map.Entry<Integer, Integer> el: m) {
-            sum += el.getValue();
+        for (Integer el: m) {
+            sum += el;
         }
         bh.consume(sum);
     }
