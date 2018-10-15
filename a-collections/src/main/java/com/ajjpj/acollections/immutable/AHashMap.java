@@ -1,11 +1,9 @@
 package com.ajjpj.acollections.immutable;
 
-import com.ajjpj.acollections.ACollection;
-import com.ajjpj.acollections.ACollectionBuilder;
-import com.ajjpj.acollections.AIterator;
-import com.ajjpj.acollections.AMap;
+import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
+import com.ajjpj.acollections.internal.AMapSupport;
 import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
@@ -139,19 +137,16 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         throw new UnsupportedOperationException("unsupported for persistent collection");
     }
 
-    //TODO
-    @Override public Set<K> keySet () {
-        return null;
+    @Override public ASet<K> keySet () {
+        return new AMapSupport.KeySet<>(this);
     }
 
-    //TODO
-    @Override public Collection<V> values () {
-        return null;
+    @Override public ACollection<V> values () {
+        return new AMapSupport.ValueCollection<>(this);
     }
 
-    //TODO
-    @Override public Set<Entry<K, V>> entrySet () {
-        return null;
+    @Override public ASet<Entry<K, V>> entrySet () {
+        return new AMapSupport.EntrySet<>(this);
     }
 
     static class Builder<K,V> implements ACollectionBuilder<Map.Entry<K,V>, AHashMap<K,V>> {

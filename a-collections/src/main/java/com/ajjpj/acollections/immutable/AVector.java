@@ -1147,14 +1147,6 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
             return this;
         }
 
-        public Builder<T> addAll(Iterator<? extends T> it) {
-            while(it.hasNext()) add(it.next());
-            return this;
-        }
-        public Builder<T> addAll(Iterable<? extends T> coll) {
-            return addAll(coll.iterator());
-        }
-
         public AVector<T> build() {
             if (wasBuilt) throw new IllegalStateException();
             wasBuilt = true;

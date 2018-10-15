@@ -6,7 +6,7 @@ import com.ajjpj.acollections.util.AOption;
 import java.util.Map;
 
 
-public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>> {
+public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Iterable<Map.Entry<K,V>> {
     AEquality keyEquality ();
 
     @Override default AEquality equality () {
@@ -21,9 +21,6 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>> {
 
     AMap<K,V> updated(K key, V value);
     AMap<K,V> removed(K key);
-
-//    ASet<K> TODO keys();
-//    ACollection<V> TODO values();
 
 //    TODO AMap<K,V> withDefaultValue(V defaultValue);
 //    TODO AMap<K,V> withDefault(AFunction1<? super K, ? extends V, ? extends RuntimeException> function);
