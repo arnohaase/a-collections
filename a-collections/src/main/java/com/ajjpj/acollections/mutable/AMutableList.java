@@ -13,6 +13,9 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 
 public class AMutableList<T> implements AList<T> {
@@ -44,74 +47,95 @@ public class AMutableList<T> implements AList<T> {
         return AVector.builder(); //TODO this is a temporary work-around
     }
 
-    //TODO unimplemented below this point
 
 
     @Override
     public AOption<T> lastOption () {
-        return null;
+        if (isEmpty()){
+            return AOption.none();
+        }
+        return AOption.of(inner.get(inner.size()-1));
     }
 
     @Override
     public boolean contains (Object o) {
-        return false;
+        return inner.contains(o);
     }
 
     @Override
     public boolean startsWith (List<T> that) {
-        return false;
+        if (that.size()<=inner.size()){
+            Iterator<T> thatIterator = that.iterator();
+            Iterator<T> innerIterator = inner.iterator();
+            while (that.iterator().hasNext()){
+                if (equality.notEquals(thatIterator.next(), innerIterator.next())){
+                    return false;
+                }
+            }
+            return true;
+        }else {
+            return false;
+        }
     }
 
     @Override
     public <U> U foldRight (U zero, BiFunction<U, T, U> f) {
-        return null;
+        return reverseIterator().fold(zero, f);
     }
 
     @Override
     public T reduceRight (BiFunction<T, T, T> f) {
-        return null;
+        return reverseIterator().reduce(f);
     }
 
     @Override
     public AOption<T> reduceRightOption (BiFunction<T, T, T> f) {
-        return null;
+        return reverseIterator().reduceOption(f);
     }
 
     @Override
     public <U> AList<U> flatMap (Function<T, Iterable<U>> f) {
-        return null;
+        Function<T, Stream<U>> g = t -> StreamSupport.stream(f.apply(t).spliterator(), false);
+        List<U> mappedInner = inner.stream()
+             .flatMap(g)
+             .collect(Collectors.toList());
+        return new AMutableList<>(mappedInner, equality);
     }
 
     @Override
     public AList<T> filterNot (Predicate<T> f) {
-        return null;
+        return filter(f.negate());
     }
 
     @Override
     public boolean nonEmpty () {
-        return false;
+        return !isEmpty();
     }
 
     @Override
     public T head () {
-        return null;
+        return iterator().next();
     }
 
     @Override
     public AOption<T> headOption () {
-        return null;
+        if (isEmpty()){
+            return AOption.none();
+        }
+        return AOption.some(iterator().next());
     }
 
     @Override
     public ALinkedList<T> toLinkedList () {
-        return null;
+        return ALinkedList.from(this, equality);
     }
 
     @Override
     public AVector<T> toVector () {
-        return null;
+        return AVector.from(this, equality);
     }
 
+    //TODO unimplemented below this point
     @Override
     public <U> AOption<U> collectFirst (Predicate<T> filter, Function<T, U> f) {
         return null;
@@ -264,7 +288,7 @@ public class AMutableList<T> implements AList<T> {
 
     @Override
     public AIterator<T> reverseIterator () {
-        return AVector.from(this).reverseIterator();
+        return AVector.from(inner).reverseIterator();
     }
 
     @Override
