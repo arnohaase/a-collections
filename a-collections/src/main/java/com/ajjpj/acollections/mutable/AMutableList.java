@@ -4,6 +4,7 @@ import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
+import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.internal.ACollectionSupport;
@@ -136,6 +137,10 @@ public class AMutableList<T> implements AList<T> {
     @Override
     public AVector<T> toVector () {
         return AVector.from(this, equality);
+    }
+
+    @Override public AHashSet<T> toSet () {
+        return AHashSet.from(this, equality);
     }
 
     @Override
