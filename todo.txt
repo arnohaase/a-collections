@@ -16,6 +16,8 @@ todo
 * toMap (?)
 * CHAMP algorithm
 
+* equals, hashCode
+
 * Serializable
   * readResolve
   * uniqueness for None, empty, ...
