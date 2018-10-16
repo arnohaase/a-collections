@@ -8,30 +8,60 @@ import java.util.Map;
 
 
 public class ATreeMap<K,V> implements Iterable<Map.Entry<K,V>> {
-    private final CompactRedBlackTree<K,V> impl;
+    private static class Entry<K,V> implements CompactRedBlackTree.EntryWithComparator, Map.Entry<K,V> {
+        final K key;
+        final V value;
+        final Comparator<K> comparator;
 
-    public static <K,V> ATreeMap<K,V> empty(Comparator<K> comparator) {
-        return new ATreeMap<>(CompactRedBlackTree.empty(comparator));
+        Entry (K key, V value, Comparator<K> comparator) {
+            this.key = key;
+            this.value = value;
+            this.comparator = comparator;
+        }
+
+        @Override public int compareTo (CompactRedBlackTree.EntryWithComparator other) {
+            //noinspection unchecked
+            return comparator.compare(key, ((Entry<K,V>)other).key);
+        }
+
+        @Override public K getKey () {
+            return key;
+        }
+        @Override public V getValue () {
+            return value;
+        }
+        @Override public V setValue (V value) {
+            throw new UnsupportedOperationException();
+        }
     }
 
-    private ATreeMap (CompactRedBlackTree<K, V> impl) {
+    private final CompactRedBlackTree<Entry<K,V>> impl;
+    private final Comparator<K> comparator;
+
+    public static <K,V> ATreeMap<K,V> empty(Comparator<K> comparator) {
+        return new ATreeMap<>(CompactRedBlackTree.empty(), comparator);
+    }
+
+    private ATreeMap (CompactRedBlackTree<Entry<K,V>> impl, Comparator<K> comparator) {
         this.impl = impl;
+        this.comparator = comparator;
     }
 
     public V get(K key) {
         return AOption
-                .of(impl.get(key))
-                .map(Map.Entry::getValue)
+                .of(impl.get(new Entry<>(key, null, comparator)))
+                .map(e -> e.value)
                 .orNull();
     }
     public ATreeMap<K,V> updated(K key, V value) {
-        return new ATreeMap<>(impl.updated(key, value));
+        return new ATreeMap<>(impl.updated(new Entry<>(key, value, comparator)), comparator);
     }
     public ATreeMap<K,V> removed(K key) {
-        return new ATreeMap<>(impl.removed(key));
+        return new ATreeMap<>(impl.removed(new Entry<>(key, null, comparator)), comparator);
     }
     public Iterator<Map.Entry<K,V>> iterator() {
-        return impl.iterator();
+        //noinspection unchecked
+        return (Iterator) impl.iterator();
     }
 
     public int size() {

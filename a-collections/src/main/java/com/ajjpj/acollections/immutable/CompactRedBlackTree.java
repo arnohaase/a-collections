@@ -5,17 +5,23 @@ import com.ajjpj.acollections.util.AOption;
 import java.util.*;
 
 
-class CompactRedBlackTree<K,V>  {
-    private final Tree<K,V> root;
-    private final Comparator<K> comparator;
-
-    static <K,V> CompactRedBlackTree<K,V> empty (Comparator<K> comparator) {
-        return new CompactRedBlackTree<> (null, comparator);
+class CompactRedBlackTree<X extends CompactRedBlackTree.EntryWithComparator>  {
+    interface EntryWithComparator {
+        int compareTo (EntryWithComparator other);
     }
 
-    private CompactRedBlackTree (Tree<K, V> root, Comparator<K> comparator) {
+    private final Tree<X> root;
+
+    @SuppressWarnings("unchecked")
+    private static final CompactRedBlackTree EMPTY = new CompactRedBlackTree(null);
+
+    static <X extends EntryWithComparator> CompactRedBlackTree<X> empty () {
+        //noinspection unchecked
+        return EMPTY;
+    }
+
+    private CompactRedBlackTree (Tree<X> root) {
         this.root = root;
-        this.comparator = comparator;
     }
 
     int size () {
@@ -25,178 +31,178 @@ class CompactRedBlackTree<K,V>  {
         return root == null;
     }
 
-    Map.Entry<K,V> get (K key) {
-        return lookup (root, key, comparator);
+    X get (X key) {
+        return AOption.of(lookup (root, key)).map(e -> e.entry).orNull();
     }
 
-    CompactRedBlackTree<K, V> updated (K key, V value) {
-        return new CompactRedBlackTree<> (blacken (upd (root, key, value, comparator)), comparator);
+    CompactRedBlackTree<X> updated (X entry) {
+        return new CompactRedBlackTree<> (blacken (upd (root, entry)));
     }
 
-    CompactRedBlackTree<K, V> removed (K key) {
-        return new CompactRedBlackTree<> (blacken (del (root, key, comparator)), comparator);
+    CompactRedBlackTree<X> removed (X key) {
+        return new CompactRedBlackTree<> (blacken (del (root, key)));
     }
 
-    Iterator<Map.Entry<K, V>> iterator () {
-        return new TreeIterator<Map.Entry<K, V>> () {
-            @Override Map.Entry<K, V> nextResult (Tree<K, V> tree) {
-                return tree;
+    Iterator<X> iterator () {
+        return new TreeIterator<X> () {
+            @Override X nextResult (Tree<X> tree) {
+                return tree.entry;
             }
         };
     }
 
-    AOption<Map.Entry<K, V>> first () {
-        if (root == null) return AOption.none ();
+    X first () {
+        if (root == null) return null;
 
-        Tree<K,V> cur = root;
+        Tree<X> cur = root;
         while (cur.left != null) cur = cur.left;
 
-        return AOption.some (cur);
+        return cur.entry;
     }
 
-    AOption<Map.Entry<K, V>> last () {
-        if (root == null) return AOption.none ();
+    X last () {
+        if (root == null) return null;
 
-        Tree<K,V> cur = root;
+        Tree<X> cur = root;
         while (cur.right != null) cur = cur.right;
 
-        return AOption.some (cur);
+        return cur.entry;
     }
 
-    AOption<Map.Entry<K, V>> firstGreaterThan (K key) {
-        if (root == null) return AOption.none ();
+    X firstGreaterThan (X key) {
+        if (root == null) return null;
 
-        Tree<K,V> cur = root;
-        Tree<K,V> candidate = null;
+        Tree<X> cur = root;
+        Tree<X> candidate = null;
         while (true) {
-            final int cmp = comparator.compare (cur.key, key);
+            final int cmp = cur.entry.compareTo(key);
             if (cmp <= 0) {
                 // this node is smaller than the key --> go right
-                if (cur.right == null) return AOption.of(candidate);
+                if (cur.right == null) return AOption.of(candidate).map(e -> e.entry).orNull();
                 cur = cur.right;
             }
             else {
                 // this node is greater than the key --> go left
-                if (cur.left == null) return AOption.some (cur);
+                if (cur.left == null) return cur.entry;
                 candidate = cur;
                 cur = cur.left;
             }
         }
     }
 
-    AOption<Map.Entry<K, V>> firstGreaterOrEquals (K key) {
-        if (root == null) return AOption.none ();
+    X firstGreaterOrEquals (X key) {
+        if (root == null) return null;
 
-        Tree<K,V> cur = root;
-        Tree<K,V> candidate = null;
+        Tree<X> cur = root;
+        Tree<X> candidate = null;
         while (true) {
-            final int cmp = comparator.compare (cur.key, key);
-            if (cmp == 0) return AOption.some (cur);
+            final int cmp = cur.entry.compareTo(key);
+            if (cmp == 0) return cur.entry;
             if (cmp < 0) {
                 // this node is smaller than the key --> go right
-                if (cur.right == null) return AOption.of(candidate);
+                if (cur.right == null) return AOption.of(candidate).map(e -> e.entry).orNull();
                 cur = cur.right;
             }
             else {
                 // this node is greater than the key --> go left
-                if (cur.left == null) return AOption.some (cur);
+                if (cur.left == null) return cur.entry;
                 candidate = cur;
                 cur = cur.left;
             }
         }
     }
 
-    public AOption<Map.Entry<K, V>> lastSmallerThan (K key) {
-        if (root == null) return AOption.none ();
+    public X lastSmallerThan (X key) {
+        if (root == null) return null;
 
-        Tree<K,V> cur = root;
-        Tree<K,V> candidate = null;
+        Tree<X> cur = root;
+        Tree<X> candidate = null;
         while (true) {
-            final int cmp = comparator.compare (cur.key, key);
+            final int cmp = cur.entry.compareTo(key);
             if (cmp >= 0) {
                 // this node is greater than the key --> go left
-                if (cur.left == null) return AOption.of(candidate);
+                if (cur.left == null) return AOption.of(candidate).map(e -> e.entry).orNull();
                 cur = cur.left;
             }
             else {
                 // this node is smaller than the key --> go right
-                if (cur.right == null) return AOption.some (cur);
+                if (cur.right == null) return cur.entry;
                 candidate = cur;
                 cur = cur.right;
             }
         }
     }
 
-    AOption<Map.Entry<K, V>> lastSmallerOrEquals (K key) {
-        if (root == null) return AOption.none ();
+    X lastSmallerOrEquals (X key) {
+        if (root == null) return null;
 
-        Tree<K,V> cur = root;
-        Tree<K,V> candidate = null;
+        Tree<X> cur = root;
+        Tree<X> candidate = null;
         while (true) {
-            final int cmp = comparator.compare (cur.key, key);
-            if (cmp == 0) return AOption.some (cur);
+            final int cmp = cur.entry.compareTo(key);
+            if (cmp == 0) return cur.entry;
             if (cmp > 0) {
                 // this node is greater than the key --> go left
-                if (cur.left == null) return AOption.of(candidate);
+                if (cur.left == null) return AOption.of(candidate).map(e -> e.entry).orNull();
                 cur = cur.left;
             }
             else {
                 // this node is smaller than the key --> go right
-                if (cur.right == null) return AOption.some (cur);
+                if (cur.right == null) return cur.entry;
                 candidate = cur;
                 cur = cur.right;
             }
         }
     }
 
-    Iterable<Map.Entry<K, V>> rangeII (final K fromKey, final K toKey) {
+    Iterable<X> rangeII (final X fromKey, final X toKey) {
         return () -> CompactRedBlackTree.this.iterator (fromKey, toKey, true, true);
     }
 
-    Iterable<Map.Entry<K, V>> rangeIE (final K fromKey, final K toKey) {
+    Iterable<X> rangeIE (final X fromKey, final X toKey) {
         return () -> CompactRedBlackTree.this.iterator (fromKey, toKey, true, false);
     }
 
-    Iterable<Map.Entry<K, V>> rangeEI (final K fromKey, final K toKey) {
+    Iterable<X> rangeEI (final X fromKey, final X toKey) {
         return () -> CompactRedBlackTree.this.iterator (fromKey, toKey, false, true);
     }
 
-    Iterable<Map.Entry<K, V>> rangeEE (final K fromKey, final K toKey) {
+    Iterable<X> rangeEE (final X fromKey, final X toKey) {
         return () -> CompactRedBlackTree.this.iterator (fromKey, toKey, false, false);
     }
 
-    Iterable<Map.Entry<K, V>> fromI (final K fromKey) {
+    Iterable<X> fromI (final X fromKey) {
         return () -> CompactRedBlackTree.this.iterator (fromKey, null, true, false);
     }
 
-    Iterable<Map.Entry<K, V>> fromE (final K fromKey) {
+    Iterable<X> fromE (final X fromKey) {
         return () -> CompactRedBlackTree.this.iterator (fromKey, null, false, false);
     }
 
-    Iterable<Map.Entry<K, V>> toI (final K toKey) {
+    Iterable<X> toI (final X toKey) {
         return () -> CompactRedBlackTree.this.iterator (null, toKey, false, true);
     }
 
-    Iterable<Map.Entry<K, V>> toE (final K toKey) {
+    Iterable<X> toE (final X toKey) {
         return () -> CompactRedBlackTree.this.iterator (null, toKey, false, false);
     }
 
 
-    private Iterator<Map.Entry<K,V>> iterator (final K from, final K to, boolean fromInclusive, boolean toInclusive) {
+    private Iterator<X> iterator (final X from, final X to, boolean fromInclusive, boolean toInclusive) {
         if (root == null) {
-            return new TreeIterator<Map.Entry<K, V>> (null, null) {
-                @Override Map.Entry<K, V> nextResult (Tree<K, V> tree) {
+            return new TreeIterator<X> (null, null) {
+                @Override X nextResult (Tree<X> tree) {
                     return null;
                 }
             };
         }
 
         // this stack contains all nodes for which the left side was visited, while they themselves were not, and neither was their right side
-        final ArrayDeque<Tree<K,V>> pathStack = new ArrayDeque<> ();
+        final ArrayDeque<Tree<X>> pathStack = new ArrayDeque<> ();
 
-        Tree<K, V> cur = root;
+        Tree<X> cur = root;
         while (true) {
-            final int cmp = (from == null) ? 1 : comparator.compare (cur.key, from);
+            final int cmp = (from == null) ? 1 : cur.entry.compareTo(from);
             if (cmp == 0 && fromInclusive) {
                 pathStack.push (cur);
                 break;
@@ -222,40 +228,40 @@ class CompactRedBlackTree<K,V>  {
         }
 
         if (to == null) {
-            return new TreeIterator<Map.Entry<K, V>> (pathStack, pathStack.isEmpty () ? null : pathStack.pop ()) {
-                @Override Map.Entry<K, V> nextResult (Tree<K, V> tree) {
-                    return tree;
+            return new TreeIterator<X> (pathStack, pathStack.isEmpty () ? null : pathStack.pop ()) {
+                @Override X nextResult (Tree<X> tree) {
+                    return tree.entry;
                 }
             };
         }
 
-        Tree<K,V> first = null;
+        Tree<X> first = null;
         if (! pathStack.isEmpty ()) {
             first = pathStack.pop ();
 
-            final int cmp = comparator.compare (first.key, to);
+            final int cmp = first.entry.compareTo(to);
             if (cmp > 0 || (cmp == 0 && !toInclusive)) {
                 first = null;
             }
         }
 
         if (toInclusive) {
-            return new TreeIterator<Map.Entry<K, V>> (pathStack, first) {
-                @Override Map.Entry<K, V> nextResult (Tree<K, V> tree) {
-                    return tree;
+            return new TreeIterator<X> (pathStack, first) {
+                @Override X nextResult (Tree<X> tree) {
+                    return tree.entry;
                 }
-                @Override protected boolean isAfterIntendedEnd (Tree<K, V> tree) {
-                    return comparator.compare (tree.key, to) > 0;
+                @Override protected boolean isAfterIntendedEnd (Tree<X> tree) {
+                    return tree.entry.compareTo(to) > 0;
                 }
             };
         }
         else {
-            return new TreeIterator<Map.Entry<K, V>> (pathStack, first) {
-                @Override Map.Entry<K, V> nextResult (Tree<K, V> tree) {
-                    return tree;
+            return new TreeIterator<X> (pathStack, first) {
+                @Override X nextResult (Tree<X> tree) {
+                    return tree.entry;
                 }
-                @Override protected boolean isAfterIntendedEnd (Tree<K, V> tree) {
-                    return comparator.compare (tree.key, to) >= 0;
+                @Override protected boolean isAfterIntendedEnd (Tree<X> tree) {
+                    return tree.entry.compareTo(to) >= 0;
                 }
             };
         }
@@ -276,10 +282,10 @@ class CompactRedBlackTree<K,V>  {
         // rule 4: every redden node has two blacken children
         if (isRedTree (tree)) {
             if (isRedTree (tree.left)) {
-                throw new IllegalStateException ("tree " + tree.key + " is redden and has a left child that is redden");
+                throw new IllegalStateException ("tree " + tree.entry + " is redden and has a left child that is redden");
             }
             if (isRedTree (tree.right)) {
-                throw new IllegalStateException ("tree " + tree.key + " is redden and has a right child that is redden");
+                throw new IllegalStateException ("tree " + tree.entry + " is redden and has a right child that is redden");
             }
         }
 
@@ -297,7 +303,7 @@ class CompactRedBlackTree<K,V>  {
 
         // rule 5: every path to 'leaf' nodes must have the same number of blacken nodes
         if (left != right) {
-            throw new IllegalStateException ("left and right side have paths to leaf nodes with different numbers of blacken nodes: " + tree.key);
+            throw new IllegalStateException ("left and right side have paths to leaf nodes with different numbers of blacken nodes: " + tree.entry);
         }
         return own + left;
     }
@@ -305,10 +311,10 @@ class CompactRedBlackTree<K,V>  {
 
     private abstract class TreeIterator<R> implements Iterator<R> {
         @SuppressWarnings ("unchecked")
-        private final ArrayDeque<Tree<K,V>> pathStack;
-        private Tree<K,V> next;
+        private final ArrayDeque<Tree<X>> pathStack;
+        private Tree<X> next;
 
-        abstract R nextResult (Tree<K,V> tree); //TODO rename this
+        abstract R nextResult (Tree<X> tree); //TODO rename this
 
         @SuppressWarnings ("unchecked")
         private TreeIterator() {
@@ -327,7 +333,7 @@ class CompactRedBlackTree<K,V>  {
             }
         }
 
-        private TreeIterator (ArrayDeque<Tree<K,V>> pathStack, Tree<K,V> first) {
+        private TreeIterator (ArrayDeque<Tree<X>> pathStack, Tree<X> first) {
             this.pathStack = pathStack;
             this.next = first;
         }
@@ -341,7 +347,7 @@ class CompactRedBlackTree<K,V>  {
                 throw new NoSuchElementException();
             }
 
-            final Tree<K,V> cur = next;
+            final Tree<X> cur = next;
             next = filteredFindNext (next.right);
             return nextResult (cur);
         }
@@ -350,13 +356,13 @@ class CompactRedBlackTree<K,V>  {
             throw new UnsupportedOperationException ();
         }
 
-        private Tree<K,V> filteredFindNext (Tree<K,V> tree) {
-            final Tree<K,V> result = findNext (tree);
+        private Tree<X> filteredFindNext (Tree<X> tree) {
+            final Tree<X> result = findNext (tree);
             if (result == null || isAfterIntendedEnd (result)) return null;
             return result;
         }
 
-        private Tree<K,V> findNext (Tree<K,V> tree) {
+        private Tree<X> findNext (Tree<X> tree) {
             while (true) {
                 if (tree == null) {
                     return popPath ();
@@ -372,11 +378,11 @@ class CompactRedBlackTree<K,V>  {
         /**
          * override if an iterator should finish before the entire map is traversed
          */
-        protected boolean isAfterIntendedEnd (Tree<K,V> tree) {
+        protected boolean isAfterIntendedEnd (Tree<X> tree) {
             return false;
         }
 
-        private Tree<K,V> popPath() {
+        private Tree<X> popPath() {
             if (pathStack.isEmpty ()) {
                 // convenience for handling the end of iteration
                 return null;
@@ -387,9 +393,9 @@ class CompactRedBlackTree<K,V>  {
 
 
 
-    private static <K,V> Tree<K,V> lookup(Tree<K,V> tree, K key, Comparator<K> comparator) {
+    private static <X extends EntryWithComparator> Tree<X> lookup(Tree<X> tree, X key) {
         while (tree != null) {
-            final int cmp = comparator.compare (key, tree.key);
+            final int cmp = key.compareTo(tree.entry);
             if (cmp == 0) return tree;
 
             tree = (cmp < 0) ? tree.left : tree.right;
@@ -405,128 +411,127 @@ class CompactRedBlackTree<K,V>  {
         return tree != null && tree.isBlack ();
     }
 
-    private static <K,V> Tree<K,V> blacken (Tree<K, V> tree) {
+    private static <X extends EntryWithComparator> Tree<X> blacken (Tree<X> tree) {
         if (tree == null) {
             return null;
         }
         return tree.blacken ();
     }
 
-    private static <K,V> Tree<K,V> balanceLeft (TreeFactory<K, V> treeFactory, K key, V value, Tree<K, V> l, Tree<K, V> d) {
+    private static <X extends EntryWithComparator> Tree<X> balanceLeft (TreeFactory<X> treeFactory, X entry, Tree<X> l, Tree<X> d) {
         if (isRedTree (l) && isRedTree (l.left)) {
-            return new RedTree<> (l.key, l.value,
-                    new BlackTree<> (l.left.key, l.left.value, l.left.left, l.left.right),
-                    new BlackTree<> (key, value, l.right, d));
+            return new RedTree<> (l.entry,
+                    new BlackTree<> (l.left.entry, l.left.left, l.left.right),
+                    new BlackTree<> (entry, l.right, d));
         }
         if (isRedTree (l) && isRedTree (l.right)) {
-            return new RedTree<> (l.right.key, l.right.value,
-                    new BlackTree<> (l.key, l.value, l.left, l.right.left),
-                    new BlackTree<> (key, value, l.right.right, d));
+            return new RedTree<> (l.right.entry,
+                    new BlackTree<> (l.entry, l.left, l.right.left),
+                    new BlackTree<> (entry, l.right.right, d));
         }
         return treeFactory.create (l, d);
     }
 
-    private static <K,V> Tree<K,V> balanceRight (TreeFactory<K, V> treeFactory, K key, V value, Tree<K, V> a, Tree<K, V> r) {
+    private static <X extends EntryWithComparator> Tree<X> balanceRight (TreeFactory<X> treeFactory, X entry, Tree<X> a, Tree<X> r) {
         if (isRedTree (r) && isRedTree (r.left)) {
-            return new RedTree<> (r.left.key, r.left.value,
-                    new BlackTree<> (key, value, a, r.left.left),
-                    new BlackTree<> (r.key, r.value, r.left.right, r.right));
+            return new RedTree<> (r.left.entry,
+                    new BlackTree<> (entry, a, r.left.left),
+                    new BlackTree<> (r.entry, r.left.right, r.right));
         }
         if (isRedTree (r) && isRedTree (r.right)) {
-            return new RedTree<> (r.key, r.value,
-                    new BlackTree<> (key, value, a, r.left),
-                    new BlackTree<> (r.right.key, r.right.value, r.right.left, r.right.right));
+            return new RedTree<> (r.entry,
+                    new BlackTree<> (entry, a, r.left),
+                    new BlackTree<> (r.right.entry, r.right.left, r.right.right));
         }
         return treeFactory.create (a, r);
     }
 
-    private static <K,V> Tree<K,V> upd (Tree<K, V> tree, K key, V value, Comparator<K> comparator) {
+    private static <X extends EntryWithComparator> Tree<X> upd (Tree<X> tree, X entry) {
         if (tree == null) {
-            return new RedTree<> (key, value, null, null);
+            return new RedTree<> (entry, null, null);
         }
-        final int cmp = comparator.compare (key, tree.key);
+        final int cmp = entry.compareTo(tree.entry);
         if (cmp < 0) {
-            return balanceLeft (tree, tree.key, tree.value, upd (tree.left, key, value, comparator), tree.right);
+            return balanceLeft (tree, tree.entry, upd (tree.left, entry), tree.right);
         }
         if (cmp > 0) {
-            return balanceRight (tree, tree.key, tree.value, tree.left, upd (tree.right, key, value, comparator));
+            return balanceRight (tree, tree.entry, tree.left, upd (tree.right, entry));
         }
-        return tree.withNewValue (key, value);
+        return tree.withNewValue (entry);
     }
 
-    private static <K,V> Tree<K,V> del (Tree<K, V> tree, K key, Comparator<K> comparator) {
+    private static <X extends EntryWithComparator> Tree<X> del (Tree<X> tree, X key) {
         if (tree == null) {
             return null;
         }
 
-        final int cmp = comparator.compare(key, tree.key);
+        final int cmp = key.compareTo(tree.entry);
         if (cmp < 0) {
             // the node that must be deleted is to the left
             return isBlackTree (tree.left) ?
-                    balanceLeft (tree.key, tree.value, del (tree.left, key, comparator), tree.right) :
+                    balanceLeft (tree.entry, del (tree.left, key), tree.right) :
 
                     // tree.left is 'redden', so its children are guaranteed to be blacken.
-                    new RedTree<> (tree.key, tree.value, del (tree.left, key, comparator), tree.right);
+                    new RedTree<> (tree.entry, del (tree.left, key), tree.right);
         }
         else if (cmp > 0) {
             // the node that must be deleted is to the right
             return isBlackTree (tree.right) ?
-                    balanceRight (tree.key, tree.value, tree.left, del (tree.right, key, comparator)) :
-                    new RedTree<> (tree.key, tree.value, tree.left, del (tree.right, key, comparator));
+                    balanceRight (tree.entry, tree.left, del (tree.right, key)) :
+                    new RedTree<> (tree.entry, tree.left, del (tree.right, key));
         }
 
         // delete this node and we are finished
         return append (tree.left, tree.right);
-
     }
 
-    private static <K,V> Tree<K,V> balance (K key, V value, Tree<K, V> tl, Tree<K, V> tr) {
-        if (isRedTree (tl) && isRedTree (tr)) return new RedTree<> (key, value, tl.blacken (), tr.blacken ());
+    private static <X extends EntryWithComparator> Tree<X> balance (X entry, Tree<X> tl, Tree<X> tr) {
+        if (isRedTree (tl) && isRedTree (tr)) return new RedTree<> (entry, tl.blacken (), tr.blacken ());
 
         if (isRedTree (tl)) {
             // left is redden, right is blacken
-            if (isRedTree (tl.left)) return new RedTree<> (tl.key, tl.value, tl.left.blacken (), new BlackTree<> (key, value, tl.right, tr));
+            if (isRedTree (tl.left)) return new RedTree<> (tl.entry, tl.left.blacken (), new BlackTree<> (entry, tl.right, tr));
             if (isRedTree (tl.right)) {
-                return new RedTree<> (tl.right.key, tl.right.value,
-                        new BlackTree<> (tl.key, tl.value, tl.left, tl.right.left),
-                        new BlackTree<> (key, value, tl.right.right, tr));
+                return new RedTree<> (tl.right.entry,
+                        new BlackTree<> (tl.entry, tl.left, tl.right.left),
+                        new BlackTree<> (entry, tl.right.right, tr));
             }
-            return new BlackTree<> (key, value, tl, tr);
+            return new BlackTree<> (entry, tl, tr);
         }
 
         if (isRedTree (tr)) {
             // left is blacken, right is redden
-            if (isRedTree (tr.right)) return new RedTree<> (tr.key, tr.value, new BlackTree<> (key, value, tl, tr.left), tr.right.blacken ());
-            if (isRedTree (tr.left))  return new RedTree<> (tr.left.key, tr.left.value, new BlackTree<> (key, value, tl, tr.left.left), new BlackTree<> (tr.key, tr.value, tr.left.right, tr.right));
-            return new BlackTree<> (key, value, tl, tr);
+            if (isRedTree (tr.right)) return new RedTree<> (tr.entry, new BlackTree<> (entry, tl, tr.left), tr.right.blacken ());
+            if (isRedTree (tr.left))  return new RedTree<> (tr.left.entry, new BlackTree<> (entry, tl, tr.left.left), new BlackTree<> (tr.entry, tr.left.right, tr.right));
+            return new BlackTree<> (entry, tl, tr);
         }
 
         // tl and tr are both blacken
-        return new BlackTree<> (key, value, tl, tr);
+        return new BlackTree<> (entry, tl, tr);
     }
 
-    private static <K,V> Tree<K,V> balanceLeft (K key, V value, Tree<K, V> tl, Tree<K, V> tr) { //TODO merge with other 'balanceLeft' method?
+    private static <X extends EntryWithComparator> Tree<X> balanceLeft (X entry, Tree<X> tl, Tree<X> tr) {
         if (isRedTree (tl)) {
-            return new RedTree<> (key, value, tl.blacken (), tr);
+            return new RedTree<> (entry, tl.blacken (), tr);
         }
         if (isBlackTree (tr)) {
-            return balance (key, value, tl, tr.redden ());
+            return balance (entry, tl, tr.redden ());
         }
         if (isRedTree (tr) && isBlackTree (tr.left)) {
-            return new RedTree<> (tr.left.key, tr.left.value, new BlackTree<> (key, value, tl, tr.left.left), balance (tr.key, tr.value, tr.left.right, tr.right.blackToRed ()));
+            return new RedTree<> (tr.left.entry, new BlackTree<> (entry, tl, tr.left.left), balance (tr.entry, tr.left.right, tr.right.blackToRed ()));
         }
         throw new IllegalStateException ("invariant violation");
     }
 
-    private static <K,V> Tree<K,V> balanceRight (K key, V value, Tree<K, V> tl, Tree<K, V> tr) {
+    private static <X extends EntryWithComparator> Tree<X> balanceRight (X entry, Tree<X> tl, Tree<X> tr) {
         if (isRedTree (tr)) {
-            return new RedTree<> (key, value, tl, tr.blacken ());
+            return new RedTree<> (entry, tl, tr.blacken ());
         }
         if (isBlackTree (tl)) {
-            return balance (key, value, tl.redden (), tr);
+            return balance (entry, tl.redden (), tr);
         }
         if (isRedTree (tl) && isBlackTree (tl.right)) {
-            return new RedTree<> (tl.right.key, tl.right.value, balance (tl.key, tl.value, tl.left.blackToRed (), tl.right.left), new BlackTree <> (key, value, tl.right.right, tr));
+            return new RedTree<> (tl.right.entry, balance (tl.entry, tl.left.blackToRed (), tl.right.left), new BlackTree <> (entry, tl.right.right, tr));
         }
         throw new IllegalStateException ("invariant violation");
     }
@@ -536,27 +541,27 @@ class CompactRedBlackTree<K,V>  {
      *  balanced and that all elements in 'tl' are smaller than all elements in 'tr'. This situation occurs when a
      *  node is deleted and its child nodes must be combined into a resulting tree.
      */
-    private static <K,V> Tree<K,V> append (Tree<K,V> tl, Tree<K,V> tr) {
+    private static <X extends EntryWithComparator> Tree<X> append (Tree<X> tl, Tree<X> tr) {
         if (tl == null) return tr;
         if (tr == null) return tl;
 
         if (isRedTree (tl) && isRedTree (tr)) {
-            final Tree<K,V> bc = append (tl.right, tr.left);
+            final Tree<X> bc = append (tl.right, tr.left);
             return isRedTree (bc) ?
-                    new RedTree<> (bc.key, bc.value, new RedTree<> (tl.key, tl.value, tl.left, bc.left), new RedTree<> (tr.key, tr.value, bc.right, tr.right)) :
-                    new RedTree<> (tl.key, tl.value, tl.left, new RedTree<> (tr.key, tr.value, bc, tr.right));
+                    new RedTree<> (bc.entry, new RedTree<> (tl.entry, tl.left, bc.left), new RedTree<> (tr.entry, bc.right, tr.right)) :
+                    new RedTree<> (tl.entry, tl.left, new RedTree<> (tr.entry, bc, tr.right));
         }
         if (isBlackTree (tl) && isBlackTree (tr)) {
-            final Tree<K,V> bc = append (tl.right, tr.left);
+            final Tree<X> bc = append (tl.right, tr.left);
             return isRedTree (bc) ?
-                    new RedTree<> (bc.key, bc.value, new BlackTree<> (tl.key, tl.value, tl.left, bc.left), new BlackTree<> (tr.key, tr.value, bc.right, tr.right)) :
-                    balanceLeft (tl.key, tl.value, tl.left, new BlackTree<> (tr.key, tr.value, bc, tr.right));
+                    new RedTree<> (bc.entry, new BlackTree<> (tl.entry, tl.left, bc.left), new BlackTree<> (tr.entry, bc.right, tr.right)) :
+                    balanceLeft (tl.entry, tl.left, new BlackTree<> (tr.entry, bc, tr.right));
         }
         if (isRedTree (tr)) {
-            return new RedTree<> (tr.key, tr.value, append (tl, tr.left), tr.right);
+            return new RedTree<> (tr.entry, append (tl, tr.left), tr.right);
         }
         if (isRedTree (tl)) {
-            return new RedTree<> (tl.key, tl.value, tl.left, append (tl.right, tr));
+            return new RedTree<> (tl.entry, tl.left, append (tl.right, tr));
         }
         throw new IllegalStateException ("invariant violation: unmatched tree on append: " + tl + ", " + tr);
     }
@@ -565,21 +570,19 @@ class CompactRedBlackTree<K,V>  {
     /**
      * encapsulates tree creation for a given colour
      */
-    interface TreeFactory<K,V> {
-        Tree<K,V> create (Tree<K,V> left, Tree<K,V> right);
+    interface TreeFactory<X extends EntryWithComparator> {
+        Tree<X> create (Tree<X> left, Tree<X> right);
     }
 
-    static abstract class Tree<K,V> implements TreeFactory<K,V>, Map.Entry<K,V> {
-        final K key;
-        final V value;
+    static abstract class Tree<X extends EntryWithComparator> implements TreeFactory<X> {
+        final X entry;
         final int count;
 
-        final Tree<K,V> left;
-        final Tree<K,V> right;
+        final Tree<X> left;
+        final Tree<X> right;
 
-        Tree (K key, V value, Tree<K, V> left, Tree<K, V> right) {
-            this.key = key;
-            this.value = value;
+        Tree (X entry, Tree<X> left, Tree<X> right) {
+            this.entry = entry;
             this.left = left;
             this.right = right;
 
@@ -588,41 +591,30 @@ class CompactRedBlackTree<K,V>  {
                     (right == null ? 0 : right.count);
         }
 
-        @Override public K getKey () {
-            return key;
-        }
-        @Override public V getValue () {
-            return value;
-        }
+        abstract Tree<X> withNewValue (X entry);
 
-        @Override public V setValue (V value) {
-            throw new UnsupportedOperationException();
-        }
-
-        abstract Tree<K,V> withNewValue (K key, V value);
-
-        abstract Tree<K,V> blackToRed();
+        abstract Tree<X> blackToRed();
 
         abstract boolean isRed();
         abstract boolean isBlack();
 
-        abstract Tree<K,V> redden ();
-        abstract Tree<K,V> blacken ();
+        abstract Tree<X> redden ();
+        abstract Tree<X> blacken ();
     }
 
-    static class BlackTree<K,V> extends Tree<K,V> {
-        BlackTree (K key, V value, Tree<K, V> left, Tree<K, V> right) {
-            super(key, value, left, right);
+    static class BlackTree<X extends EntryWithComparator> extends Tree<X> {
+        BlackTree (X entry, Tree<X> left, Tree<X> right) {
+            super(entry, left, right);
         }
 
-        @Override Tree<K, V> withNewValue (K key, V value) {
-            return new BlackTree<> (key, value, left, right);
+        @Override Tree<X> withNewValue (X entry) {
+            return new BlackTree<> (entry, left, right);
         }
-        @Override public Tree<K, V> create (Tree<K, V> left, Tree<K, V> right) {
-            return new BlackTree<> (key, value, left, right);
+        @Override public Tree<X> create (Tree<X> left, Tree<X> right) {
+            return new BlackTree<> (entry, left, right);
         }
 
-        @Override Tree<K, V> blackToRed () {
+        @Override Tree<X> blackToRed () {
             return redden ();
         }
 
@@ -633,27 +625,27 @@ class CompactRedBlackTree<K,V>  {
             return true;
         }
 
-        @Override Tree<K, V> redden () {
-            return new RedTree<> (key, value, left, right);
+        @Override Tree<X> redden () {
+            return new RedTree<> (entry, left, right);
         }
-        @Override Tree<K, V> blacken () {
+        @Override Tree<X> blacken () {
             return this;
         }
     }
 
-    static class RedTree<K,V> extends Tree<K,V> {
-        RedTree (K key, V value, Tree<K, V> left, Tree<K, V> right) {
-            super (key, value, left, right);
+    static class RedTree<X extends EntryWithComparator> extends Tree<X> {
+        RedTree (X entry, Tree<X> left, Tree<X> right) {
+            super (entry, left, right);
         }
 
-        @Override Tree<K, V> withNewValue (K key, V value) {
-            return new RedTree<> (key, value, left, right);
+        @Override Tree<X> withNewValue (X entry) {
+            return new RedTree<> (entry, left, right);
         }
-        @Override public Tree<K, V> create (Tree<K, V> left, Tree<K, V> right) {
-            return new RedTree<> (key, value, left, right);
+        @Override public Tree<X> create (Tree<X> left, Tree<X> right) {
+            return new RedTree<> (entry, left, right);
         }
 
-        @Override Tree<K, V> blackToRed () {
+        @Override Tree<X> blackToRed () {
             throw new IllegalStateException ();
         }
 
@@ -664,11 +656,11 @@ class CompactRedBlackTree<K,V>  {
             return false;
         }
 
-        @Override Tree<K, V> redden () {
+        @Override Tree<X> redden () {
             return this;
         }
-        @Override Tree<K, V> blacken () {
-            return new BlackTree<> (key, value, left, right);
+        @Override Tree<X> blacken () {
+            return new BlackTree<> (entry, left, right);
         }
     }
 }
