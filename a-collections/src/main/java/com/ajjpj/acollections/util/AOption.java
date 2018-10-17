@@ -40,6 +40,10 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
         return ANone;
     }
 
+    public boolean isDefined() {
+        return nonEmpty();
+    }
+
     @Override public abstract <U> AOption<U> map (Function<T,U> f);
     @Override public <U> AOption<U> flatMap (Function<T, Iterable<U>> f) {
         return ACollectionSupport.flatMap(newBuilder(), this, f);
