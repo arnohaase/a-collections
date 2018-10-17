@@ -24,13 +24,12 @@ class RedBlackTree {
     }
 
     static <A, B> Tree<A, B> lookup (Tree<A, B> tree, A x, Comparator<A> ordering) {
-        while (true) { // migration of @tailrec
-            if (tree == null) return null;
-            final int cmp = ordering.compare(x, tree.key);
+        int cmp;
+        while (tree != null && (cmp = ordering.compare(x, tree.key)) != 0) {
             if (cmp < 0) tree = tree.left;
-            else if (cmp > 0) tree = tree.right;
-            else return tree;
+            else tree = tree.right;
         }
+        return tree;
     }
 
     static int count (Tree<?, ?> tree) {
@@ -149,18 +148,17 @@ class RedBlackTree {
         return new ValuesIterator<>(tree, start, ordering);
     }
 
-    static <A, B> Tree<A, B> nth (Tree<A, B> tree, int n) { //TODO transformed algorithm
-        while (true) { // migration of @tailrec
-            final int count = count(tree.left);
-            if (count == n) return tree;
-            if (n < count) {
+    static <A, B> Tree<A, B> nth (Tree<A, B> tree, int n) {
+        int count;
+        while((count = count(tree.left)) != n) {
+            if (n < count)
                 tree = tree.left;
-            }
             else {
                 tree = tree.right;
-                n -= count + 1;
+                n -= count+1;
             }
         }
+        return tree;
     }
 
     static boolean isBlack (Tree<?, ?> tree) {
@@ -206,7 +204,7 @@ class RedBlackTree {
         final int cmp = ordering.compare(k, tree.key);
         if (cmp < 0) return balanceLeft(isBlackTree(tree), tree.key, tree.value, upd(tree.left, k, v, overwrite, ordering), tree.right);
         if (cmp > 0) return balanceRight(isBlackTree(tree), tree.key, tree.value, tree.left, upd(tree.right, k, v, overwrite, ordering));
-        if (overwrite || !Objects.equals(k, tree.key)) return mkTree(isBlackTree(tree), k, v, tree.left, tree.right); //TODO the comparison should be superfluous
+        if (overwrite || !Objects.equals(k, tree.key)) return mkTree(isBlackTree(tree), k, v, tree.left, tree.right); //TODO the 'equals' comparison should be superfluous
         return tree;
     }
 
@@ -244,8 +242,8 @@ class RedBlackTree {
     }
 
     private static <A, B> Tree<A, B> del_subl (Tree<A, B> t) {
-        if (t instanceof BlackTree) return t.red(); //TODO remove instanceof?
-        throw new IllegalStateException("Defect: invariance violation; expected black, got " + t);
+        if (! (t instanceof BlackTree)) throw new IllegalStateException("Defect: invariance violation; expected black, got " + t);
+        return t.red();
     }
 
     private static <A, B> Tree<A, B> del_balLeft (A x, B xv, Tree<A, B> tl, Tree<A, B> tr) {
@@ -400,42 +398,56 @@ class RedBlackTree {
 
     // Once a side is found to be deeper, unzip it to the bottom
     private static <A, B> NList<Tree<A, B>> cd_unzip (NList<Tree<A, B>> zipper, boolean leftMost) {
-        while (true) { // migrated @tailrec
-            final Tree<A, B> next;
-            if (leftMost) next = zipper.head.left;
-            else next = zipper.head.right;
-            if (next == null) return zipper;
-
+        Tree<A, B> next;
+        while ((next = leftMost ? zipper.head.left : zipper.head.right) != null) {
             zipper = zipper.prepend(next);
         }
+        return zipper;
     }
 
     // Unzip left tree on the rightmost side and right tree on the leftmost side until one is
     // found to be deeper, or the bottom is reached
     private static <A, B> CompareDepthResult<A, B> cd_unzipBoth (Tree<A, B> left, Tree<A, B> right, NList<Tree<A, B>> leftZipper, NList<Tree<A, B>> rightZipper, int smallerDepth) {
-        //TODO loop --> tailrec
-        if (isBlackTree(left) && isBlackTree(right))
-            return cd_unzipBoth(left.right, right.left, leftZipper.prepend(left), rightZipper.prepend(right), smallerDepth + 1);
-        if (isRedTree(left) && isRedTree(right))
-            return cd_unzipBoth(left.right, right.left, leftZipper.prepend(left), rightZipper.prepend(right), smallerDepth);
-        if (isRedTree(right)) return cd_unzipBoth(left, right.left, leftZipper, rightZipper.prepend(right), smallerDepth);
-        if (isRedTree(left)) return cd_unzipBoth(left.right, right, leftZipper.prepend(left), rightZipper, smallerDepth);
-        if (left == null && right == null) return new CompareDepthResult<>(null, true, false, smallerDepth);
-        if (left == null && isBlackTree(right)) {
-            final boolean leftMost = true;
-            return new CompareDepthResult<>(cd_unzip(rightZipper.prepend(right), leftMost), false, leftMost, smallerDepth);
+        while (true) {
+            if (isBlackTree(left) && isBlackTree(right)) {
+                left = left.right;
+                right = right.left;
+                leftZipper = leftZipper.prepend(left);
+                rightZipper = rightZipper.prepend(right);
+                smallerDepth += 1;
+            }
+            else if (isRedTree(left) && isRedTree(right)) {
+                left = left.right;
+                right = right.left;
+                leftZipper = leftZipper.prepend(left);
+                rightZipper = rightZipper.prepend(right);
+            }
+            else if (isRedTree(right)) {
+                right = right.left;
+                rightZipper = rightZipper.prepend(right);
+            }
+            else if (isRedTree(left)) { //TODO different structure in Scala bytecode
+                left = left.right;
+                leftZipper = leftZipper.prepend(left);
+            }
+            else {
+                if (left == null && right == null) return new CompareDepthResult<>(null, true, false, smallerDepth);
+                if (left == null && isBlackTree(right)) {
+                    final boolean leftMost = true;
+                    return new CompareDepthResult<>(cd_unzip(rightZipper.prepend(right), leftMost), false, leftMost, smallerDepth);
+                }
+                if (isBlackTree(left) && right == null) {
+                    final boolean leftMost = false;
+                    return new CompareDepthResult<>(cd_unzip(leftZipper.prepend(left), leftMost), false, leftMost, smallerDepth);
+                }
+                throw new IllegalStateException("unmatched trees in unzip: " + left + ", " + right);
+            }
         }
-        if (isBlackTree(left) && right == null) {
-            final boolean leftMost = false;
-            return new CompareDepthResult<>(cd_unzip(leftZipper.prepend(left), leftMost), false, leftMost, smallerDepth);
-        }
-        throw new IllegalStateException("unmatched trees in unzip: " + left + ", " + right);
     }
 
     // This is like drop(n-1), but only counting black nodes
     private static <A, B> NList<Tree<A, B>> rebalance_findDepth (NList<Tree<A, B>> zipper, int depth) {
-        while (true) { // migrated @tailrec
-            if (zipper == null) throw new IllegalStateException("Defect: unexpected empty zipper while computing range");
+        while (zipper != null) {
             if (isBlackTree(zipper.head)) {
                 if (depth == 1)
                     return zipper;
@@ -445,6 +457,7 @@ class RedBlackTree {
                 zipper = zipper.tail;
             }
         }
+        throw new IllegalStateException("Defect: unexpected empty zipper while computing range");
     }
 
     private static <A, B> Tree<A, B> rebalance (Tree<A, B> tree, Tree<A, B> newLeft, Tree<A, B> newRight) {
@@ -613,11 +626,11 @@ class RedBlackTree {
         }
 
         private Tree<A, B> findLeftMostOrPopOnEmpty (Tree<A, B> tree) {
-            while (true) { // migrated @tailrec
-                if (tree == null) return popNext();
+            while (tree != null) {
                 if (tree.left == null) return tree;
                 tree = goLeft(tree);
             }
+            return popNext();
         }
 
         private void pushNext (Tree<A, B> tree) {

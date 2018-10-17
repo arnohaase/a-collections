@@ -18,6 +18,8 @@ todo
 
 * equals, hashCode
 
+* AIterator methods: see decompiled TreeIterator
+
 * Serializable
   * readResolve
   * uniqueness for None, empty, ...

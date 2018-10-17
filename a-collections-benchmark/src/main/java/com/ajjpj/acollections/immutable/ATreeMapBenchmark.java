@@ -39,7 +39,7 @@ public class ATreeMapBenchmark {
         bh.consume(m);
     }
 
-    @Benchmark
+//    @Benchmark
     public void testModifyDexx(Blackhole bh) {
         final Random rand = new Random(12345);
         com.github.andrewoma.dexx.collection.TreeMap<Integer,Integer> m = new com.github.andrewoma.dexx.collection.TreeMap<>();
@@ -55,8 +55,8 @@ public class ATreeMapBenchmark {
         }
         bh.consume(m);
     }
-    @Benchmark
-    public void testModifyAHashMap(Blackhole bh) {
+//    @Benchmark
+    public void testModifyATreeMap(Blackhole bh) {
         final Random rand = new Random(12345);
         ATreeMap<Integer,Integer> m = ATreeMap.empty(Comparator.<Integer>naturalOrder());
 
@@ -73,6 +73,39 @@ public class ATreeMapBenchmark {
     }
 
     @Benchmark
+    public void testModifyATreeMap2(Blackhole bh) {
+        final Random rand = new Random(12345);
+        ATreeMap2<Integer,Integer> m = ATreeMap2.empty(Comparator.<Integer>naturalOrder());
+
+        for(int i=0; i<numIter; i++) {
+            final int key = rand.nextInt(size);
+            final boolean add = rand.nextBoolean();
+
+            if(add)
+                m=m.updated(key, key);
+            else
+                m=m.removed(key);
+        }
+        bh.consume(m);
+    }
+    @Benchmark
+    public void testModifyATreeMap3(Blackhole bh) {
+        final Random rand = new Random(12345);
+        ATreeMap3<Integer,Integer> m = ATreeMap3.empty(Comparator.<Integer>naturalOrder());
+
+        for(int i=0; i<numIter; i++) {
+            final int key = rand.nextInt(size);
+            final boolean add = rand.nextBoolean();
+
+            if(add)
+                m=m.updated(key, key);
+            else
+                m=m.removed(key);
+        }
+        bh.consume(m);
+    }
+
+//    @Benchmark
     public void testIterateScala(Blackhole bh) {
         scala.collection.immutable.TreeMap<Integer,Integer> m = new scala.collection.immutable.TreeMap<>(new LowPriorityOrderingImplicits(){}.comparatorToOrdering(Comparator.<Integer>naturalOrder()));
 
@@ -88,7 +121,7 @@ public class ATreeMapBenchmark {
         bh.consume(sum);
     }
 
-    @Benchmark
+//    @Benchmark
     public void testIterateDexx(Blackhole bh) {
         com.github.andrewoma.dexx.collection.TreeMap<Integer,Integer> m = new com.github.andrewoma.dexx.collection.TreeMap<>();
 
@@ -101,9 +134,22 @@ public class ATreeMapBenchmark {
         }
         bh.consume(sum);
     }
-    @Benchmark
-    public void testIterateAHashMap(Blackhole bh) {
+//    @Benchmark
+    public void testIterateATreeMap(Blackhole bh) {
         ATreeMap<Integer,Integer> m = ATreeMap.empty(Comparator.<Integer>naturalOrder());
+
+        for(int i=0; i<size; i++) {
+            m=m.updated(i, i);
+        }
+        int sum=0;
+        for (Map.Entry<Integer, Integer> el: m) {
+            sum += el.getValue();
+        }
+        bh.consume(sum);
+    }
+//    @Benchmark
+    public void testIterateATreeMap2(Blackhole bh) {
+        ATreeMap2<Integer,Integer> m = ATreeMap2.empty(Comparator.<Integer>naturalOrder());
 
         for(int i=0; i<size; i++) {
             m=m.updated(i, i);
