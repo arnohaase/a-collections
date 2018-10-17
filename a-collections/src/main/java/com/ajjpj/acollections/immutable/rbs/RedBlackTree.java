@@ -30,17 +30,14 @@ public class RedBlackTree {
     public static <A, B> Tree<A, B> lookup(Tree<A, B> tree, final A x, final Comparator<A> ordering) {
         while(tree != null) {
             int cmp = ordering.compare(x, tree.key());
-            Tree var10000;
             if (cmp < 0) {
-                var10000 = tree.left();
-                tree = var10000;
+                tree = tree.left();
             } else {
                 if (cmp <= 0) {
                     return tree;
                 }
 
-                var10000 = tree.right();
-                tree = var10000;
+                tree = tree.right();
             }
         }
 
@@ -146,11 +143,8 @@ public class RedBlackTree {
         if (tree == null) {
             throw new NoSuchElementException("empty map");
         } else {
-            Tree result;
-            for(result = tree; result.left() != null; result = result.left()) {
-                ;
-            }
-
+            Tree<A,B> result=tree;
+            while (result.left() != null) result = result.left();
             return result;
         }
     }
@@ -159,11 +153,8 @@ public class RedBlackTree {
         if (tree == null) {
             throw new NoSuchElementException("empty map");
         } else {
-            Tree result;
-            for(result = tree; result.right() != null; result = result.right()) {
-                ;
-            }
-
+            Tree<A,B> result = tree;
+            while (result.right() != null) result = result.right();
             return result;
         }
     }
@@ -213,32 +204,29 @@ public class RedBlackTree {
     }
 
     public static <A, B> Iterator<Map.Entry<A, B>> iterator(final Tree<A, B> tree, final AOption<A> start, final Comparator<A> evidence$13) {
-        return new EntriesIterator(tree, start, evidence$13);
+        return new EntriesIterator<>(tree, start, evidence$13);
     }
 
     public static <A> Iterator<A> keysIterator(final Tree<A, ?> tree, final AOption<A> start, final Comparator<A> evidence$14) {
-        return new KeysIterator(tree, start, evidence$14);
+        return new KeysIterator<>(tree, start, evidence$14);
     }
 
     public static <A, B> Iterator<B> valuesIterator(final Tree<A, B> tree, final AOption<A> start, final Comparator<A> evidence$15) {
-        return new ValuesIterator(tree, start, evidence$15);
+        return new ValuesIterator<>(tree, start, evidence$15);
     }
 
     public static <A, B> Tree<A, B> nth(Tree<A, B> tree, int n) {
         while(true) {
             int count = count(tree.left());
-            Tree var10000;
             if (n < count) {
-                var10000 = tree.left();
-                tree = var10000;
+                tree = tree.left();
             } else {
                 if (n <= count) {
                     return tree;
                 }
 
-                var10000 = tree.right();
                 n = n - count - 1;
-                tree = var10000;
+                tree = tree.right();
             }
         }
     }
@@ -268,71 +256,20 @@ public class RedBlackTree {
     }
 
     private static <A, B> Tree<A, B> balanceLeft(final boolean isBlack, final A z, final B zv, final Tree<A, B> l, final Tree<A, B> d) {
-        Object var10001;
-        Object var10002;
-        Object var10004;
-        Object var10005;
-        Tree var10006;
         if (isRedTree(l) && isRedTree(l.left())) {
-            var10004 = l.left().key();
-            var10005 = l.left().value();
-            var10006 = l.left().left();
-            Object apply_value = var10005;
-            Object apply_key = var10004;
-            {
-                BlackTree var10 = new BlackTree(apply_key, apply_value, var10006, l.left().right());
-                {
-                    BlackTree var12 = new BlackTree(z, zv, l.right(), d);
-                    return new RedTree<>(l.key(), l.value(), var10, var12);
-                }
-            }
+            return new RedTree<>(l.key(), l.value(), new BlackTree<>(l.left().key(), l.left().value(), l.left().left(), l.left().right()), new BlackTree<>(z, zv, l.right(), d));
         } else if (isRedTree(l) && isRedTree(l.right())) {
-            var10001 = l.right().key();
-            var10002 = l.right().value();
-            var10004 = l.key();
-            var10005 = l.value();
-            var10006 = l.left();
-            Tree apply_right = l.right().left();
-            Tree apply_left = var10006;
-            Object apply_value = var10005;
-            Object apply_key = var10004;
-            BlackTree var19 = new BlackTree(apply_key, apply_value, apply_left, apply_right);
-            BlackTree var21 = new BlackTree(z, zv, l.right().right(), d);
-            return new RedTree(var10001, var10002, var19, var21);
+            return new RedTree<>(l.right().key(), l.right().value(), new BlackTree<>(l.key(), l.value(), l.left(), l.right().left()), new BlackTree<>(z, zv, l.right().right(), d));
         } else {
             return mkTree(isBlack, z, zv, l, d);
         }
     }
 
     private static <A, B> Tree<A, B> balanceRight(final boolean isBlack, final A x, final B xv, final Tree<A, B> a, final Tree<A, B> r) {
-        Object var10001;
-        Object var10002;
-        Object var10004;
-        Object var10005;
-        Tree var10006;
         if (isRedTree(r) && isRedTree(r.left())) {
-            var10001 = r.left().key();
-            var10002 = r.left().value();
-            Tree apply_right = r.left().left();
-            BlackTree var7 = new BlackTree(x, xv, a, apply_right);
-            var10004 = r.key();
-            var10005 = r.value();
-            var10006 = r.left().right();
-            Tree apply_left = var10006;
-            Object apply_value = var10005;
-            Object apply_key = var10004;
-            BlackTree var12 = new BlackTree(apply_key, apply_value, apply_left, r.right());
-            return new RedTree(var10001, var10002, var7, var12);
+            return new RedTree<>(r.left().key(), r.left().value(), new BlackTree<>(x, xv, a, r.left().left()), new BlackTree<>(r.key(), r.value(), r.left().right(), r.right()));
         } else if (isRedTree(r) && isRedTree(r.right())) {
-            var10001 = r.key();
-            var10002 = r.value();
-            Tree apply_right = r.left();
-            BlackTree var16 = new BlackTree(x, xv, a, apply_right);
-            var10004 = r.right().key();
-            var10005 = r.right().value();
-            var10006 = r.right().left();
-            BlackTree var21 = new BlackTree(var10004, var10005, var10006, r.right().right());
-            return new RedTree(var10001, var10002, var16, var21);
+            return new RedTree<>(r.key(), r.value(), new BlackTree<>(x, xv, a, r.left()), new BlackTree<>(r.right().key(), r.right().value(), r.right().left(), r.right().right()));
         } else {
             return mkTree(isBlack, x, xv, a, r);
         }
@@ -434,8 +371,8 @@ public class RedBlackTree {
         } else if (ordering.compare(until, tree.key()) <= 0) {
             return doRange(tree.left(), from, until, ordering);
         } else {
-            Tree newLeft = doFrom(tree.left(), from, ordering);
-            Tree newRight = doUntil(tree.right(), until, ordering);
+            Tree<A,B> newLeft = doFrom(tree.left(), from, ordering);
+            Tree<A,B> newRight = doUntil(tree.right(), until, ordering);
             if (newLeft == tree.left() && newRight == tree.right()) {
                 return tree;
             } else if (newLeft == null) {
@@ -456,7 +393,7 @@ public class RedBlackTree {
             if (n > count) {
                 return doDrop(tree.right(), n - count - 1);
             } else {
-                Tree newLeft = doDrop(tree.left(), n);
+                Tree<A,B> newLeft = doDrop(tree.left(), n);
                 if (newLeft == tree.left()) {
                     return tree;
                 } else {
@@ -476,7 +413,7 @@ public class RedBlackTree {
             if (n <= count) {
                 return doTake(tree.left(), n);
             } else {
-                Tree newRight = doTake(tree.right(), n - count - 1);
+                Tree<A,B> newRight = doTake(tree.right(), n - count - 1);
                 if (newRight == tree.right()) {
                     return tree;
                 } else {
@@ -496,8 +433,8 @@ public class RedBlackTree {
             } else if (until <= count) {
                 return doSlice(tree.left(), from, until);
             } else {
-                Tree newLeft = doDrop(tree.left(), from);
-                Tree newRight = doTake(tree.right(), until - count - 1);
+                Tree<A,B> newLeft = doDrop(tree.left(), from);
+                Tree<A,B> newRight = doTake(tree.right(), until - count - 1);
                 if (newLeft == tree.left() && newRight == tree.right()) {
                     return tree;
                 } else if (newLeft == null) {
@@ -523,80 +460,67 @@ public class RedBlackTree {
         }
     }
 
-    private static <A, B> CompareDepthResult compareDepth(final Tree<A, B> left, final Tree<A, B> right) {
+    private static <A, B> CompareDepthResult<A,B> compareDepth(final Tree<A, B> left, final Tree<A, B> right) {
         return unzipBoth$1(left, right, null, null, 0);
     }
 
     private static <A, B> Tree<A, B> rebalance(final Tree<A, B> tree, final Tree<A, B> newLeft, final Tree<A, B> newRight) {
-        Tree blkNewLeft = blacken(newLeft);
-        Tree blkNewRight = blacken(newRight);
-        CompareDepthResult var6 = compareDepth(blkNewLeft, blkNewRight);
-        NList zipper = var6.zipper;
+        Tree<A,B> blkNewLeft = blacken(newLeft);
+        Tree<A,B> blkNewRight = blacken(newRight);
+        CompareDepthResult<A,B> var6 = compareDepth(blkNewLeft, blkNewRight);
+        NList<Tree<A,B>> zipper = var6.zipper;
         boolean levelled = var6.levelled;
         boolean leftMost = var6.leftMost;
         int smallerDepth = var6.smallerDepth;
         if (levelled) {
-            return new BlackTree(tree.key(), tree.value(), blkNewLeft, blkNewRight);
+            return new BlackTree<>(tree.key(), tree.value(), blkNewLeft, blkNewRight);
         } else {
-            NList zipFrom = findDepth$1(zipper, smallerDepth);
-            RedTree var26;
+            NList<Tree<A,B>> zipFrom = findDepth$1(zipper, smallerDepth);
+            RedTree<A,B> var26;
             if (leftMost) {
-                Tree apply_right = (Tree)zipFrom.head();
-                var26 = new RedTree(tree.key(), tree.value(), blkNewLeft, apply_right);
+                var26 = new RedTree<>(tree.key(), tree.value(), blkNewLeft, zipFrom.head());
             } else {
-                Tree apply_left = (Tree)zipFrom.head();
-                var26 = new RedTree(tree.key(), tree.value(), apply_left, blkNewRight);
+                var26 = new RedTree<>(tree.key(), tree.value(), zipFrom.head(), blkNewRight);
             }
 
-            RedTree union = var26;
-            NList foldLeft_xs = zipFrom.tail();
-            Object foldLeft_acc = union;
+            RedTree<A,B> union = var26;
+            NList<Tree<A,B>> foldLeft_xs = zipFrom.tail();
+            Tree<A,B> foldLeft_acc = union;
 
             for(NList<Tree<A,B>> foldLeft_these = foldLeft_xs; foldLeft_these != null; foldLeft_these = foldLeft_these.tail()) {
                 final Tree<A,B> node = foldLeft_these.head();
                 foldLeft_acc = leftMost ? balanceLeft(isBlackTree(node), node.key, node.value, tree, node.right) : balanceRight(isBlackTree(node), node.key, node.value, node.left, tree);
             }
 
-            return (Tree)foldLeft_acc;
+            return foldLeft_acc;
         }
     }
 
-    private static final Tree balance$1(final Object x, final Object xv, final Tree tl, final Tree tr) {
+    private static <A,B> Tree<A,B> balance$1(final A x, final B xv, final Tree<A,B> tl, final Tree<A,B> tr) {
         if (isRedTree(tl)) {
             if (isRedTree(tr)) {
-                Tree var35 = tl.black();
-                Tree apply_right = tr.black();
-                Tree apply_left = var35;
-                return new RedTree(x, xv, apply_left, apply_right);
+                return new RedTree<>(x, xv, tl.black(), tr.black());
             } else if (isRedTree(tl.left())) {
-                Tree var36 = tl.left().black();
-                Tree apply_left = tl.right();
-                BlackTree var8 = new BlackTree(x, xv, apply_left, tr);
-                return new RedTree(tl.key(), tl.value(), var36, var8);
+                return new RedTree<>(tl.key(), tl.value(), tl.left().black(), new BlackTree<>(x, xv, tl.right(), tr));
             } else if (isRedTree(tl.right())) {
-                BlackTree var16 = new BlackTree(tl.key(), tl.value(), tl.left(), tl.right().left());
-                BlackTree var18 = new BlackTree(x, xv, tl.right().right(), tr);
-                return new RedTree(tl.right().key(), tl.right().value(), var16, var18);
+                return new RedTree<>(tl.right().key(), tl.right().value(), new BlackTree<>(tl.key(), tl.value(), tl.left(), tl.right().left()), new BlackTree<>(x, xv, tl.right().right(), tr));
             } else {
-                return new BlackTree(x, xv, tl, tr);
+                return new BlackTree<>(x, xv, tl, tr);
             }
         } else if (isRedTree(tr)) {
             if (isRedTree(tr.right())) {
-                BlackTree var22 = new BlackTree(x, xv, tl, tr.left());
-                return new RedTree(tr.key(), tr.value(), var22, tr.right().black());
+                return new RedTree<>(tr.key(), tr.value(), new BlackTree<>(x, xv, tl, tr.left()), tr.right().black());
             } else if (isRedTree(tr.left())) {
-                BlackTree var27 = new BlackTree(x, xv, tl, tr.left().left());
-                BlackTree var32 = new BlackTree(tr.key(), tr.value(), tr.left().right(), tr.right());
-                return new RedTree(tr.left().key(), tr.left().value(), var27, var32);
+                return new RedTree<>(tr.left().key(), tr.left().value(), new BlackTree<>(x, xv, tl, tr.left().left()), new BlackTree<>(tr.key(), tr.value(), tr.left().right(), tr.right()));
             } else {
-                return new BlackTree(x, xv, tl, tr);
+                return new BlackTree<>(x, xv, tl, tr);
             }
         } else {
-            return new BlackTree(x, xv, tl, tr);
+            return new BlackTree<>(x, xv, tl, tr);
         }
     }
 
-    private static final Tree subl$1(final Tree t) {
+    private static <A,B> Tree<A,B> subl$1(final Tree<A,B> t) {
         if (t instanceof BlackTree) {
             return t.red();
         } else {
@@ -604,146 +528,103 @@ public class RedBlackTree {
         }
     }
 
-    private static final Tree balLeft$1(final Object x, final Object xv, final Tree tl, final Tree tr) {
+    private static <A,B> Tree<A,B> balLeft$1(final A x, final B xv, final Tree<A,B> tl, final Tree<A,B> tr) {
         if (isRedTree(tl)) {
-            Tree apply_left = tl.black();
-            return new RedTree(x, xv, apply_left, tr);
+            return new RedTree<>(x, xv, tl.black(), tr);
         } else if (isBlackTree(tr)) {
             return balance$1(x, xv, tl, tr.red());
         } else if (isRedTree(tr) && isBlackTree(tr.left())) {
-            BlackTree var7 = new BlackTree(x, xv, tl, tr.left().left());
-            return new RedTree(tr.left().key(), tr.left().value(), var7, balance$1(tr.key(), tr.value(), tr.left().right(), subl$1(tr.right())));
+            return new RedTree<>(tr.left().key(), tr.left().value(), new BlackTree<>(x, xv, tl, tr.left().left()), balance$1(tr.key(), tr.value(), tr.left().right(), subl$1(tr.right())));
         } else {
             throw new IllegalStateException("Defect: invariance violation");
         }
     }
 
-    private static final Tree balRight$1(final Object x, final Object xv, final Tree tl, final Tree tr) {
+    private static <A,B> Tree<A,B> balRight$1(final A x, final B xv, final Tree<A,B> tl, final Tree<A,B> tr) {
         if (isRedTree(tr)) {
-            Tree apply_right = tr.black();
-            return new RedTree(x, xv, tl, apply_right);
+            return new RedTree<>(x, xv, tl, tr.black());
         } else if (isBlackTree(tl)) {
             return balance$1(x, xv, tl.red(), tr);
         } else if (isRedTree(tl) && isBlackTree(tl.right())) {
-            Tree var10003 = balance$1(tl.key(), tl.value(), subl$1(tl.left()), tl.right().left());
-            BlackTree var7 = new BlackTree(x, xv, tl.right().right(), tr);
-            return new RedTree(tl.right().key(), tl.right().value(), var10003, var7);
+            return new RedTree<>(tl.right().key(), tl.right().value(), balance$1(tl.key(), tl.value(), subl$1(tl.left()), tl.right().left()), new BlackTree<>(x, xv, tl.right().right(), tr));
         } else {
             throw new IllegalStateException("Defect: invariance violation");
         }
     }
 
-    private static final Tree delLeft$1(final Tree tree$1, final Object k$1, final Comparator ordering$1) {
+    private static <A,B> Tree<A,B> delLeft$1(final Tree<A,B> tree$1, final A k$1, final Comparator<A> ordering$1) {
         if (isBlackTree(tree$1.left())) {
             return balLeft$1(tree$1.key(), tree$1.value(), del(tree$1.left(), k$1, ordering$1), tree$1.right());
         } else {
-            Object var10001 = tree$1.key();
-            Object var10002 = tree$1.value();
-            Tree var10003 = del(tree$1.left(), k$1, ordering$1);
-            Tree apply_right = tree$1.right();
-            Tree apply_left = var10003;
-            Object apply_value = var10002;
-            Object apply_key = var10001;
-            return new RedTree(apply_key, apply_value, apply_left, apply_right);
+            return new RedTree<>(tree$1.key(), tree$1.value(), del(tree$1.left(), k$1, ordering$1), tree$1.right());
         }
     }
 
-    private static final Tree delRight$1(final Tree tree$1, final Object k$1, final Comparator ordering$1) {
+    private static <A,B> Tree<A,B> delRight$1(final Tree<A,B> tree$1, final A k$1, final Comparator<A> ordering$1) {
         if (isBlackTree(tree$1.right())) {
             return balRight$1(tree$1.key(), tree$1.value(), tree$1.left(), del(tree$1.right(), k$1, ordering$1));
         } else {
-            Object var10001 = tree$1.key();
-            Object var10002 = tree$1.value();
-            Tree var10003 = tree$1.left();
-            Tree apply_right = del(tree$1.right(), k$1, ordering$1);
-            Tree apply_left = var10003;
-            Object apply_value = var10002;
-            Object apply_key = var10001;
-            return new RedTree(apply_key, apply_value, apply_left, apply_right);
+            return new RedTree<>(tree$1.key(), tree$1.value(), tree$1.left(), del(tree$1.right(), k$1, ordering$1));
         }
     }
 
-    private static final Tree append$1(final Tree tl, final Tree tr) {
+    private static <A,B> Tree<A,B> append$1(final Tree<A,B> tl, final Tree<A,B> tr) {
         if (tl == null) {
             return tr;
         } else if (tr == null) {
             return tl;
         } else {
             if (isRedTree(tl) && isRedTree(tr)) {
-                Tree bc = append$1(tl.right(), tr.left());
+                Tree<A,B> bc = append$1(tl.right(), tr.left());
                 if (isRedTree(bc)) {
-                    RedTree var9 = new RedTree(tl.key(), tl.value(), tl.left(), bc.left());
-                    RedTree var14 = new RedTree(tr.key(), tr.value(), bc.right(), tr.right());
-                    return new RedTree(bc.key(), bc.value(), var9, var14);
+                    return new RedTree<>(bc.key(), bc.value(), new RedTree<>(tl.key(), tl.value(), tl.left(), bc.left()), new RedTree<>(tr.key(), tr.value(), bc.right(), tr.right()));
                 } else {
-                    RedTree var20 = new RedTree(tr.key(), tr.value(), bc, tr.right());
-                    return new RedTree(tl.key(), tl.value(), tl.left(), var20);
+                    return new RedTree<>(tl.key(), tl.value(), tl.left(), new RedTree<>(tr.key(), tr.value(), bc, tr.right()));
                 }
             } else if (isBlackTree(tl) && isBlackTree(tr)) {
-                Tree bc = append$1(tl.right(), tr.left());
+                Tree<A,B> bc = append$1(tl.right(), tr.left());
                 if (isRedTree(bc)) {
-                    BlackTree var28 = new BlackTree(tl.key(), tl.value(), tl.left(), bc.left());
-                    BlackTree var33 = new BlackTree(tr.key(), tr.value(), bc.right(), tr.right());
-                    return new RedTree(bc.key(), bc.value(), var28, var33);
+                    return new RedTree<>(bc.key(), bc.value(), new BlackTree<>(tl.key(), tl.value(), tl.left(), bc.left()), new BlackTree<>(tr.key(), tr.value(), bc.right(), tr.right()));
                 } else {
-                    return balLeft$1(tl.key(), tl.value(), tl.left(), new BlackTree(tr.key(), tr.value(), bc, tr.right()));
+                    return balLeft$1(tl.key(), tl.value(), tl.left(), new BlackTree<>(tr.key(), tr.value(), bc, tr.right()));
                 }
             } else if (isRedTree(tr)) {
-                return new RedTree(tr.key(), tr.value(), append$1(tl, tr.left()), tr.right());
+                return new RedTree<>(tr.key(), tr.value(), append$1(tl, tr.left()), tr.right());
             } else if (isRedTree(tl)) {
-                return new RedTree(tl.key(), tl.value(), tl.left(), append$1(tl.right(), tr));
+                return new RedTree<>(tl.key(), tl.value(), tl.left(), append$1(tl.right(), tr));
             } else {
                 throw new IllegalStateException((new StringBuilder(28)).append("unmatched tree on append: ").append(tl).append(", ").append(tr).toString());
             }
         }
     }
 
-    private static final NList unzip$1(NList zipper, boolean leftMost) {
+    private static <A,B> NList<Tree<A,B>> unzip$1(NList<Tree<A,B>> zipper, boolean leftMost) {
         while(true) {
-            Tree next = leftMost ? ((Tree)zipper.head()).left() : ((Tree)zipper.head()).right();
+            Tree<A,B> next = leftMost ? (zipper.head()).left() : (zipper.head()).right();
             if (next == null) {
                 return zipper;
             }
 
-            NList var10000 = NList.cons(next, zipper);
-            zipper = var10000;
+            zipper = NList.cons(next, zipper);
         }
     }
 
-    private static final CompareDepthResult unzipBoth$1(Tree left, Tree right, NList leftZipper, NList rightZipper, int smallerDepth) {
+    private static <A,B> CompareDepthResult<A,B> unzipBoth$1(Tree<A,B> left, Tree<A,B> right, NList<Tree<A,B>> leftZipper, NList<Tree<A,B>> rightZipper, int smallerDepth) {
         while(true) {
-            Tree var10000;
-            Tree var10001;
-            NList var10002;
-            NList var10003;
             if (isBlackTree(left) && isBlackTree(right)) {
-                var10000 = left.right();
-                var10001 = right.left();
-                var10002 = NList.cons(left, leftZipper);
-                var10003 = NList.cons(right, rightZipper);
                 ++smallerDepth;
-                rightZipper = var10003;
-                leftZipper = var10002;
-                right = var10001;
-                left = var10000;
+                rightZipper = NList.cons(right, rightZipper);
+                leftZipper = NList.cons(left, leftZipper);
+                right = right.left();
+                left = left.right();
             } else if (isRedTree(left) && isRedTree(right)) {
-                var10000 = left.right();
-                var10001 = right.left();
-                var10002 = NList.cons(left, leftZipper);
-                var10003 = NList.cons(right, rightZipper);
-                smallerDepth = smallerDepth;
-                rightZipper = var10003;
-                leftZipper = var10002;
-                right = var10001;
-                left = var10000;
+                rightZipper = NList.cons(right, rightZipper);
+                leftZipper = NList.cons(left, leftZipper);
+                right = right.left();
+                left = left.right();
             } else if (isRedTree(right)) {
-                var10001 = right.left();
-                var10003 = NList.cons(right, rightZipper);
-                smallerDepth = smallerDepth;
-                rightZipper = var10003;
-                leftZipper = leftZipper;
-                right = var10001;
-                left = left;
+                rightZipper = NList.cons(right, rightZipper);
+                right = right.left();
             } else {
                 if (!isRedTree(left)) {
                     if (left == null && right == null) {
@@ -769,21 +650,17 @@ public class RedBlackTree {
         }
     }
 
-    private static final NList findDepth$1(NList zipper, int depth) {
+    private static <A,B> NList<Tree<A,B>> findDepth$1(NList<Tree<A,B>> zipper, int depth) {
         while(zipper != null) {
-            NList var10000;
-            if (isBlackTree((Tree)zipper.head())) {
+            if (isBlackTree(zipper.head())) {
                 if (depth == 1) {
                     return zipper;
                 }
 
-                var10000 = zipper.tail();
-                --depth;
-                zipper = var10000;
+                depth -= 1;
+                zipper = zipper.tail();
             } else {
-                var10000 = zipper.tail();
-                depth = depth;
-                zipper = var10000;
+                zipper = zipper.tail();
             }
         }
 
@@ -808,7 +685,7 @@ public class RedBlackTree {
         }
 
         public static <B> NList<B> cons(final B x, final NList<B> xs) {
-            return new NList(x, xs);
+            return new NList<>(x, xs);
         }
 
         public static <A, B> B foldLeft(final NList<A> xs, final B z, final BiFunction<B, A, B> op) {
@@ -865,7 +742,7 @@ public class RedBlackTree {
 
     public static final class RedTree<A, B> extends Tree<A, B> {
         public Tree<A, B> black() {
-            return new BlackTree(key(), value(), left(), right());
+            return new BlackTree<>(key(), value(), left(), right());
         }
 
         public Tree<A, B> red() {
@@ -881,7 +758,7 @@ public class RedBlackTree {
         }
 
         public static <A, B> RedTree<A, B> apply(final A key, final B value, final Tree<A, B> left, final Tree<A, B> right) {
-            return new RedTree(key, value, left, right);
+            return new RedTree<>(key, value, left, right);
         }
     }
 
@@ -903,7 +780,7 @@ public class RedBlackTree {
         }
 
         public static <A, B> BlackTree<A, B> apply(final A key, final B value, final Tree<A, B> left, final Tree<A, B> right) {
-            return new BlackTree(key, value, left, right);
+            return new BlackTree<>(key, value, left, right);
         }
     }
 
