@@ -8,9 +8,14 @@ todo
   * static factories in interfaces
   * static factories a la Java 10
 
+  * AMap withDerivedDefault, withDefaultValue, filterKeys, filterValues(?)
+  * ACollection: permutations, combinations
+  * ASet: subsets
+  * ACollection: flatten
+  * AList, ACollection: diverse methods
+
   * AIterator methods: see decompiled TreeIterator
   * Missing methods in collection interfaces / to do comments
-  * AMap.withDerivedDefault, AMap.withDefaultValue
 
   * toBuffer (mutable)
   * toMap (?)
@@ -23,7 +28,7 @@ todo
     * uniqueness for None, empty, ...
 
 * Collection classes
-  * Range
+  * Range: from, to, step (positive or negative!)
   * Bag, MultiSet, MultiMap, ...?
   * wrappers for arrays
   * wrappers for more JU collections
