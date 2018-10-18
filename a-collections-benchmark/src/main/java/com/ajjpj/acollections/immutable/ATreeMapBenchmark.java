@@ -58,7 +58,7 @@ public class ATreeMapBenchmark {
 //    @Benchmark
     public void testModifyATreeMap(Blackhole bh) {
         final Random rand = new Random(12345);
-        ATreeMap<Integer,Integer> m = ATreeMap.empty(Comparator.<Integer>naturalOrder());
+        ATreeMapFromFoundation<Integer,Integer> m = ATreeMapFromFoundation.empty(Comparator.<Integer>naturalOrder());
 
         for(int i=0; i<numIter; i++) {
             final int key = rand.nextInt(size);
@@ -75,7 +75,7 @@ public class ATreeMapBenchmark {
     @Benchmark
     public void testModifyATreeMap2(Blackhole bh) {
         final Random rand = new Random(12345);
-        ATreeMap2<Integer,Integer> m = ATreeMap2.empty(Comparator.<Integer>naturalOrder());
+        ATreeMap<Integer,Integer> m = ATreeMap.empty(Comparator.<Integer>naturalOrder());
 
         for(int i=0; i<numIter; i++) {
             final int key = rand.nextInt(size);
@@ -136,7 +136,7 @@ public class ATreeMapBenchmark {
     }
 //    @Benchmark
     public void testIterateATreeMap(Blackhole bh) {
-        ATreeMap<Integer,Integer> m = ATreeMap.empty(Comparator.<Integer>naturalOrder());
+        ATreeMapFromFoundation<Integer,Integer> m = ATreeMapFromFoundation.empty(Comparator.<Integer>naturalOrder());
 
         for(int i=0; i<size; i++) {
             m=m.updated(i, i);
@@ -149,7 +149,7 @@ public class ATreeMapBenchmark {
     }
 //    @Benchmark
     public void testIterateATreeMap2(Blackhole bh) {
-        ATreeMap2<Integer,Integer> m = ATreeMap2.empty(Comparator.<Integer>naturalOrder());
+        ATreeMap<Integer,Integer> m = ATreeMap.empty(Comparator.<Integer>naturalOrder());
 
         for(int i=0; i<size; i++) {
             m=m.updated(i, i);

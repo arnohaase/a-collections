@@ -44,10 +44,23 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
     abstract AHashMap<K,V> newInstance(CompactHashMap<MapEntryWithEquality> compact);
     abstract MapEntryWithEquality newEntry(K key, V value);
 
-    public static <K,V> ACollectionBuilder<Map.Entry<K,V>, AHashMap<K,V>> builder() {
+    public static <K,V> AHashMap<K,V> fromIterator(Iterator<Entry<K,V>> iterator) {
+        return fromIterator(iterator, AEquality.EQUALS);
+    }
+    public static <K,V> AHashMap<K,V> fromIterator(Iterator<Entry<K,V>> iterator, AEquality equality) {
+        return AHashMap.<K,V> builder(equality).addAll(iterator).build();
+    }
+    public static <K,V> AHashMap<K,V> fromIterable(Iterable<Entry<K,V>> iterable) {
+        return fromIterable(iterable, AEquality.EQUALS);
+    }
+    public static <K,V> AHashMap<K,V> fromIterable(Iterable<Entry<K,V>> iterator, AEquality equality) {
+        return AHashMap.<K,V> builder(equality).addAll(iterator).build();
+    }
+
+    public static <K,V> Builder<K,V> builder() {
         return builder(AEquality.EQUALS);
     }
-    public static <K,V> ACollectionBuilder<Map.Entry<K,V>, AHashMap<K,V>> builder(AEquality equality) {
+    public static <K,V> Builder<K,V> builder(AEquality equality) {
         return new Builder<>(equality);
     }
 
@@ -84,17 +97,16 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         return (AIterator) compactHashMap.iterator();
     }
 
-    @Override public AHashMap<K, V> filter (Predicate<Entry<K, V>> f) {
-        CompactHashMap result = CompactHashMap.EMPTY;
+    @Override public AIterator<K> keysIterator () {
+        return iterator().map(Entry::getKey); //TODO this can be optimized
+    }
 
-        for (Map.Entry<K,V> kv: this) {
-            if(f.test(kv)) {
-                //noinspection unchecked
-                result = result.updated0((MapEntryWithEquality) kv, 0);
-            }
-        }
-        //noinspection unchecked
-        return newInstance(result);
+    @Override public AIterator<V> valuesIterator () {
+        return iterator().map(Entry::getValue); //TODO this can be optimized
+    }
+
+    @Override public AHashMap<K, V> filter (Predicate<Entry<K, V>> f) {
+        return AHashMap.fromIterator(iterator().filter(f), equality());
     }
 
     @Override public AHashMap<K, V> filterNot (Predicate<Entry<K, V>> f) {
@@ -156,6 +168,11 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
             result = empty(equality);
         }
 
+        public ACollectionBuilder<Entry<K, V>, AHashMap<K, V>> add (K key, V value) {
+            result = result.updated(key, value);
+            return this;
+        }
+
         @Override public ACollectionBuilder<Entry<K, V>, AHashMap<K, V>> add (Entry<K, V> el) {
             result = result.updated(el.getKey(), el.getValue());
             return this;
@@ -176,8 +193,7 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
             return new AHashMapEquals<>(compactHashMap);
         }
 
-        @Override
-        MapEntryWithEquality newEntry (K key, V value) {
+        @Override MapEntryWithEquality newEntry (K key, V value) {
             return new MapEntryWithEquals<>(key, value);
         }
 
@@ -194,8 +210,7 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
             return new AHashMapIdentity<>(compactHashMap);
         }
 
-        @Override
-        MapEntryWithEquality newEntry (K key, V value) {
+        @Override MapEntryWithEquality newEntry (K key, V value) {
             return new MapEntryWithIdentity<>(key, value);
         }
 
@@ -215,8 +230,7 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
             return new AHashMapCustom<>(compactHashMap, keyEquality);
         }
 
-        @Override
-        MapEntryWithEquality newEntry (K key, V value) {
+        @Override MapEntryWithEquality newEntry (K key, V value) {
             return new MapEntryWithConfiguredEquality<>(key, value, keyEquality);
         }
 

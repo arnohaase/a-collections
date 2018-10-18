@@ -1,33 +1,37 @@
 todo
 ----
 * stream()
-* stream integration: collectors
-* spliterator()
+  * stream integration: collectors
+  * spliterator()
 
-* static factories in interfaces
+* missing API
+  * static factories in interfaces
+  * static factories a la Java 10
+
+  * AIterator methods: see decompiled TreeIterator
+  * Missing methods in collection interfaces / to do comments
+  * AMap.withDerivedDefault, AMap.withDefaultValue
+
+  * toBuffer (mutable)
+  * toMap (?)
+
+  * partial order
+
+  * equals, hashCode
+  * Serializable
+    * readResolve
+    * uniqueness for None, empty, ...
+
+* Collection classes
+  * Range
+  * Bag, MultiSet, MultiMap, ...?
+  * wrappers for arrays
+  * wrappers for more JU collections
 
 * add mutable JU code to benchmarks
+* tuning of RedBlackTree
 
-* partial order
-
-* ATreeSet, ATreeMap
-* AMap.withDerivedDefault, AMap.withDefaultValue
-* toBuffer (mutable)
-* toMap (?)
 * CHAMP algorithm
-
-* equals, hashCode
-
-* AIterator methods: see decompiled TreeIterator
-
-* Serializable
-  * readResolve
-  * uniqueness for None, empty, ...
-
-* Bag, MultiSet, MultiMap, ...?
-
-* static factories a la Java 10
 
 * unit tests
 
-* Range

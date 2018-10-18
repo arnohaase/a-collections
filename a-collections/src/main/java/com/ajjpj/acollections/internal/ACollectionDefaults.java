@@ -5,6 +5,7 @@ import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.ACollectionOps;
 import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
+import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.util.AOption;
 
@@ -49,6 +50,9 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
     }
     @Override default AHashSet<T> toSet() {
         return AHashSet.from(this, equality());
+    }
+    @Override default ATreeSet<T> toSortedSet(Comparator<T> comparator) {
+        return ATreeSet.from(this, comparator);
     }
 
     //TODO flatten

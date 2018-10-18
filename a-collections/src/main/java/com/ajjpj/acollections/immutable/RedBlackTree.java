@@ -1,5 +1,8 @@
 package com.ajjpj.acollections.immutable;
 
+import com.ajjpj.acollections.AIterator;
+import com.ajjpj.acollections.AMap;
+import com.ajjpj.acollections.AbstractAIterator;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
@@ -136,15 +139,15 @@ class RedBlackTree {
         if (tree.right != null) _foreachKey(tree.right, f);
     }
 
-    static <A, B> Iterator<Map.Entry<A, B>> iterator (Tree<A, B> tree, AOption<A> start, Comparator<A> ordering) {
+    static <A, B> AIterator<Map.Entry<A, B>> iterator (Tree<A, B> tree, AOption<A> start, Comparator<A> ordering) {
         return new EntriesIterator<>(tree, start, ordering);
     }
 
-    static <A> Iterator<A> keysIterator (Tree<A, ?> tree, AOption<A> start, Comparator<A> ordering) {
+    static <A> AIterator<A> keysIterator (Tree<A, ?> tree, AOption<A> start, Comparator<A> ordering) {
         return new KeysIterator<>(tree, start, ordering);
     }
 
-    static <A, B> Iterator<B> valuesIterator (Tree<A, B> tree, AOption<A> start, Comparator<A> ordering) {
+    static <A, B> AIterator<B> valuesIterator (Tree<A, B> tree, AOption<A> start, Comparator<A> ordering) {
         return new ValuesIterator<>(tree, start, ordering);
     }
 
@@ -519,8 +522,11 @@ class RedBlackTree {
             this.count = 1 + count(left) + count(right);
         }
 
-        abstract Tree<A, B> black ();
+        Map.Entry<A,B> entry() {
+            return new AMap.AMapEntry<>(key, value); //TODO make Tree implement Entry
+        }
 
+        abstract Tree<A, B> black ();
         abstract Tree<A, B> red ();
     }
 
@@ -529,13 +535,10 @@ class RedBlackTree {
             super(key, value, left, right);
         }
 
-        @Override
-        Tree<A, B> black () {
+        @Override Tree<A, B> black () {
             return new BlackTree<>(key, value, left, right);
         }
-
-        @Override
-        Tree<A, B> red () {
+        @Override Tree<A, B> red () {
             return this;
         }
 
@@ -576,7 +579,7 @@ class RedBlackTree {
         }
     }
 
-    private static abstract class TreeIterator<A, B, R> implements Iterator<R> {
+    private static abstract class TreeIterator<A, B, R> extends AbstractAIterator<R> {
         private final Tree<A, B> root;
         private final AOption<A> start;
         private final Comparator<A> ordering;
@@ -673,39 +676,13 @@ class RedBlackTree {
         }
     }
 
-    private static class EntryImpl<A, B> implements Map.Entry<A, B> {
-        private final A key;
-        private final B value;
-
-        EntryImpl (A key, B value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        @Override
-        public A getKey () {
-            return key;
-        }
-
-        @Override
-        public B getValue () {
-            return value;
-        }
-
-        @Override
-        public B setValue (B value) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
     private static class EntriesIterator<A, B> extends TreeIterator<A, B, Map.Entry<A, B>> {
         EntriesIterator (Tree<A, B> root, AOption<A> start, Comparator<A> ordering) {
             super(root, start, ordering);
         }
 
-        @Override
-        Map.Entry<A, B> nextResult (Tree<A, B> tree) {
-            return new EntryImpl<>(tree.key, tree.value);
+        @Override  Map.Entry<A, B> nextResult (Tree<A, B> tree) {
+            return tree.entry();
         }
     }
 
@@ -714,8 +691,7 @@ class RedBlackTree {
             super(root, start, ordering);
         }
 
-        @Override
-        A nextResult (Tree<A, B> tree) {
+        @Override A nextResult (Tree<A, B> tree) {
             return tree.key;
         }
     }
@@ -725,8 +701,7 @@ class RedBlackTree {
             super(root, start, ordering);
         }
 
-        @Override
-        B nextResult (Tree<A, B> tree) {
+        @Override B nextResult (Tree<A, B> tree) {
             return tree.value;
         }
     }

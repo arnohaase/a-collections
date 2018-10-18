@@ -1,5 +1,6 @@
 package com.ajjpj.acollections.util;
 
+import java.util.Comparator;
 import java.util.Objects;
 
 
@@ -29,4 +30,17 @@ public interface AEquality {
             return o != null ? System.identityHashCode(o) : 0;
         }
     };
+
+    static AEquality fromComparator(Comparator comparator) {
+        return new AEquality() {
+            @Override public boolean equals (Object o1, Object o2) {
+                //noinspection unchecked
+                return comparator.compare(o1, o2) == 0;
+            }
+
+            @Override public int hashCode (Object o) {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
 }

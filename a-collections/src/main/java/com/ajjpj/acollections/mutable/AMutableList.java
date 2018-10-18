@@ -5,6 +5,7 @@ import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
+import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListIterator;
@@ -148,6 +149,10 @@ public class AMutableList<T> implements AList<T> {
 
     @Override public AHashSet<T> toSet () {
         return AHashSet.from(this, AEquality.EQUALS);
+    }
+
+    @Override public ATreeSet<T> toSortedSet(Comparator<T> comparator) {
+        return ATreeSet.from(this, comparator);
     }
 
     @Override

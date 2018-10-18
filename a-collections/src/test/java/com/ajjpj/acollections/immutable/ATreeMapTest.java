@@ -26,9 +26,9 @@ public class ATreeMapTest {
         }
         return result;
     }
-    private ATreeMap<Integer, Integer> createA() {
+    private ATreeMapFromFoundation<Integer, Integer> createA() {
         final Random rand = new Random(12345);
-        ATreeMap<Integer, Integer> result = ATreeMap.empty(Comparator.<Integer>naturalOrder());
+        ATreeMapFromFoundation<Integer, Integer> result = ATreeMapFromFoundation.empty(Comparator.<Integer>naturalOrder());
 
         for(int i=0; i<numIter; i++) {
             final int key = rand.nextInt(size);
@@ -44,7 +44,7 @@ public class ATreeMapTest {
 
     @Test public void testAddRemove() {
         final Map<Integer, Integer> juMap = createJu();
-        final ATreeMap<Integer, Integer> aMap = createA();
+        final ATreeMapFromFoundation<Integer, Integer> aMap = createA();
 
         assertEquals(juMap.size(), aMap.size());
 

@@ -9,6 +9,7 @@ import com.ajjpj.acollections.util.AEquality;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -88,11 +89,11 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
         return result;
     }
 
-    @Override public AHashSet<T> intersect (Collection<T> that) {
+    @Override public AHashSet<T> intersect (Set<T> that) {
         return filter(that::contains);
     }
 
-    @Override public AHashSet<T> diff (Iterable<T> that) {
+    @Override public AHashSet<T> diff (Set<T> that) {
         AHashSet<T> result = this;
         for (T o: that)
             result = result.removed(o);

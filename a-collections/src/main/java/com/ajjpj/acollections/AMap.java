@@ -22,6 +22,12 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
     AMap<K,V> updated(K key, V value);
     AMap<K,V> removed(K key);
 
+    ASet<K> keySet();
+    ACollection<V> values();
+
+    AIterator<K> keysIterator();
+    AIterator<V> valuesIterator();
+
 //    TODO AMap<K,V> withDefaultValue(V defaultValue);
 //    TODO AMap<K,V> withDefault(AFunction1<? super K, ? extends V, ? extends RuntimeException> function);
 
