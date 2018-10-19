@@ -1,5 +1,6 @@
 package com.ajjpj.acollections;
 
+import com.ajjpj.acollections.immutable.ARange;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Iterator;
@@ -58,13 +59,16 @@ public interface AList<T> extends ACollection<T>, List<T> {
     AList<T> filterNot(Predicate<T> f);
     <U> AList<U> collect(Predicate<T> filter, Function<T,U> f);
 
+    default AList<Integer> indices() {
+        return new ARange(0, size());
+    }
+
     //TODO permutations
     //TODO combinations (--> ACollection?)
     //TODO reverseMap
     //TODO indexOfSlice (2x), lastIndexOfSlice (2x), containsSlice
     //TODO corresponds
     //TODO sortWith, sortBy, shuffle
-    //TODO indices
     //TODO zip, zipWithIndex
     //TODO partition (ACollection?!), groupBy (ACollection?), slice, splitAt, span, distinct (ACollection?!)
 

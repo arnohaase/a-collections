@@ -118,7 +118,7 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
     }
 
     @Override default ListIterator<T> listIterator(int index) {
-        return new ASimpleListIterator<T>(this.iterator(), index);
+        return new ASimpleListIterator<>(this.iterator(), index);
     }
 
     default C filter(Predicate<T> f) {

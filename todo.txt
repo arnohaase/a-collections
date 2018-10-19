@@ -28,7 +28,6 @@ todo
     * uniqueness for None, empty, ...
 
 * Collection classes
-  * Range: from, to, step (positive or negative!)
   * Bag, MultiSet, MultiMap, ...?
   * wrappers for arrays
   * wrappers for more JU collections
