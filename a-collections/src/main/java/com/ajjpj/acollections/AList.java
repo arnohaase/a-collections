@@ -62,14 +62,4 @@ public interface AList<T> extends ACollection<T>, List<T> {
     default AList<Integer> indices() {
         return new ARange(0, size());
     }
-
-    //TODO permutations
-    //TODO combinations (--> ACollection?)
-    //TODO reverseMap
-    //TODO indexOfSlice (2x), lastIndexOfSlice (2x), containsSlice
-    //TODO corresponds
-    //TODO sortWith, sortBy, shuffle
-    //TODO zip, zipWithIndex
-    //TODO partition (ACollection?!), groupBy (ACollection?), slice, splitAt, span, distinct (ACollection?!)
-
 }

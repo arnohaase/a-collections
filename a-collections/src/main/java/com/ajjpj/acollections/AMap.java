@@ -28,12 +28,6 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
     AIterator<K> keysIterator();
     AIterator<V> valuesIterator();
 
-//    TODO AMap<K,V> withDefaultValue(V defaultValue);
-//    TODO AMap<K,V> withDefault(AFunction1<? super K, ? extends V, ? extends RuntimeException> function);
-
-    // TODO filterKeys()
-    // TODO mapValues()
-
     class AMapEntry<K,V> implements Map.Entry<K,V> {
         private final K key;
         private final V value;

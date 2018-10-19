@@ -55,8 +55,6 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
         return ATreeSet.from(this, comparator);
     }
 
-    //TODO flatten
-
     @Override default C filter(Predicate<T> f) {
         final ACollectionBuilder<T, ? extends ACollection<T>> builder = newBuilder();
         for (T o: this) if (f.test(o)) builder.add(o);

@@ -1,41 +1,59 @@
 todo
 ----
+
+
+
+* add mutable JU code to benchmarks
+
+
+* unit tests
+
+
+
+
+
 * stream()
   * stream integration: collectors
   * spliterator()
 
-* missing API
-  * static factories in interfaces
+* CHAMP algorithm
+* tuning of RedBlackTree
+
+* API
   * static factories a la Java 10
-
-  * AMap withDerivedDefault, withDefaultValue, filterKeys, filterValues(?)
   * ACollection: permutations, combinations
-  * ASet: subsets
   * ACollection: flatten
-  * AList, ACollection: diverse methods
-
+  * AMap withDerivedDefault, withDefaultValue, filterKeys, filterValues(?)
   * AIterator methods: see decompiled TreeIterator
-  * Missing methods in collection interfaces / to do comments
-
-  * toBuffer (mutable)
+  * ASet: subsets
   * toMap (?)
 
   * partial order
+
+* wrappers for arrays
+* wrappers for more JU collections
 
   * equals, hashCode
   * Serializable
     * readResolve
     * uniqueness for None, empty, ...
 
-* Collection classes
-  * Bag, MultiSet, MultiMap, ...?
-  * wrappers for arrays
-  * wrappers for more JU collections
 
-* add mutable JU code to benchmarks
-* tuning of RedBlackTree
+// ACollection.flatten
+// permutations, combinations
 
-* CHAMP algorithm
+//AList: zip, zipWithIndex
+// sortWith, sortBy, shuffle --> ACollection, produces AList?
+// indexOfSlice (2x), lastIndexOfSlice (2x), containsSlice
+// partition (ACollection?!), groupBy (ACollection?), splitAt, span, distinct (ACollection?!)
+// reverseMap
+// corresponds
 
-* unit tests
+
+
+
+//    AMap<K,V> withDefaultValue(V defaultValue);
+//    AMap<K,V> withDefault(AFunction1<? super K, ? extends V, ? extends RuntimeException> function);
+// filterKeys()
+// mapValues()
 

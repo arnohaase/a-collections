@@ -55,8 +55,6 @@ public interface ACollectionOps<T> {
     ACollectionOps<T> filter(Predicate<T> f);
     ACollectionOps<T> filterNot(Predicate<T> f);
 
-    //TODO flatten
-
     AOption<T> find(Predicate<T> f);
     boolean forall(Predicate<T> f);
     boolean exists(Predicate<T> f);
