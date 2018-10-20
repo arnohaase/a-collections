@@ -1,13 +1,10 @@
 package com.ajjpj.acollections.immutable;
 
-import com.ajjpj.acollections.ACollection;
-import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.ASetTests;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import static com.ajjpj.acollections.util.AOption.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -19,8 +16,8 @@ public class ATreeSetTest implements ASetTests  {
 
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
-                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder()), some(AVector.of(1, 2, 3)), false),
-                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder().reversed()), some(AVector.of(3, 2, 1)), false)
+                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3), false),
+                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1), false)
         );
     }
 

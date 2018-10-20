@@ -7,8 +7,7 @@ import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.util.AOption;
 import org.junit.jupiter.api.Test;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -26,6 +25,7 @@ public interface ACollectionTests {
     default boolean isEven(int n) { return n%2 == 0; }
     default boolean isOdd(int n) { return n%2 == 1; }
     default int doubled(int n) { return 2*n; }
+    default int sum(int a, int b) { return a+b; }
 
     @Test default void testAEquality() {
         doTest(v -> {
@@ -39,8 +39,8 @@ public interface ACollectionTests {
             assertTrue(! v.mkColl().iterator().hasNext());
             assertEquals(AVector.of(1), v.mkColl(1).iterator().toVector());
 
-            if (v.iterationOrder123.isDefined())
-                assertEquals(v.iterationOrder123.get(), v.mkColl(1, 2, 3).iterator().toVector());
+            if (v.iterationOrder123 != null)
+                assertEquals(v.iterationOrder123, v.mkColl(1, 2, 3).iterator().toVector());
             else
                 assertEquals(v.mkColl(1, 2, 3).toSet(), v.mkColl(1, 2, 3).iterator().toSet());
         });
@@ -69,8 +69,8 @@ public interface ACollectionTests {
         doTest(v -> {
             assertThrows(NoSuchElementException.class, () -> v.mkColl().head());
             assertEquals(1, v.mkColl(1).head().intValue());
-            if (v.iterationOrder123().isDefined())
-                assertEquals(v.mkColl(1, 2, 3).head(), v.iterationOrder123().get().head());
+            if (v.iterationOrder123() != null)
+                assertEquals(v.mkColl(1, 2, 3).head(), v.iterationOrder123().head());
             else {
                 assertTrue(AHashSet.of(1, 2, 3).contains(v.mkColl(1, 2, 3).head()));
             }
@@ -80,8 +80,8 @@ public interface ACollectionTests {
         doTest(v -> {
             assertTrue(v.mkColl().headOption().isEmpty());
             assertTrue(v.mkColl(1).headOption().contains(1));
-            if (v.iterationOrder123().isDefined())
-                assertTrue(v.mkColl(1, 2, 3).headOption().contains(v.iterationOrder123().get().head()));
+            if (v.iterationOrder123() != null)
+                assertTrue(v.mkColl(1, 2, 3).headOption().contains(v.iterationOrder123().head()));
             else {
                 assertTrue(v.mkColl(1, 2, 3).toSet().contains(v.mkColl(1, 2, 3).headOption().get()));
             }
@@ -160,8 +160,8 @@ public interface ACollectionTests {
             v.checkEquality(v.mkColl(1).collect(this::isOdd, this::doubled));
 
             final int firstOdd;
-            if (v.iterationOrder123().isDefined())
-                firstOdd = v.iterationOrder123.get().head();
+            if (v.iterationOrder123() != null)
+                firstOdd = v.iterationOrder123.head();
             else {
                 final Iterator<Integer> it = v.mkColl(1, 2, 3).iterator();
                 if (it.next() == 2) firstOdd = it.next();
@@ -246,28 +246,121 @@ public interface ACollectionTests {
         });
     }
 
-    /*
+    @Test default void testReduce() {
+        doTest(v -> {
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().reduce(this::sum));
+            assertEquals(1, v.mkColl(1).reduce(this::sum).intValue());
+            assertEquals(6, v.mkColl(1, 2, 3).reduce(this::sum).intValue());
 
-    default T reduce(BiFunction<T,T,T> f) {
-        return reduceLeft(f);
+            if (v.iterationOrder123() != null) {
+                final List<Integer> trace = new ArrayList<>();
+                v.mkColl(1, 2, 3).reduce((a, b) -> {
+                    trace.add(a);
+                    trace.add(b);
+                    return 0;
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), 0, v.iterationOrder123().get(2)), trace);
+            }
+        });
     }
-    T reduceLeft(BiFunction<T,T,T> f);
-    AOption<T> reduceLeftOption(BiFunction<T,T,T> f);
+    @Test default void testReduceLeft() {
+        doTest(v -> {
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().reduceLeft(this::sum));
+            assertEquals(1, v.mkColl(1).reduceLeft(this::sum).intValue());
+            assertEquals(6, v.mkColl(1, 2, 3).reduceLeft(this::sum).intValue());
 
-    default <U> U fold(U zero, BiFunction<U,T,U> f) {
-        return foldLeft(zero, f);
+            if (v.iterationOrder123() != null) {
+                final List<Integer> trace = new ArrayList<>();
+                v.mkColl(1, 2, 3).reduceLeft((a, b) -> {
+                    trace.add(a);
+                    trace.add(b);
+                    return 0;
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), 0, v.iterationOrder123().get(2)), trace);
+            }
+        });
     }
-    <U> U foldLeft(U zero, BiFunction<U,T,U> f);
+    @Test default void testReduceLeftOption() {
+        doTest(v -> {
+            assertEquals(AOption.none(), v.mkColl().reduceLeftOption(this::sum));
+            assertEquals(AOption.some(1), v.mkColl(1).reduceLeftOption(this::sum));
+            assertEquals(AOption.some(6), v.mkColl(1, 2, 3).reduceLeftOption(this::sum));
 
-    T min();
-    T min(Comparator<T> comparator);
-    T max();
-    T max(Comparator<T> comparator);
+            if (v.iterationOrder123() != null) {
+                final List<Integer> trace = new ArrayList<>();
+                v.mkColl(1, 2, 3).reduceLeftOption((a, b) -> {
+                    trace.add(a);
+                    trace.add(b);
+                    return 0;
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), 0, v.iterationOrder123().get(2)), trace);
+            }
+        });
+    }
 
-    String mkString(String infix);
-    String mkString(String prefix, String infix, String suffix);
+    @Test default void testFold() {
+        doTest(v -> {
+            assertEquals(0, v.mkColl().fold(0, this::sum).intValue());
+            assertEquals(1, v.mkColl(1).fold(0, this::sum).intValue());
+            assertEquals(6, v.mkColl(1, 2, 3).fold(0, this::sum).intValue());
 
-     */
+            if (v.iterationOrder123() != null) {
+                final List<Integer> trace = new ArrayList<>();
+                v.mkColl(1, 2, 3).fold(0, (a, b) -> {
+                    trace.add(b);
+                    return 0;
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), v.iterationOrder123().get(2)), trace);
+            }
+        });
+    }
+    @Test default void testFoldLeft() {
+        doTest(v -> {
+            assertEquals(0, v.mkColl().foldLeft(0, this::sum).intValue());
+            assertEquals(1, v.mkColl(1).foldLeft(0, this::sum).intValue());
+            assertEquals(6, v.mkColl(1, 2, 3).foldLeft(0, this::sum).intValue());
+
+            if (v.iterationOrder123() != null) {
+                final List<Integer> trace = new ArrayList<>();
+                v.mkColl(1, 2, 3).foldLeft(0, (a, b) -> {
+                    trace.add(b);
+                    return 0;
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), v.iterationOrder123().get(2)), trace);
+            }
+        });
+    }
+
+    @Test default void testMin() {
+        doTest(v -> {
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().min());
+            assertEquals(1, v.mkColl(1).min().intValue());
+            assertEquals(1, v.mkColl(2, 1, 3).min().intValue());
+            assertEquals(3, v.mkColl(2, 1, 3).min(Comparator.<Integer>naturalOrder().reversed()).intValue());
+        });
+    }
+    @Test default void testMax() {
+        doTest(v -> {
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().max());
+            assertEquals(1, v.mkColl(1).max().intValue());
+            assertEquals(3, v.mkColl(2, 3, 1).max().intValue());
+            assertEquals(1, v.mkColl(2, 1, 3).max(Comparator.<Integer>naturalOrder().reversed()).intValue());
+        });
+    }
+
+    @Test default void testMkString() {
+        doTest(v -> {
+            assertEquals("", v.mkColl().mkString("|"));
+            assertEquals("$%", v.mkColl().mkString("$", "|", "%"));
+            assertEquals("1", v.mkColl(1).mkString("|"));
+            assertEquals("$1%", v.mkColl(1).mkString("$", "|", "%"));
+
+            if (v.iterationOrder123() != null) {
+                assertEquals(v.iterationOrder123().mkString("|"), v.mkColl(1, 2, 3).mkString("|"));
+                assertEquals(v.iterationOrder123().mkString("$", "|", "%"), v.mkColl(1, 2, 3).mkString("$", "|", "%"));
+            }
+        });
+    }
 
     //TODO keySet, entrySet, Range; AMap
 
@@ -280,10 +373,10 @@ public interface ACollectionTests {
 
     class Variant {
         private final Supplier<ACollectionBuilder<Integer, ? extends ACollection<Integer>>> builderFactory;
-        private final AOption<AVector<Integer>> iterationOrder123;
+        private final AVector<Integer> iterationOrder123;
         private final boolean isIdentity;
 
-        public Variant (Supplier<ACollectionBuilder<Integer, ? extends ACollection<Integer>>> builderFactory, AOption<AVector<Integer>> iterationOrder123, boolean isIdentity) {
+        public Variant (Supplier<ACollectionBuilder<Integer, ? extends ACollection<Integer>>> builderFactory, AVector<Integer> iterationOrder123, boolean isIdentity) {
             this.builderFactory = builderFactory;
             this.iterationOrder123 = iterationOrder123;
             this.isIdentity = isIdentity;
@@ -299,7 +392,7 @@ public interface ACollectionTests {
                     .build();
         }
 
-        public AOption<AVector<Integer>> iterationOrder123() {
+        public AVector<Integer> iterationOrder123() {
             return this.iterationOrder123;
         }
 

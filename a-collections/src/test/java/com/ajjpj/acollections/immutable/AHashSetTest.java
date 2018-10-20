@@ -6,7 +6,6 @@ import com.ajjpj.acollections.util.AEquality;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
-import static com.ajjpj.acollections.util.AOption.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -19,8 +18,8 @@ public class AHashSetTest implements ASetTests {
 
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
-                new Variant(() -> AHashSet.builder(AEquality.EQUALS), none(), false),
-                new Variant(() -> AHashSet.builder(AEquality.IDENTITY), none(), true)
+                new Variant(() -> AHashSet.builder(AEquality.EQUALS), null, false),
+                new Variant(() -> AHashSet.builder(AEquality.IDENTITY), null, true)
         );
     }
 

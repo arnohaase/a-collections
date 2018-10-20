@@ -8,6 +8,7 @@ import com.ajjpj.acollections.util.AOption;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -103,7 +104,7 @@ public interface AIterator<T> extends Iterator<T> {
         return result;
     }
     default T reduce(BiFunction<T,T,T> f) {
-        if (! hasNext()) throw new IndexOutOfBoundsException();
+        if (! hasNext()) throw new NoSuchElementException();
 
         final T first = next();
         if (! hasNext()) return first;

@@ -6,10 +6,7 @@ import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -126,6 +123,25 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
 
     @Override public ASortedSet<T> slice (int from, int until) {
         return new ATreeSet<>(RedBlackTree.slice(root, from, until), comparator);
+    }
+
+    /**
+     * relative to *natural* order, which may or may not be the tree's order
+     */
+    @Override public T min () {
+        if (comparator.equals(Comparator.naturalOrder()))
+            return smallest().orElseThrow(NoSuchElementException::new);
+        else
+            return ACollectionDefaults.super.min();
+    }
+    /**
+     * relative to *natural* order, which may or may not be the tree's order
+     */
+    @Override public T max () {
+        if (comparator.equals(Comparator.naturalOrder()))
+            return greatest().orElseThrow(NoSuchElementException::new);
+        else
+            return ACollectionDefaults.super.max();
     }
 
     @Override public AOption<T> smallest () {

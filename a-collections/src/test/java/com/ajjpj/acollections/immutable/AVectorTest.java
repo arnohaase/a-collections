@@ -10,15 +10,14 @@ import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static com.ajjpj.acollections.util.AOption.*;
 
 
 @SuppressWarnings("WeakerAccess")
 public class AVectorTest implements ACollectionTests {
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
-                new Variant (() -> AVector.builder(AEquality.EQUALS), some(AVector.of(1, 2, 3)), false),
-                new Variant (() -> AVector.builder(AEquality.IDENTITY), some(AVector.of(1, 2, 3)), true)
+                new Variant (() -> AVector.builder(AEquality.EQUALS), AVector.of(1, 2, 3), false),
+                new Variant (() -> AVector.builder(AEquality.IDENTITY), AVector.of(1, 2, 3), true)
         );
     }
 
