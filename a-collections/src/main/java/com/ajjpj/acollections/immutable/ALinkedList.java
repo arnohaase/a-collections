@@ -40,8 +40,20 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     public static <T> ALinkedList<T> of(T o1, T o2) {
         return ALinkedList.<T>nil().prepend(o2).prepend(o1);
     }
+    public static <T> ALinkedList<T> of(T o1, T o2, T o3) {
+        return ALinkedList.<T>nil().prepend(o3).prepend(o2).prepend(o1);
+    }
+    public static <T> ALinkedList<T> of(T o1, T o2, T o3, T o4) {
+        return ALinkedList.<T>nil().prepend(o4).prepend(o3).prepend(o2).prepend(o1);
+    }
 
 
+    public static <T> ALinkedList<T> empty(AEquality equality) {
+        return nil(equality);
+    }
+    public static <T> ALinkedList<T> empty() {
+        return nil();
+    }
     public static <T> ALinkedList<T> nil() {
         return nil(AEquality.EQUALS);
     }
@@ -329,6 +341,10 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
 
         Builder (AEquality equality) {
             result = nil(equality);
+        }
+
+        @Override public AEquality equality () {
+            return result.equality();
         }
 
         public Builder<T> add(T o) {

@@ -1,5 +1,7 @@
 package com.ajjpj.acollections;
 
+import com.ajjpj.acollections.util.AEquality;
+
 import java.util.Iterator;
 
 
@@ -14,11 +16,17 @@ public interface ACollectionBuilder<T, R extends ACollectionOps<T>> {
     ACollectionBuilder<T,R> add(T el);
     R build();
 
+    AEquality equality();
+
     default ACollectionBuilder<T,R> addAll(Iterator<? extends T> it) {
         while(it.hasNext()) add(it.next());
         return this;
     }
     default ACollectionBuilder<T,R> addAll(Iterable<? extends T> coll) {
         return addAll(coll.iterator());
+    }
+    default ACollectionBuilder<T,R> addAll(T[] coll) {
+        for (T o: coll) add(o);
+        return this;
     }
 }

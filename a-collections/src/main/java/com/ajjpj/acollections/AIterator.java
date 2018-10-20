@@ -1,5 +1,9 @@
 package com.ajjpj.acollections;
 
+import com.ajjpj.acollections.immutable.AHashSet;
+import com.ajjpj.acollections.immutable.ALinkedList;
+import com.ajjpj.acollections.immutable.ATreeSet;
+import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Comparator;
@@ -21,6 +25,21 @@ public interface AIterator<T> extends Iterator<T> {
     static <T> AIterator<T> single(T o) {
         return new AbstractAIterator.Single<>(o);
     }
+
+    default AVector<T> toVector() {
+        return AVector.fromIterator(this);
+    }
+    default ALinkedList<T> toLinkedList() {
+        return ALinkedList.fromIterator(this);
+    }
+    default AHashSet<T> toSet() {
+        return AHashSet.fromIterator(this);
+    }
+    default ATreeSet<T> toSortedSet() {
+        //noinspection unchecked
+        return ATreeSet.fromIterator(this, (Comparator) Comparator.naturalOrder());
+    }
+    //TODO toBuffer, toLinkedList
 
     default <U> AIterator<U> map(Function<T,U> f) {
         final AIterator<T> inner = this;

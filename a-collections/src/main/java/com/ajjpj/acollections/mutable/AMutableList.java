@@ -48,6 +48,10 @@ public class AMutableList<T> implements AList<T> {
         return new ACollectionBuilder<U, AMutableList<U>>() {
             private final List<U> l = new ArrayList<>();
 
+            @Override public AEquality equality () {
+                return AEquality.EQUALS; //TODO ?!
+            }
+
             @Override public ACollectionBuilder<U, AMutableList<U>> add (U el) {
                 l.add(el);
                 return this;

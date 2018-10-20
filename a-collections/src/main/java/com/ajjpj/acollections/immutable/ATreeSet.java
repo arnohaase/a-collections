@@ -18,9 +18,35 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
     private final RedBlackTree.Tree<T,Object> root;
     private final Comparator<T> comparator;
 
-    private ATreeSet (RedBlackTree.Tree<T, Object> root, Comparator<T> comparator) {
-        this.root = root;
-        this.comparator = comparator;
+    public static <T extends Comparable<T>> ATreeSet<T> of(T o) {
+        return ATreeSet
+                .<T>builder()
+                .add(o)
+                .build();
+    }
+    public static <T extends Comparable<T>> ATreeSet<T> of(T o1, T o2) {
+        return ATreeSet
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .build();
+    }
+    public static <T extends Comparable<T>> ATreeSet<T> of(T o1, T o2, T o3) {
+        return ATreeSet
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .add(o3)
+                .build();
+    }
+    public static <T extends Comparable<T>> ATreeSet<T> of(T o1, T o2, T o3, T o4) {
+        return ATreeSet
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .add(o3)
+                .add(o4)
+                .build();
     }
 
     public static <T extends Comparable<T>> ATreeSet<T> from(Iterable<T> iterable) {
@@ -43,6 +69,18 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return new Builder<>(comparator);
     }
 
+    private ATreeSet (RedBlackTree.Tree<T, Object> root, Comparator<T> comparator) {
+        this.root = root;
+        this.comparator = comparator;
+    }
+
+    @Override public String toString () {
+        return ACollectionSupport.toString(ATreeSet.class, this);
+    }
+
+    @Override public AHashSet<T> toSet () {
+        return AHashSet.from(this, AEquality.EQUALS);
+    }
     @Override public ATreeSet<T> toSortedSet (Comparator<T> comparator) {
         return this;
     }
@@ -171,6 +209,10 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
 
         public Builder (Comparator<T> comparator) {
             this.comparator = comparator;
+        }
+
+        @Override public AEquality equality () {
+            return AEquality.fromComparator(comparator);
         }
 
         @Override public ACollectionBuilder<T, ATreeSet<T>> add (T el) {

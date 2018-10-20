@@ -1,9 +1,22 @@
 package com.ajjpj.acollections.immutable;
 
+import com.ajjpj.acollections.AListTests;
+import com.ajjpj.acollections.util.AEquality;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import static com.ajjpj.acollections.util.AOption.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ALinkedListTest {
+public class ALinkedListTest implements AListTests {
+    @Override public Iterable<Variant> variants () {
+        return Arrays.asList(
+                new Variant(() -> ALinkedList.builder(AEquality.EQUALS), some(AVector.of(1, 2, 3)), false),
+                new Variant(() -> ALinkedList.builder(AEquality.IDENTITY), some(AVector.of(1, 2, 3)), true)
+        );
+    }
+
     @Test public void test()  {
         ALinkedList<Integer> l = ALinkedList.of(1, 2);
         assertEquals(1, l.head().intValue());

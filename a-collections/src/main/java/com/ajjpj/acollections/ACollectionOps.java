@@ -1,6 +1,5 @@
 package com.ajjpj.acollections;
 
-
 import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.ATreeSet;
@@ -17,7 +16,7 @@ import java.util.function.Predicate;
 
 /**
  * This interface separates out the ACollection specific operations without extending {@link Collection} itself, allowing more flexible
- *  use.
+ *  use (e.g. for {@link AMap}.
  */
 public interface ACollectionOps<T> {
 

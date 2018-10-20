@@ -64,6 +64,8 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         return new Builder<>(equality);
     }
 
+    //TODO toString
+
     @Override public int size () {
         return compactHashMap.size();
     }
@@ -166,6 +168,10 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
 
         Builder(AEquality equality) {
             result = empty(equality);
+        }
+
+        @Override public AEquality equality () {
+            return result.equality();
         }
 
         public ACollectionBuilder<Entry<K, V>, AHashMap<K, V>> add (K key, V value) {

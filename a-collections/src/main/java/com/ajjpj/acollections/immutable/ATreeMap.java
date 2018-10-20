@@ -45,6 +45,8 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
         return new Builder<>(comparator);
     }
 
+    //TODO toString
+
     @Override public V get(Object key) {
         //noinspection unchecked
         return RedBlackTree.get(root, (K) key, comparator).orNull(); //TODO skip 'get'
@@ -193,6 +195,10 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
 
         Builder (Comparator<K> comparator) {
             this.result = ATreeMap.empty(comparator);
+        }
+
+        @Override public AEquality equality () {
+            return result.equality();
         }
 
         public ACollectionBuilder<Entry<K, V>, ATreeMap<K, V>> add (K key, V value) {

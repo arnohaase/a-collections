@@ -32,15 +32,34 @@ public interface AEquality {
     };
 
     static AEquality fromComparator(Comparator comparator) {
-        return new AEquality() {
-            @Override public boolean equals (Object o1, Object o2) {
-                //noinspection unchecked
-                return comparator.compare(o1, o2) == 0;
-            }
+        return new ComparatorBasedEquality(comparator);
+    }
 
-            @Override public int hashCode (Object o) {
-                throw new UnsupportedOperationException();
-            }
-        };
+    class ComparatorBasedEquality implements AEquality {
+        private final Comparator comparator;
+
+        public ComparatorBasedEquality (Comparator comparator) {
+            this.comparator = comparator;
+        }
+
+        @Override public boolean equals (Object o1, Object o2) {
+            //noinspection unchecked
+            return comparator.compare(o1, o2) == 0;
+        }
+
+        @Override public int hashCode (Object o) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean equals (Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            ComparatorBasedEquality that = (ComparatorBasedEquality) o;
+            return Objects.equals(comparator, that.comparator);
+        }
+
+        @Override public int hashCode () {
+            return Objects.hash(comparator);
+        }
     }
 }

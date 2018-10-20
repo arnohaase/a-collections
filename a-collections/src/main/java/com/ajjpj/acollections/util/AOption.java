@@ -40,6 +40,10 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
         return ANone;
     }
 
+    @Override public String toString () {
+        return ACollectionSupport.toString(AOption.class, this);
+    }
+
     public boolean isDefined() {
         return nonEmpty();
     }
@@ -75,6 +79,10 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
 
         return new ACollectionBuilder<U, AOption<U>>() {
             private AOption<U> result = none();
+
+            @Override public AEquality equality () {
+                return AEquality.EQUALS;
+            }
 
             @Override public ACollectionBuilder<U, AOption<U>> add (U el) {
                 if (result.nonEmpty()) throw new IllegalStateException("an AOption can hold at most one element");

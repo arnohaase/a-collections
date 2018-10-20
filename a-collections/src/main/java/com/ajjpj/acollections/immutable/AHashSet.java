@@ -39,6 +39,23 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
                 .add(o2)
                 .build();
     }
+    public static <T> AHashSet<T> of(T o1, T o2, T o3) {
+        return AHashSet
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .add(o3)
+                .build();
+    }
+    public static <T> AHashSet<T> of(T o1, T o2, T o3, T o4) {
+        return AHashSet
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .add(o3)
+                .add(o4)
+                .build();
+    }
 
     public static <T> AHashSet<T> from(Iterable<T> that) {
         return from(that, AEquality.EQUALS);
@@ -65,6 +82,20 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
     abstract AHashSet<T> newInstance(CompactHashMap<SetEntryWithEquality<T>> compactHashMap);
     abstract SetEntryWithEquality<T> newEntry(Object o);
     @Override public abstract <U> ACollectionBuilder<U, AHashSet<U>> newBuilder();
+
+    @Override
+    public boolean equals (Object o) {
+        if (o == this) return true;
+        if (! (o instanceof Set)) return false;
+        //noinspection unchecked
+        final Set<T> that = (Set<T>) o;
+
+        return this.size() == that.size() && forall(that::contains);
+    }
+
+    @Override public String toString () {
+        return ACollectionSupport.toString(AHashSet.class, this);
+    }
 
     @Override public AHashSet<T> toSet () {
         return this;
@@ -243,19 +274,25 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
         }
     }
     static class EqualsBuilder<T> extends Builder<T> {
+        @Override public AEquality equality () {
+            return AEquality.EQUALS;
+        }
+
         @Override AHashSet<T> newInstance () {
             return new EqualsHashSet<>(result);
         }
-
         @Override SetEntryWithEquality<T> newElement (T el) {
             return new EqualsSetEntry<>(el);
         }
     }
     static class IdentityBuilder<T> extends Builder<T> {
+        @Override public AEquality equality () {
+            return AEquality.IDENTITY;
+        }
+
         @Override AHashSet<T> newInstance () {
             return new IdentityHashSet<>(result);
         }
-
         @Override SetEntryWithEquality<T> newElement (T el) {
             return new IdentitySetEntry<>(el);
         }
@@ -266,10 +303,13 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
             this.equality = equality;
         }
 
+        @Override public AEquality equality () {
+            return equality;
+        }
+
         @Override AHashSet<T> newInstance () {
             return new CustomHashSet<>(result, equality);
         }
-
         @Override SetEntryWithEquality<T> newElement (T el) {
             return new CustomSetEntry<>(el, equality);
         }

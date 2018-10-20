@@ -1,6 +1,8 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.ACollection;
+import com.ajjpj.acollections.internal.ACollectionSupport;
+
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -29,7 +31,6 @@ public abstract class AbstractImmutableCollection<T> implements ACollection<T> {
 
         return result;
     }
-
 
     @Override public boolean add (T t) { throw new UnsupportedOperationException("no mutable operations for immutable collection"); }
     @Override public boolean remove (Object o) { throw new UnsupportedOperationException("no mutable operations for immutable collection"); }

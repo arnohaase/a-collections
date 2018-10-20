@@ -1,16 +1,27 @@
 package com.ajjpj.acollections.immutable;
 
+import com.ajjpj.acollections.ACollectionTests;
 import com.ajjpj.acollections.AList;
+import com.ajjpj.acollections.util.AEquality;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static com.ajjpj.acollections.util.AOption.*;
 
 
 @SuppressWarnings("WeakerAccess")
-public class AVectorTest {
+public class AVectorTest implements ACollectionTests {
+    @Override public Iterable<Variant> variants () {
+        return Arrays.asList(
+                new Variant (() -> AVector.builder(AEquality.EQUALS), some(AVector.of(1, 2, 3)), false),
+                new Variant (() -> AVector.builder(AEquality.IDENTITY), some(AVector.of(1, 2, 3)), true)
+        );
+    }
+
     @Test public void testAppendSimple() {
         AVector<Integer> v = AVector.empty();
 

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ATreeMap2Test {
     final int size = 100_000;
-    final int numIter = 10_000_000;
+    final int numIter = 1_000_000;
 
     private Map<Integer, Integer> createJu() {
         final Random rand = new Random(12345);
