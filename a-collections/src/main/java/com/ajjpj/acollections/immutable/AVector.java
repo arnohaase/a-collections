@@ -184,14 +184,6 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         return ACollectionSupport.collect(newBuilder(), this, filter, f);
     }
 
-    @Override public Object[] toArray () {
-        return ACollectionSupport.toArray(this);
-    }
-
-    @Override public <T1> T1[] toArray (T1[] a) {
-        return ACollectionSupport.toArray(this, a);
-    }
-
     @Override public boolean addAll (int index, Collection<? extends T> c) {
         throw new UnsupportedOperationException();
     }

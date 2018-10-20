@@ -5,6 +5,7 @@ import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
+import com.ajjpj.acollections.internal.ASetSupport;
 import com.ajjpj.acollections.util.AEquality;
 
 import java.util.Collection;
@@ -83,14 +84,8 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
     abstract SetEntryWithEquality<T> newEntry(Object o);
     @Override public abstract <U> ACollectionBuilder<U, AHashSet<U>> newBuilder();
 
-    @Override
-    public boolean equals (Object o) {
-        if (o == this) return true;
-        if (! (o instanceof Set)) return false;
-        //noinspection unchecked
-        final Set<T> that = (Set<T>) o;
-
-        return this.size() == that.size() && forall(that::contains);
+    @Override public boolean equals (Object o) {
+        return ASetSupport.equals(this, o);
     }
 
     @Override public String toString () {
@@ -165,14 +160,6 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
 
     @Override public int size () {
         return compactHashMap.size();
-    }
-
-    @Override public Object[] toArray () {
-        return ACollectionSupport.toArray(this);
-    }
-
-    @Override public <T1> T1[] toArray (T1[] a) {
-        return ACollectionSupport.toArray(this, a);
     }
 
     @Override public boolean containsAll (Collection<?> c) {

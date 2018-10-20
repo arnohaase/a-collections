@@ -227,14 +227,6 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     @Override public <U> ALinkedList<U> flatMap(Function<T, Iterable<U>> f) {
         return ACollectionSupport.flatMap(newBuilder(), this, f);
     }
-    @Override public Object[] toArray () {
-        return ACollectionSupport.toArray(this);
-    }
-
-    @Override public <T1> T1[] toArray (T1[] a) {
-        return ACollectionSupport.toArray(this, a);
-    }
-
 
     @Override public ALinkedList<T> toLinkedList() {
         return this;

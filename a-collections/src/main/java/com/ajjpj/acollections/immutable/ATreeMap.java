@@ -131,8 +131,8 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
         return new AMapSupport.ValueCollection<>(this);
     }
 
-    @Override public Set<Entry<K, V>> entrySet () { //TODO ASortedSet
-        return new AMapSupport.EntrySet<>(this);
+    @Override public ASortedSet<Entry<K, V>> entrySet () { //TODO ASortedSet
+        return new AMapSupport.SortedEntrySet<K,V>(this);
     }
 
     @Override public Comparator<K> comparator () {

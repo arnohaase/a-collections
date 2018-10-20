@@ -3,11 +3,14 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
 
 
 public interface ASortedSet<T> extends ASet<T> {
+    Comparator<T> comparator();
+
     ASortedSet<T> added (T o);
     ASortedSet<T> removed (T o);
 

@@ -59,14 +59,6 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
         return ACollectionDefaults.super.filterNot(f);
     }
 
-    @Override public Object[] toArray () {
-        return ACollectionSupport.toArray(this);
-    }
-
-    @Override public <T1> T1[] toArray (T1[] a) {
-        return ACollectionSupport.toArray(this, a);
-    }
-
     @Override public abstract boolean contains(Object o);
     
     @Override public boolean containsAll (Collection<?> c) {

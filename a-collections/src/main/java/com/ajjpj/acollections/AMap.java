@@ -24,6 +24,7 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
 
     ASet<K> keySet();
     ACollection<V> values();
+    ASet<Map.Entry<K,V>> entrySet();
 
     AIterator<K> keysIterator();
     AIterator<V> valuesIterator();

@@ -4,14 +4,11 @@ import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.AbstractAIterator;
-import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
 import com.ajjpj.acollections.util.AEquality;
-import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -212,13 +209,5 @@ public class ARange extends AbstractImmutableCollection<Integer> implements ALis
     @Override public int size () { //TODO verify both paths
         if (step > 0) return (to - from) / step;
         else return (from - to) / (-step); // rounding rules
-    }
-
-    @Override public Object[] toArray () {
-        return ACollectionSupport.toArray(this);
-    }
-
-    @Override public <T> T[] toArray (T[] a) {
-        return ACollectionSupport.toArray(this, a);
     }
 }

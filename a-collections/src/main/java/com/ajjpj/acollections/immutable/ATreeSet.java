@@ -3,6 +3,7 @@ package com.ajjpj.acollections.immutable;
 import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
+import com.ajjpj.acollections.internal.ASetSupport;
 import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
@@ -69,6 +70,14 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
     private ATreeSet (RedBlackTree.Tree<T, Object> root, Comparator<T> comparator) {
         this.root = root;
         this.comparator = comparator;
+    }
+
+    @Override public Comparator<T> comparator () {
+        return comparator;
+    }
+
+    @Override public boolean equals (Object o) {
+        return ASetSupport.equals(this, o);
     }
 
     @Override public String toString () {
@@ -200,14 +209,6 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
 
     @Override public int size () {
         return RedBlackTree.count(root);
-    }
-
-    @Override public Object[] toArray () {
-        return ACollectionSupport.toArray(this);
-    }
-
-    @Override public <T1> T1[] toArray (T1[] a) {
-        return ACollectionSupport.toArray(this, a);
     }
 
     @Override public boolean contains (Object o) {

@@ -85,14 +85,6 @@ public class AMapSupport {
             return map.size();
         }
 
-        @Override public Object[] toArray () {
-            return ACollectionSupport.toArray(this);
-        }
-
-        @Override public <T1> T1[] toArray (T1[] a) {
-            return ACollectionSupport.toArray(this, a);
-        }
-
         @Override public boolean contains (Object o) {
             //noinspection SuspiciousMethodCalls
             return map.containsKey(o);
@@ -100,6 +92,14 @@ public class AMapSupport {
 
         @Override public boolean containsAll (Collection<?> c) {
             return ACollectionDefaults.super.containsAll(c);
+        }
+
+        @Override public boolean equals (Object o) {
+            return ASetSupport.equals(this, o);
+        }
+
+        @Override public String toString () {
+            return ACollectionSupport.toString(KeySet.class, this);
         }
     }
 
@@ -150,20 +150,28 @@ public class AMapSupport {
             return map.size();
         }
 
-        @Override public Object[] toArray () {
-            return ACollectionSupport.toArray(this);
-        }
-
-        @Override public <T1> T1[] toArray (T1[] a) {
-            return ACollectionSupport.toArray(this, a);
-        }
-
         @Override public boolean contains (Object o) {
             return ACollectionDefaults.super.contains(o);
         }
 
         @Override public boolean containsAll (Collection<?> c) {
             return ACollectionDefaults.super.containsAll(c);
+        }
+
+        @Override
+        public boolean equals (Object o) {
+            if (o == this) return true;
+            if (! (o instanceof Collection)) return false;
+
+            //noinspection unchecked
+            final Collection<T> that = (Collection<T>) o;
+            if (this.size() != that.size()) return false;
+            return containsAll(that);
+        }
+
+
+        @Override public String toString () {
+            return ACollectionSupport.toString(ValueCollection.class, this);
         }
     }
 
@@ -238,14 +246,6 @@ public class AMapSupport {
             return map.size();
         }
 
-        @Override public Object[] toArray () {
-            return ACollectionSupport.toArray(this);
-        }
-
-        @Override public <T1> T1[] toArray (T1[] a) {
-            return ACollectionSupport.toArray(this, a);
-        }
-
         @Override public boolean contains (Object o) {
             //noinspection SuspiciousMethodCalls
             return map.containsKey(o);
@@ -254,6 +254,14 @@ public class AMapSupport {
         @Override public boolean containsAll (Collection<?> c) {
             return ACollectionDefaults.super.containsAll(c);
         }
+
+        @Override public boolean equals (Object o) {
+            return ASetSupport.equals(this, o);
+        }
+
+        @Override public String toString () {
+            return ACollectionSupport.toString(EntrySet.class, this);
+        }
     }
 
     public static class SortedKeySet<T> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T, ATreeSet<T>> {
@@ -261,6 +269,14 @@ public class AMapSupport {
 
         public SortedKeySet (ASortedMap<T, ?> map) {
             this.map = map;
+        }
+
+        @Override public Comparator<T> comparator () {
+            return map.comparator();
+        }
+
+        @Override public AHashSet<T> toSet () {
+            return AHashSet.from(this);
         }
 
         @Override public ATreeSet<T> added (T o) {
@@ -361,12 +377,131 @@ public class AMapSupport {
             return map.size();
         }
 
-        @Override public Object[] toArray () {
-            return ACollectionSupport.toArray(this);
+        @Override
+        public boolean contains (Object o) {
+            return map.containsKey(o);
         }
 
-        @Override public <T1> T1[] toArray (T1[] a) {
-            return ACollectionSupport.toArray(this, a);
+        @Override public boolean containsAll (Collection<?> c) {
+            return ACollectionDefaults.super.containsAll(c);
+        }
+
+        @Override public boolean equals (Object o) {
+            return ASetSupport.equals(this, o);
+        }
+
+        @Override public String toString () {
+            return ACollectionSupport.toString(SortedKeySet.class, this);
+        }
+    }
+
+    public static class SortedEntrySet<K,V> extends AbstractImmutableCollection<Map.Entry<K,V>> implements ASortedSet<Map.Entry<K,V>>, ACollectionDefaults<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>> {
+        private final ASortedMap<K,V> map;
+
+        public SortedEntrySet (ASortedMap<K, V> map) {
+            this.map = map;
+        }
+
+        @Override public Comparator<Map.Entry<K,V>> comparator() {
+            return (o1, o2) -> map.comparator().compare(o1.getKey(), o2.getKey());
+        }
+
+        @Override public ATreeSet<Map.Entry<K,V>> added (Map.Entry<K,V> o) {
+            return ATreeSet.from(this, comparator()).added(o);
+        }
+
+        @Override public ATreeSet<Map.Entry<K,V>> removed (Map.Entry<K,V> o) {
+            return ATreeSet.from(this, comparator()).removed(o);
+        }
+
+        @Override public ATreeSet<Map.Entry<K,V>> union (Iterable<Map.Entry<K,V>> that) {
+            return ATreeSet.builder(comparator())
+                    .addAll(this)
+                    .addAll(that)
+                    .build();
+        }
+
+        @Override public ATreeSet<Map.Entry<K,V>> intersect (Set<Map.Entry<K,V>> that) {
+            return ATreeSet.fromIterator(iterator().filter(that::contains), comparator());
+        }
+
+        @Override public ATreeSet<Map.Entry<K,V>> diff (Set<Map.Entry<K,V>> that) {
+            return ATreeSet.fromIterator(iterator().filterNot(that::contains), comparator());
+        }
+
+        @Override public int countInRange (AOption<Map.Entry<K,V>> from, AOption<Map.Entry<K,V>> to) {
+            return map.countInRange(from.map(Map.Entry::getKey), to.map(Map.Entry::getKey));
+        }
+
+        @Override public ASortedSet<Map.Entry<K,V>> range (AOption<Map.Entry<K,V>> from, AOption<Map.Entry<K,V>> until) {
+            return map.range(from.map(Map.Entry::getKey), until.map(Map.Entry::getKey)).entrySet();
+        }
+
+        @Override public ASortedSet<Map.Entry<K,V>> drop (int n) {
+            return map.drop(n).entrySet();
+        }
+
+        @Override public ASortedSet<Map.Entry<K,V>> take (int n) {
+            return map.take(n).entrySet();
+        }
+
+        @Override public ASortedSet<Map.Entry<K,V>> slice (int from, int until) {
+            return map.slice(from, until).entrySet();
+        }
+
+        @Override public AOption<Map.Entry<K,V>> smallest () {
+            return map.smallest();
+        }
+
+        @Override public AOption<Map.Entry<K,V>> greatest () {
+            return map.greatest();
+        }
+
+        @Override public AIterator<Map.Entry<K,V>> iterator (AOption<Map.Entry<K,V>> start) {
+            return map.iterator(start.map(Map.Entry::getKey));
+        }
+
+        @Override public AIterator<ASortedSet<Map.Entry<K,V>>> subsets () {
+            return null; //TODO subsets
+        }
+
+        @Override public AEquality equality () {
+            return map.keyEquality();
+        }
+
+        @Override public AIterator<Map.Entry<K,V>> iterator () {
+            return map.iterator();
+        }
+
+        @Override public <U> ACollectionBuilder<U, ATreeSet<U>> newBuilder () {
+            return ATreeSet.builder((Comparator) map.comparator()); //TODO this is somewhat happy - better alternatives?
+        }
+
+        @Override public boolean isEmpty () {
+            return map.isEmpty();
+        }
+
+        @Override public <U> ATreeSet<U> map (Function<Map.Entry<K,V>, U> f) {
+            return ACollectionSupport.map(newBuilder(), this, f);
+        }
+
+        @Override public <U> ATreeSet<U> flatMap (Function<Map.Entry<K,V>, Iterable<U>> f) {
+            return ACollectionSupport.flatMap(newBuilder(), this, f);
+        }
+
+        @Override public <U> ACollection<U> collect (Predicate<Map.Entry<K,V>> filter, Function<Map.Entry<K,V>, U> f) {
+            return ACollectionSupport.collect(newBuilder(), this, filter, f);
+        }
+
+        @Override public ATreeSet<Map.Entry<K,V>> filter (Predicate<Map.Entry<K,V>> f) {
+            return ACollectionDefaults.super.filter(f);
+        }
+        @Override public ATreeSet<Map.Entry<K,V>> filterNot (Predicate<Map.Entry<K,V>> f) {
+            return ACollectionDefaults.super.filterNot(f);
+        }
+
+        @Override public int size () {
+            return map.size();
         }
 
         @Override
@@ -376,6 +511,14 @@ public class AMapSupport {
 
         @Override public boolean containsAll (Collection<?> c) {
             return ACollectionDefaults.super.containsAll(c);
+        }
+
+        @Override public boolean equals (Object o) {
+            return ASetSupport.equals(this, o);
+        }
+
+        @Override public String toString () {
+            return ACollectionSupport.toString(SortedKeySet.class, this);
         }
     }
 }

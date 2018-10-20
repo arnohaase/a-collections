@@ -27,6 +27,9 @@ public interface ACollectionTests {
     default int doubled(int n) { return 2*n; }
     default int sum(int a, int b) { return a+b; }
 
+    //TODO test methods from java.util.Collection (and from java.lang.Object)
+
+
     @Test default void testAEquality() {
         doTest(v -> {
             v.checkEquality(v.mkColl());

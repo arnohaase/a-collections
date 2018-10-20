@@ -13,8 +13,6 @@ public interface ASortedMap<K,V> extends AMap<K,V> {
         return AEquality.fromComparator(comparator());
     }
 
-    ASortedSet<K> keySet();
-
     /**
      * Count all the nodes with keys greater than or equal to the lower bound and less than the upper bound.
      * The two bounds are optional.
@@ -28,6 +26,9 @@ public interface ASortedMap<K,V> extends AMap<K,V> {
 
     AOption<Map.Entry<K,V>> smallest();
     AOption<Map.Entry<K,V>> greatest();
+
+    ASortedSet<K> keySet();
+    ASortedSet<Map.Entry<K,V>> entrySet();
 
     AIterator<Map.Entry<K,V>> iterator(AOption<K> start);
     AIterator<K> keysIterator (AOption<K> start);

@@ -32,6 +32,14 @@ public abstract class AbstractImmutableCollection<T> implements ACollection<T> {
         return result;
     }
 
+    @Override public Object[] toArray () {
+        return ACollectionSupport.toArray(this);
+    }
+
+    @Override public <T1> T1[] toArray (T1[] a) {
+        return ACollectionSupport.toArray(this, a);
+    }
+
     @Override public boolean add (T t) { throw new UnsupportedOperationException("no mutable operations for immutable collection"); }
     @Override public boolean remove (Object o) { throw new UnsupportedOperationException("no mutable operations for immutable collection"); }
     @Override public boolean addAll (Collection<? extends T> c) { throw new UnsupportedOperationException("no mutable operations for immutable collection"); }
