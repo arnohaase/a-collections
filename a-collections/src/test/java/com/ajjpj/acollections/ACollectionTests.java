@@ -18,6 +18,7 @@ public interface ACollectionTests {
     // These methods must be implemented by concrete test classes, customizing the tests per tested collection class
 
     default boolean isSorted() { return false; }
+    default boolean isImmutable() {return true; }
     Iterable<Variant> variants();
 
     //---------------------------- the tests ------------------------------
@@ -27,8 +28,20 @@ public interface ACollectionTests {
     default int doubled(int n) { return 2*n; }
     default int sum(int a, int b) { return a+b; }
 
-    //TODO test methods from java.util.Collection (and from java.lang.Object)
+    //TODO equals, hashCode
 
+    @Test default void testMutators() {
+        if (isImmutable()) {
+            doTest(v -> {
+                assertThrows(UnsupportedOperationException.class, () -> v.mkColl().add(1));
+                assertThrows(UnsupportedOperationException.class, () -> v.mkColl().remove(1));
+                assertThrows(UnsupportedOperationException.class, () -> v.mkColl().addAll(Arrays.asList(1, 2, 3)));
+                assertThrows(UnsupportedOperationException.class, () -> v.mkColl().removeAll(Arrays.asList(1, 2, 3)));
+                assertThrows(UnsupportedOperationException.class, () -> v.mkColl().retainAll(Arrays.asList(1, 2, 3)));
+                assertThrows(UnsupportedOperationException.class, () -> v.mkColl().clear());
+            });
+        }
+    }
 
     @Test default void testAEquality() {
         doTest(v -> {
@@ -50,6 +63,42 @@ public interface ACollectionTests {
     }
 
     //TODO iterator --> separate tests
+
+    @Test default void testToArray() {
+        doTest(v -> {
+            assertEquals(0, v.mkColl().toArray().length);
+            assertEquals(Object.class, v.mkColl().toArray().getClass().getComponentType());
+            assertEquals(0, v.mkColl().toArray(new Integer[0]).length);
+            assertEquals(Integer.class, v.mkColl().toArray(new Integer[0]).getClass().getComponentType());
+
+            assertArrayEquals(new Object[]{1}, v.mkColl(1).toArray());
+            assertEquals(Object.class, v.mkColl(1).toArray().getClass().getComponentType());
+            assertArrayEquals(new Object[]{1}, v.mkColl(1).toArray(new Integer[0]));
+            assertEquals(Integer.class, v.mkColl(1).toArray(new Integer[0]).getClass().getComponentType());
+
+            {
+                final Integer[] arr = new Integer[1];
+                assertSame(arr, v.mkColl(1).toArray(arr));
+                assertEquals(1, arr[0].intValue());
+            }
+            {
+                final Integer[] arr = new Integer[2];
+                arr[1] = 99;
+
+                assertSame(arr, v.mkColl(1).toArray(arr));
+                assertEquals(1, arr[0].intValue());
+                assertNull(arr[1]);
+            }
+        });
+    }
+
+    @Test default void testSize() {
+        doTest(v -> {
+            assertEquals(0, v.mkColl().size());
+            assertEquals(1, v.mkColl(1).size());
+            assertEquals(3, v.mkColl(1, 2, 3).size());
+        });
+    }
 
     @Test default void testIsEmpty() {
         doTest(v -> {
@@ -246,6 +295,29 @@ public interface ACollectionTests {
 
             //noinspection UnnecessaryBoxing
             assertEquals(!v.isIdentity(), v.mkColl(1).contains(new Integer(1)));
+        });
+    }
+    @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
+    @Test default void testContainsAll() {
+        doTest(v -> {
+            assertTrue(v.mkColl().containsAll(Collections.emptyList()));
+            assertFalse(v.mkColl().containsAll(Arrays.asList(1)));
+            assertFalse(v.mkColl().containsAll(Arrays.asList(1, 2, 3)));
+
+            assertTrue(v.mkColl(1).containsAll(Arrays.asList(1)));
+            assertFalse(v.mkColl(1).containsAll(Arrays.asList(1, 2)));
+            assertFalse(v.mkColl(1).containsAll(Arrays.asList(2)));
+
+            assertTrue(v.mkColl(1, 2, 3).containsAll(Arrays.asList(1)));
+            assertTrue(v.mkColl(1, 2, 3).containsAll(Arrays.asList(2)));
+            assertTrue(v.mkColl(1, 2, 3).containsAll(Arrays.asList(3)));
+            assertFalse(v.mkColl(1, 2, 3).containsAll(Arrays.asList(4)));
+            assertTrue(v.mkColl(1, 2, 3).containsAll(Arrays.asList(1, 2)));
+            assertTrue(v.mkColl(1, 2, 3).containsAll(Arrays.asList(3, 2, 1)));
+            assertFalse(v.mkColl(1, 2, 3).containsAll(Arrays.asList(3, 2, 4)));
+
+            //noinspection UnnecessaryBoxing
+            assertEquals(!v.isIdentity(), v.mkColl(1).containsAll(Arrays.asList(new Integer(1))));
         });
     }
 
