@@ -23,6 +23,7 @@ public abstract class AbstractImmutableCollection<T> implements ACollection<T> {
     }
 
     @Override public int hashCode () {
+        //TODO do we want to cache?
         // we can not safely cache the hash code, even for immutable collections, because there is no way to
         //  be sure that the elements are immutable too :-(
         int result = 1;
