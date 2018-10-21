@@ -481,6 +481,10 @@ public class AMutableList<T> implements AList<T> {
         inner.clear();
     }
 
+    @Override public String toString () {
+        return getClass().getSimpleName() + "@" + inner;
+    }
+
     @Override
     public boolean equals(Object obj) {
         return inner.equals(obj);
