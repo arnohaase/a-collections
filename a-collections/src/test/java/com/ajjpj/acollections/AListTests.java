@@ -97,7 +97,7 @@ public interface AListTests extends ACollectionTests {
             AList<Integer> l = v.mkList(1);
             l.updated(0, 2);
             if (isImmutable())
-                assertTrue(l.isEmpty());
+                assertEquals(AVector.of(1), l);
             else
                 assertEquals(AVector.of(2), l);
         });
@@ -182,6 +182,8 @@ public interface AListTests extends ACollectionTests {
             assertEquals(AVector.of(1), v.mkList(1).take(2));
 
             assertEquals(AVector.of(1, 2), v.mkList(1, 2, 3).take(2));
+
+            //TODO mutable?!
         });
     }
     @Test default void testTakeRight() {
@@ -194,10 +196,22 @@ public interface AListTests extends ACollectionTests {
             assertEquals(AVector.of(1), v.mkList(1).takeRight(2));
 
             assertEquals(AVector.of(2, 3), v.mkList(1, 2, 3).takeRight(2));
+
+            //TODO mutable?!
         });
     }
     @Test default void testTakeWhile() {
-        fail("todo");
+        doTest(v -> {
+            assertEquals(AVector.empty(), v.mkList().takeWhile(x -> x == 1));
+            assertEquals(AVector.of(1), v.mkList(1).takeWhile(x -> x == 1));
+            assertEquals(AVector.of(1, 1), v.mkList(1, 1).takeWhile(x -> x == 1));
+            assertEquals(AVector.of(1, 1), v.mkList(1, 1, 2).takeWhile(x -> x == 1));
+            assertEquals(AVector.of(1, 1), v.mkList(1, 1, 2, 1).takeWhile(x -> x == 1));
+            assertEquals(AVector.of(1), v.mkList(1, 2, 1, 1).takeWhile(x -> x == 1));
+            assertEquals(AVector.empty(), v.mkList(2, 1, 2, 1, 1).takeWhile(x -> x == 1));
+
+            //TODO mutable?!
+        });
     }
     @Test default void testDrop() {
         doTest(v -> {
@@ -208,7 +222,9 @@ public interface AListTests extends ACollectionTests {
             assertEquals(AVector.empty(), v.mkList(1).drop(1));
             assertEquals(AVector.empty(), v.mkList(1).drop(2));
 
-            assertEquals(AVector.of(1), v.mkList(1, 2, 3).drop(2));
+            assertEquals(AVector.of(3), v.mkList(1, 2, 3).drop(2));
+
+            //TODO mutable?!
         });
     }
     @Test default void testDropRight() {
@@ -221,10 +237,22 @@ public interface AListTests extends ACollectionTests {
             assertEquals(AVector.empty(), v.mkList(1).dropRight(2));
 
             assertEquals(AVector.of(1), v.mkList(1, 2, 3).dropRight(2));
+
+            //TODO mutable?!
         });
     }
     @Test default void testDropWhile() {
-        fail("todo");
+        doTest(v -> {
+            assertEquals(AVector.empty(), v.mkList().dropWhile(x -> x == 1));
+            assertEquals(AVector.empty(), v.mkList(1).dropWhile(x -> x == 1));
+            assertEquals(AVector.empty(), v.mkList(1, 1).dropWhile(x -> x == 1));
+            assertEquals(AVector.of(2), v.mkList(1, 1, 2).dropWhile(x -> x == 1));
+            assertEquals(AVector.of(2, 1), v.mkList(1, 1, 2, 1).dropWhile(x -> x == 1));
+            assertEquals(AVector.of(2, 1, 1), v.mkList(1, 2, 1, 1).dropWhile(x -> x == 1));
+            assertEquals(AVector.of(2, 1, 2, 1, 1), v.mkList(2, 1, 2, 1, 1).dropWhile(x -> x == 1));
+
+            //TODO mutable?!
+        });
     }
 
     @Test default void testReverse() {
@@ -235,6 +263,8 @@ public interface AListTests extends ACollectionTests {
             v.checkEquality(v.mkList(1).reverse());
             assertEquals(AVector.of(2, 1), v.mkList(1, 2).reverse());
             v.checkEquality(v.mkList(1, 2).reverse());
+
+            //TODO mutable?!
         });
     }
     @Test default void testReverseIterator() {
@@ -331,6 +361,23 @@ public interface AListTests extends ACollectionTests {
 
     @Test default void testListIterator() {
         fail("todo");
+    }
+
+    @Test default void testSubList() { //TODO AListTest for every sublist
+        doTest(v -> {
+            assertEquals(AVector.empty(), v.mkList().subList(0, 0));
+            assertThrows(IndexOutOfBoundsException.class, () -> v.mkList().subList(0, 1));
+
+            assertEquals(AVector.of(1), v.mkList(1).subList(0, 1));
+            assertEquals(AVector.empty(), v.mkList(1).subList(0, 0));
+            assertEquals(AVector.empty(), v.mkList(1).subList(1, 1));
+            assertThrows(IndexOutOfBoundsException.class, () -> v.mkList(1).subList(-1, 1));
+            assertThrows(IndexOutOfBoundsException.class, () -> v.mkList(1).subList(0, 2));
+
+            assertEquals(AVector.of(1), v.mkList(1, 2, 3).subList(0, 1));
+            assertEquals(AVector.of(2, 3), v.mkList(1, 2, 3).subList(1, 3));
+            assertEquals(AVector.of(1, 2, 3), v.mkList(1, 2, 3).subList(0, 3));
+        });
     }
 
     @Test default void testIndexOf() {

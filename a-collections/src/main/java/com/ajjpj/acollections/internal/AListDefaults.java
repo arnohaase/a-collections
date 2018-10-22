@@ -5,10 +5,7 @@ import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.util.AOption;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
@@ -38,12 +35,15 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
         else return AOption.some(last());
     }
     @Override default C tail() {
+        if (isEmpty()) throw new NoSuchElementException();
         return drop(1);
     }
     @Override default T last() {
+        if (isEmpty()) throw new NoSuchElementException();
         return get(size() - 1);
     }
     @Override default C init() {
+        if (isEmpty()) throw new NoSuchElementException();
         return dropRight(1);
     }
 
