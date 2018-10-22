@@ -25,14 +25,14 @@ import java.util.stream.StreamSupport;
  * Always AEquality.EQUALS --> least surprise
  *
  */
-public class AMutableList<T> implements AList<T> {
+public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDefaults
     private final List<T> inner;
 
-    public static <T> AMutableList<T> wrap(List<T> inner) {
-        return new AMutableList<>(inner);
+    public static <T> AMutableListWrapper<T> wrap(List<T> inner) {
+        return new AMutableListWrapper<>(inner);
     }
 
-    private AMutableList (List<T> inner) {
+    private AMutableListWrapper (List<T> inner) {
         this.inner = inner;
     }
 
@@ -41,29 +41,9 @@ public class AMutableList<T> implements AList<T> {
         return inner;
     }
 
-    @Override public <U> ACollectionBuilder<U, AMutableList<U>> newBuilder () {
-        //TODO differentiate based on inner type, build mutable collection and wrap that, ...
-        //TODO when using a good builder make use of ACollectionSupport.flatMap instead of own implementation here.
-
-        return new ACollectionBuilder<U, AMutableList<U>>() {
-            private final List<U> l = new ArrayList<>();
-
-            @Override public AEquality equality () {
-                return AEquality.EQUALS; //TODO ?!
-            }
-
-            @Override public ACollectionBuilder<U, AMutableList<U>> add (U el) {
-                l.add(el);
-                return this;
-            }
-
-            @Override public AMutableList<U> build () {
-                return new AMutableList<>(l);
-            }
-        };
+    @Override public <U> ACollectionBuilder<U, AMutableListWrapper<U>> newBuilder () {
+        return builder();
     }
-
-
 
     @Override
     public AOption<T> lastOption () {
@@ -115,7 +95,7 @@ public class AMutableList<T> implements AList<T> {
         List<U> mappedInner = inner.stream()
              .flatMap(g)
              .collect(Collectors.toList());
-        return new AMutableList<>(mappedInner);
+        return new AMutableListWrapper<>(mappedInner);
     }
 
     @Override
@@ -301,17 +281,17 @@ public class AMutableList<T> implements AList<T> {
 
     @Override
     public AList<T> takeRight (int n) {
-        return new AMutableList<>(inner.subList(inner.size()-n, inner.size()));
+        return new AMutableListWrapper<>(inner.subList(inner.size()-n, inner.size()));
     }
 
     @Override
     public AList<T> dropRight (int n) {
-        return new AMutableList<>(inner.subList(0, n+1));
+        return new AMutableListWrapper<>(inner.subList(0, n+1));
     }
 
     @Override
     public AIterator<T> reverseIterator () {
-        return AVector.from(inner).reverseIterator();
+        return AVector.from(inner).reverseIterator(); //TODO custom implementation --> optimize
     }
 
     @Override
@@ -333,18 +313,17 @@ public class AMutableList<T> implements AList<T> {
             if (!f.test(o)) break;
             updatedInner.add(o);
         }
-        return new AMutableList<>(updatedInner);
+        return new AMutableListWrapper<>(updatedInner);
     }
 
-    @Override
-    public AList<T> dropWhile (Predicate<T> f) {
+    @Override public AMutableListWrapper<T> dropWhile (Predicate<T> f) {
         List<T> updatedInner = new ArrayList<>();
         boolean go = false;
         for (T o: this) {
             if (!go && !f.test(o)) go = true;
             if (go) updatedInner.add(o);
         }
-        return new AMutableList<>(updatedInner);
+        return new AMutableListWrapper<>(updatedInner);
     }
 
     @Override
@@ -353,24 +332,24 @@ public class AMutableList<T> implements AList<T> {
                 .filter(filter)
                 .map(f)
                 .collect(Collectors.toList());
-        return new AMutableList<>(updatedInner);
+        return new AMutableListWrapper<>(updatedInner);
     }
 
     @Override
     public AList<T> take (int n) {
-        return new AMutableList<>(inner.subList(0, n-1));
+        return new AMutableListWrapper<>(inner.subList(0, n-1));
     }
 
     @Override
     public AList<T> drop (int n) {
-        return new AMutableList<>(inner.subList(n, inner.size()-1));
+        return new AMutableListWrapper<>(inner.subList(n, inner.size()-1));
     }
 
     @Override
     public AList<T> reverse () {
         List<T> updatedInner = new ArrayList<>();
         for (T e: inner) updatedInner.add(0, e);
-        return new AMutableList<>(updatedInner);
+        return new AMutableListWrapper<>(updatedInner);
     }
 
 
@@ -382,13 +361,13 @@ public class AMutableList<T> implements AList<T> {
     @Override
     public <U> AList<U> map (Function<T, U> f) {
         List<U> updatedInner = inner.stream().map(f).collect(Collectors.toList());
-        return new AMutableList<>(updatedInner);
+        return new AMutableListWrapper<>(updatedInner);
     }
 
     @Override
     public AList<T> filter (Predicate<T> f) {
         List<T> updatedInner = inner.stream().filter(f).collect(Collectors.toList());
-        return new AMutableList<>(updatedInner);
+        return new AMutableListWrapper<>(updatedInner);
     }
 
     @Override
@@ -438,7 +417,7 @@ public class AMutableList<T> implements AList<T> {
 
     @Override
     public List<T> subList (int fromIndex, int toIndex) {
-        return new AMutableList<>(inner.subList(fromIndex,toIndex ));
+        return new AMutableListWrapper<>(inner.subList(fromIndex,toIndex ));
     }
 
     @Override
@@ -485,13 +464,33 @@ public class AMutableList<T> implements AList<T> {
         return getClass().getSimpleName() + ":" + inner;
     }
 
-    @Override
-    public boolean equals(Object obj) {
+    @Override public boolean equals(Object obj) {
         return inner.equals(obj);
     }
 
-    @Override
-    public int hashCode() {
+    @Override public int hashCode() {
         return inner.hashCode();
+    }
+
+
+    public static <T> Builder<T> builder() {
+        return new Builder<>();
+    }
+
+    public static class Builder<T> implements ACollectionBuilder<T, AMutableListWrapper<T>> {
+        private final List<T> inner = new ArrayList<>();
+
+        @Override public ACollectionBuilder<T, AMutableListWrapper<T>> add (T el) {
+            inner.add(el);
+            return this;
+        }
+
+        @Override public AMutableListWrapper<T> build () {
+            return AMutableListWrapper.wrap(inner);
+        }
+
+        @Override public AEquality equality () {
+            return AEquality.EQUALS;
+        }
     }
 }

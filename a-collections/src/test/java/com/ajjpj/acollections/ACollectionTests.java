@@ -161,17 +161,17 @@ public interface ACollectionTests {
 
     @Test default void testToSet() {
         doTest(v -> {
-            assertEquals(v.mkColl(), v.mkColl().toSet());
+            assertTrue(v.mkColl().toSet().isEmpty());
             if (! isSorted()) v.checkEquality(v.mkColl().toSet());
 
-            assertEquals(v.mkColl(1), v.mkColl(1).toSet());
+            assertEquals(AHashSet.of(1), v.mkColl(1).toSet());
             assertEquals(AHashSet.of(1, 2, 3, 4), v.mkColl(1, 2, 3, 4).toSet());
         });
     }
     @Test default void testToSortedSet() {
         doTest(v -> {
-            assertEquals(v.mkColl(), v.mkColl().toSortedSet());
-            assertEquals(v.mkColl(1), v.mkColl(1).toSortedSet());
+            assertTrue(v.mkColl().toSortedSet().isEmpty());
+            assertEquals(ATreeSet.of(1), v.mkColl(1).toSortedSet());
             assertEquals(ATreeSet.of(1, 2, 3, 4), v.mkColl(2, 1, 4, 3).toSortedSet());
         });
     }

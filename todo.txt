@@ -2,11 +2,14 @@ todo
 ----
 
 
-* static 'range' method for AList implmentations
+
 
 * AbstractImmutableSet
 * add mutable JU code to benchmarks
 * unit tests
+  * AMap
+  * CollectionOps<Map.Entry>
+  * AIterator
 
 
 
@@ -25,18 +28,14 @@ todo
   * ACollection: flatten
   * AMap withDerivedDefault, withDefaultValue, filterKeys, filterValues(?)
   * AIterator methods: see decompiled TreeIterator
-  * ASet: subsets
   * toMap (?)
 
   * partial order
 
-* wrappers for arrays
-* wrappers for more JU collections
-
-  * equals, hashCode
-  * Serializable
-    * readResolve
-    * uniqueness for None, empty, ...
+* equals, hashCode
+* Serializable
+  * readResolve
+  * uniqueness for None, empty, ...
 
 
 // ACollection.flatten
