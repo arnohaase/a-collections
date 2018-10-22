@@ -28,7 +28,7 @@ todo
   * ACollection: flatten
   * AMap withDerivedDefault, withDefaultValue, filterKeys, filterValues(?)
   * AIterator methods: see decompiled TreeIterator
-  * toMap (?)
+  * toMap (?) (2x?)
 
   * partial order
 
