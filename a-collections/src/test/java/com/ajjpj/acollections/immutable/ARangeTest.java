@@ -117,10 +117,12 @@ public class ARangeTest implements AListTests {
             if (v.equals(Arrays.asList(2))) return ARange.create(2, 3);
             if (v.equals(Arrays.asList(1, 2))) return ARange.create(1, 3);
             if (v.equals(Arrays.asList(1, 3))) return ARange.create(1, 4, 2);
+            if (v.equals(Arrays.asList(2, 4))) return ARange.create(2, 5, 2);
             if (v.equals(Arrays.asList(2, 6))) return ARange.create(2, 7, 4);
             if (v.equals(Arrays.asList(2, 3))) return ARange.create(2, 4);
             if (v.equals(Arrays.asList(2, 1))) return ARange.create(2, 0);
             if (v.equals(Arrays.asList(1, 2, 3))) return ARange.create(1, 4);
+            if (v.equals(Arrays.asList(3, 2, 1))) return ARange.create(3, 0);
             if (v.equals(Arrays.asList(2, 4, 6))) return ARange.create(2, 8, 2);
             if (v.equals(Arrays.asList(1, 2, 3, 4))) return ARange.create(1, 5);
             if (v.equals(Arrays.asList(2, 3, 4, 5, 6, 7))) return ARange.create(2, 8);

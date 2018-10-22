@@ -61,6 +61,17 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
                 .add(o4)
                 .build();
     }
+    public static <T> AVector<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
+        return AVector
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .add(o3)
+                .add(o4)
+                .add(o5)
+                .addAll(others)
+                .build();
+    }
 
     @SuppressWarnings("StaticInitializerReferencesSubClass")
     private static final AVector EMPTY = new AVectorEquals<>(0, 0, 0);
