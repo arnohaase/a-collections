@@ -2,9 +2,9 @@ package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
-import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
+import com.ajjpj.acollections.internal.ASetDefaults;
 import com.ajjpj.acollections.internal.ASetSupport;
 import com.ajjpj.acollections.util.AEquality;
 
@@ -15,7 +15,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public abstract class AHashSet<T> extends AbstractImmutableCollection<T> implements ASet<T>, ACollectionDefaults<T, AHashSet<T>> {
+public abstract class AHashSet<T> extends AbstractImmutableCollection<T> implements ACollectionDefaults<T, AHashSet<T>>, ASetDefaults<T, AHashSet<T>> {
     private final CompactHashMap<SetEntryWithEquality<T>> compactHashMap;
 
     public static<T> AHashSet<T> empty() {
@@ -55,6 +55,17 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
                 .add(o2)
                 .add(o3)
                 .add(o4)
+                .build();
+    }
+    public static <T> AHashSet<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
+        return AHashSet
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .add(o3)
+                .add(o4)
+                .add(o5)
+                .addAll(others)
                 .build();
     }
 
@@ -124,10 +135,6 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
         for (T o: that)
             result = result.removed(o);
         return result;
-    }
-
-    @Override public AIterator<ASet<T>> subsets () {
-        return null; //TODO
     }
 
     @Override public AIterator<T> iterator () {

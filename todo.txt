@@ -2,6 +2,8 @@ todo
 ----
 
 
+* static 'range' method for AList implmentations
+
 * AbstractImmutableSet
 * add mutable JU code to benchmarks
 * unit tests

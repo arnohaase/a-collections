@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 public abstract class AbstractImmutableCollection<T> implements ACollection<T> {
 
-    @Override public boolean equals (Object o) {
+    @Override public boolean equals (Object o) { //TODO make this abstract?
         if (o == this) return true;
         if (! (o instanceof Iterable)) return false;
         if (o instanceof Collection && ((Collection) o).size() != size()) return false;

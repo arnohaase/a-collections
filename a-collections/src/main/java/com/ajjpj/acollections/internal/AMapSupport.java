@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 
 
 public class AMapSupport {
-    public static class KeySet<T> extends AbstractImmutableCollection<T> implements ASet<T>, ACollectionDefaults<T, AHashSet<T>> {
+    public static class KeySet<T> extends AbstractImmutableCollection<T> implements ASet<T>, ACollectionDefaults<T, AHashSet<T>>, ASetDefaults<T, AHashSet<T>> {
         private final AMap<T,?> map;
 
         public KeySet (AMap<T, ?> map) {
@@ -39,10 +39,6 @@ public class AMapSupport {
 
         @Override public ASet<T> diff (Set<T> that) {
             return AHashSet.fromIterator(iterator().filterNot(that::contains), equality());
-        }
-
-        @Override public AIterator<ASet<T>> subsets () {
-            return null; //TODO subsets
         }
 
         @Override public AEquality equality () {
@@ -175,7 +171,7 @@ public class AMapSupport {
         }
     }
 
-    public static class EntrySet<K,V> extends AbstractImmutableCollection<Map.Entry<K,V>> implements ASet<Map.Entry<K,V>>, ACollectionDefaults<Map.Entry<K,V>, AHashSet<Map.Entry<K,V>>> {
+    public static class EntrySet<K,V> extends AbstractImmutableCollection<Map.Entry<K,V>> implements ASet<Map.Entry<K,V>>, ACollectionDefaults<Map.Entry<K,V>, AHashSet<Map.Entry<K,V>>>, ASetDefaults<Map.Entry<K,V>, AHashSet<Map.Entry<K,V>>> {
         private final AMap<K,V> map;
 
         public EntrySet (AMap<K, V> map) {
@@ -200,10 +196,6 @@ public class AMapSupport {
 
         @Override public ASet<Map.Entry<K,V>> diff (Set<Map.Entry<K,V>> that) {
             return AHashSet.fromIterator(iterator().filterNot(that::contains), equality());
-        }
-
-        @Override public AIterator<ASet<Map.Entry<K,V>>> subsets () {
-            return null; //TODO subsets
         }
 
         @Override public AEquality equality () {
@@ -264,7 +256,7 @@ public class AMapSupport {
         }
     }
 
-    public static class SortedKeySet<T> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T, ATreeSet<T>> {
+    public static class SortedKeySet<T> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T, ATreeSet<T>>, ASetDefaults<T, ATreeSet<T>> {
         private final ASortedMap<T,?> map;
 
         public SortedKeySet (ASortedMap<T, ?> map) {
@@ -334,10 +326,6 @@ public class AMapSupport {
             return map.keysIterator(start);
         }
 
-        @Override public AIterator<ASortedSet<T>> subsets () {
-            return null; //TODO subsets
-        }
-
         @Override public AEquality equality () {
             return map.keyEquality();
         }
@@ -377,13 +365,20 @@ public class AMapSupport {
             return map.size();
         }
 
-        @Override
-        public boolean contains (Object o) {
+        @Override public boolean contains (Object o) {
             return map.containsKey(o);
         }
 
         @Override public boolean containsAll (Collection<?> c) {
             return ACollectionDefaults.super.containsAll(c);
+        }
+
+        @Override public AIterator<ATreeSet<T>> subsets () {
+            return ASetDefaults.super.subsets();
+        }
+
+        @Override public AIterator<ATreeSet<T>> subsets (int len) {
+            return ASetDefaults.super.subsets(len);
         }
 
         @Override public boolean equals (Object o) {
@@ -395,7 +390,7 @@ public class AMapSupport {
         }
     }
 
-    public static class SortedEntrySet<K,V> extends AbstractImmutableCollection<Map.Entry<K,V>> implements ASortedSet<Map.Entry<K,V>>, ACollectionDefaults<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>> {
+    public static class SortedEntrySet<K,V> extends AbstractImmutableCollection<Map.Entry<K,V>> implements ASortedSet<Map.Entry<K,V>>, ACollectionDefaults<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>>, ASetDefaults<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>> {
         private final ASortedMap<K,V> map;
 
         public SortedEntrySet (ASortedMap<K, V> map) {
@@ -461,10 +456,6 @@ public class AMapSupport {
             return map.iterator(start.map(Map.Entry::getKey));
         }
 
-        @Override public AIterator<ASortedSet<Map.Entry<K,V>>> subsets () {
-            return null; //TODO subsets
-        }
-
         @Override public AEquality equality () {
             return map.keyEquality();
         }
@@ -511,6 +502,14 @@ public class AMapSupport {
 
         @Override public boolean containsAll (Collection<?> c) {
             return ACollectionDefaults.super.containsAll(c);
+        }
+
+        @Override public AIterator<ATreeSet<Map.Entry<K,V>>> subsets () {
+            return ASetDefaults.super.subsets();
+        }
+
+        @Override public AIterator<ATreeSet<Map.Entry<K,V>>> subsets (int len) {
+            return ASetDefaults.super.subsets(len);
         }
 
         @Override public boolean equals (Object o) {

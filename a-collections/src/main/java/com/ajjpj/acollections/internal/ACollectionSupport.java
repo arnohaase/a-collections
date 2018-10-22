@@ -2,6 +2,7 @@ package com.ajjpj.acollections.internal;
 
 import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
+import com.ajjpj.acollections.ACollectionOps;
 
 import java.util.Collection;
 import java.util.function.Function;
@@ -33,7 +34,7 @@ public class ACollectionSupport {
         return result;
     }
 
-    public static String toString(Class<?> baseClass, ACollection<?> coll) {
+    public static String toString(Class<?> baseClass, ACollectionOps<?> coll) {
         return coll.mkString(baseClass.getSimpleName() + "[", ",", "]");
     }
 

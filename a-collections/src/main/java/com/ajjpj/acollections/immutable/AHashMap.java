@@ -163,6 +163,10 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         return new AMapSupport.EntrySet<>(this);
     }
 
+    @Override public String toString () {
+        return ACollectionSupport.toString(AHashMap.class, this);
+    }
+
     static class Builder<K,V> implements ACollectionBuilder<Map.Entry<K,V>, AHashMap<K,V>> {
         private AHashMap<K,V> result;
 

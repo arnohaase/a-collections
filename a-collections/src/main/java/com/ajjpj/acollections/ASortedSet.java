@@ -34,5 +34,6 @@ public interface ASortedSet<T> extends ASet<T> {
 
     AIterator<T> iterator(AOption<T> start);
 
-    AIterator<ASortedSet<T>> subsets ();
+    AIterator<? extends ASortedSet<T>> subsets ();
+    AIterator<? extends ASortedSet<T>> subsets (int len);
 }

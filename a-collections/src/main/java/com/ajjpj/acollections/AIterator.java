@@ -40,7 +40,7 @@ public interface AIterator<T> extends Iterator<T> {
         //noinspection unchecked
         return ATreeSet.fromIterator(this, (Comparator) Comparator.naturalOrder());
     }
-    //TODO toBuffer, toLinkedList
+    //TODO toBuffer
 
     default <U> AIterator<U> map(Function<T,U> f) {
         final AIterator<T> inner = this;

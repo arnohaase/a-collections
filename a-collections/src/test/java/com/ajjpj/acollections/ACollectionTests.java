@@ -467,6 +467,10 @@ public interface ACollectionTests {
                     .build();
         }
 
+        public ASet<Integer> mkSet(Integer... values) {
+            return (ASet<Integer>) mkColl(values);
+        }
+
         public AVector<Integer> iterationOrder123() {
             return this.iterationOrder123;
         }

@@ -48,7 +48,7 @@ public interface AEquality {
         }
 
         @Override public int hashCode (Object o) {
-            throw new UnsupportedOperationException();
+            return Objects.hashCode(o);
         }
 
         @Override

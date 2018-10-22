@@ -3,6 +3,7 @@ package com.ajjpj.acollections.immutable;
 import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
+import com.ajjpj.acollections.internal.ASetDefaults;
 import com.ajjpj.acollections.internal.ASetSupport;
 import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
@@ -12,9 +13,16 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T,ATreeSet<T>> {
+public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T,ATreeSet<T>>, ASetDefaults<T,ATreeSet<T>> {
     private final RedBlackTree.Tree<T,Object> root;
     private final Comparator<T> comparator;
+
+    public static <T extends Comparable<T>> ATreeSet<T> empty() {
+        return empty(Comparator.<T>naturalOrder());
+    }
+    public static <T> ATreeSet<T> empty(Comparator<T> comparator) {
+        return new ATreeSet<>(null, comparator);
+    }
 
     public static <T extends Comparable<T>> ATreeSet<T> of(T o) {
         return ATreeSet
@@ -87,10 +95,6 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
     @Override public AHashSet<T> toSet () {
         return AHashSet.from(this, AEquality.EQUALS);
     }
-    @Override public ATreeSet<T> toSortedSet (Comparator<T> comparator) {
-        return this;
-    }
-
     @Override public ATreeSet<T> added (T o) {
         return new ATreeSet<>(RedBlackTree.update(root, o, null, true, comparator), comparator);
     }
@@ -167,10 +171,6 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return RedBlackTree.keysIterator(root, start, comparator);
     }
 
-    @Override public AIterator<ASortedSet<T>> subsets () {
-        return null; //TODO
-    }
-
     @Override public AEquality equality () {
         return AEquality.fromComparator(comparator);
     }
@@ -214,6 +214,14 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
     @Override public boolean contains (Object o) {
         //noinspection unchecked
         return RedBlackTree.lookup(root, (T) o, comparator) != null;
+    }
+
+    @Override public AIterator<ATreeSet<T>> subsets () {
+        return ASetDefaults.super.subsets();
+    }
+
+    @Override public AIterator<ATreeSet<T>> subsets (int len) {
+        return ASetDefaults.super.subsets(len);
     }
 
     @Override public boolean containsAll (Collection<?> c) {

@@ -6,6 +6,7 @@ import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
+import com.ajjpj.acollections.internal.ASetDefaults;
 import com.ajjpj.acollections.util.AEquality;
 
 import java.util.Collection;
@@ -15,7 +16,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AMutableSetWrapper<T>> {
+public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AMutableSetWrapper<T>>, ASetDefaults<T, AMutableSetWrapper<T>> {
     private final Set<T> inner;
 
     public static<T> AMutableSetWrapper<T> wrap(Set<T> inner) {
@@ -51,10 +52,6 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
         return this;
     }
 
-    @Override public AIterator<? extends ASet<T>> subsets () {
-        return null; //TODO
-    }
-
     @Override public AEquality equality () {
         return AEquality.EQUALS;
     }
@@ -63,7 +60,7 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
         return AIterator.wrap(inner.iterator());
     }
 
-    @Override public <U> ACollectionBuilder<U, ? extends ACollection<U>> newBuilder () {
+    @Override public <U> ACollectionBuilder<U, ? extends ASet<U>> newBuilder () {
         return builder();
     }
 
@@ -136,7 +133,7 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
     }
 
     @Override public String toString () {
-        return getClass().getSimpleName() + "@" + inner;
+        return getClass().getSimpleName() + ":" + inner;
     }
 
     @Override public boolean equals (Object obj) {

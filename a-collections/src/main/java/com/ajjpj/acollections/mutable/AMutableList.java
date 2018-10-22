@@ -482,7 +482,7 @@ public class AMutableList<T> implements AList<T> {
     }
 
     @Override public String toString () {
-        return getClass().getSimpleName() + "@" + inner;
+        return getClass().getSimpleName() + ":" + inner;
     }
 
     @Override
