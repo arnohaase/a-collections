@@ -60,6 +60,6 @@ public interface AList<T> extends ACollection<T>, List<T> {
     <U> AList<U> collect(Predicate<T> filter, Function<T,U> f);
 
     default AList<Integer> indices() {
-        return new ARange(0, size());
+        return ARange.create(0, size());
     }
 }

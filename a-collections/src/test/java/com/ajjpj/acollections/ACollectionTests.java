@@ -471,6 +471,10 @@ public interface ACollectionTests {
             return (ASet<Integer>) mkColl(values);
         }
 
+        public AList<Integer> mkList(Integer... values) {
+            return (AList<Integer>) mkColl(values);
+        }
+
         public AVector<Integer> iterationOrder123() {
             return this.iterationOrder123;
         }

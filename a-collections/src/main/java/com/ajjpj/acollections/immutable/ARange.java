@@ -16,10 +16,17 @@ import java.util.function.Predicate;
 public class ARange extends AbstractImmutableCollection<Integer> implements AList<Integer>, AListDefaults<Integer, AList<Integer>> {
     private final int from, to, step;
 
-    public ARange (int from, int to) {
-        this (from, to, (from < to) ? 1 : -1);
+    public static ARange empty() {
+        return new ARange(1, 1, 1);
     }
-    public ARange (int from, int to, int step) {
+    public static ARange create (int from, int to) { //TODO inclusive or exclusive?
+        return create (from, to, (from < to) ? 1 : -1);
+    }
+    public static ARange create (int from, int to, int step) {
+        return new ARange(from, to, step);
+    }
+
+    private ARange (int from, int to, int step) {
         this.from = from;
         this.to = to;
         this.step = step;
@@ -94,7 +101,8 @@ public class ARange extends AbstractImmutableCollection<Integer> implements ALis
     }
 
     @Override public AList<Integer> reverse () {
-        return new ARange(to, from, -step);
+        if (isEmpty()) return this;
+        return new ARange(last(), from + (step > 0 ? -1 : 1), -step);
     }
 
     @Override public AIterator<Integer> reverseIterator () {
@@ -123,6 +131,16 @@ public class ARange extends AbstractImmutableCollection<Integer> implements ALis
         return AListDefaults.super.filterNot(f);
     }
 
+    @Override public Integer min () {
+        if (isEmpty()) throw new NoSuchElementException();
+        return step > 0 ? from : last();
+    }
+
+    @Override public Integer max () {
+        if (isEmpty()) throw new NoSuchElementException();
+        return step < 0 ? from : last();
+    }
+
     @Override public AEquality equality () {
         return AEquality.EQUALS;
     }
@@ -137,6 +155,7 @@ public class ARange extends AbstractImmutableCollection<Integer> implements ALis
                 }
 
                 @Override public Integer next () {
+                    if (!hasNext()) throw new NoSuchElementException();
                     final Integer result = next;
                     next += step;
                     return result;
@@ -151,6 +170,7 @@ public class ARange extends AbstractImmutableCollection<Integer> implements ALis
                 }
 
                 @Override public Integer next () {
+                    if (!hasNext()) throw new NoSuchElementException();
                     final Integer result = next;
                     next += step;
                     return result;
@@ -160,6 +180,10 @@ public class ARange extends AbstractImmutableCollection<Integer> implements ALis
 
     @Override public boolean isEmpty () {
         return size() == 0;
+    }
+
+    @Override public String toString () {
+        return "ARange[" + from + " to " + to + " step " + step + "]";
     }
 
     @Override public boolean addAll (int index, Collection<? extends Integer> c) {
@@ -189,9 +213,6 @@ public class ARange extends AbstractImmutableCollection<Integer> implements ALis
         final int fromStart = ((Integer)o) - from;
         if (fromStart % step != 0) return -1;
 
-
-
-
         return -1; //TODO special case for integer division - negative numerator and denominator
     }
 
@@ -206,8 +227,8 @@ public class ARange extends AbstractImmutableCollection<Integer> implements ALis
         return new ARange(from + fromIndex*step, from + toIndex*step, step);
     }
 
-    @Override public int size () { //TODO verify both paths
-        if (step > 0) return (to - from) / step;
-        else return (from - to) / (-step); // rounding rules
+    @Override public int size () {
+        if (step > 0) return (to - from + step - 1) / step;
+        else return (from - to - step - 1) / (-step); // rounding rules
     }
 }
