@@ -4,56 +4,56 @@ import com.ajjpj.acollections.AbstractAIterator;
 
 import java.util.ListIterator;
 
-public class AListIterator<T> extends AbstractAIterator<T> implements ListIterator<T> {
 
-    private ListIterator<T> listIterator;
+public class AListIteratorWrapper<T> extends AbstractAIterator<T> implements ListIterator<T> {
+    private final  ListIterator<T> inner;
 
-    public AListIterator(ListIterator<T> iterator){
-        this.listIterator = iterator;
+    public AListIteratorWrapper (ListIterator<T> iterator){
+        this.inner = iterator;
     }
 
     @Override
     public boolean hasNext() {
-        return listIterator.hasNext();
+        return inner.hasNext();
     }
 
     @Override
     public T next() {
-        return listIterator.next();
+        return inner.next();
     }
 
     @Override
     public boolean hasPrevious() {
-        return listIterator.hasPrevious();
+        return inner.hasPrevious();
     }
 
     @Override
     public T previous() {
-        return listIterator.previous();
+        return inner.previous();
     }
 
     @Override
     public int nextIndex() {
-        return listIterator.nextIndex();
+        return inner.nextIndex();
     }
 
     @Override
     public int previousIndex() {
-        return listIterator.previousIndex();
+        return inner.previousIndex();
     }
 
     @Override
     public void remove() {
-        listIterator.remove();
+        inner.remove();
     }
 
     @Override
     public void set(T t) {
-        listIterator.set(t);
+        inner.set(t);
     }
 
     @Override
     public void add(T t) {
-        listIterator.add(t);
+        inner.add(t);
     }
 }

@@ -330,7 +330,35 @@ public interface AListTests extends ACollectionTests {
     }
 
     @Test default void testListIterator() {
-        fail("todo");
+        doTest(v -> {
+            if (isImmutable()) {
+                {
+                    final ListIterator<Integer> it = v.mkList().listIterator();
+                    assertFalse(it.hasNext());
+                    assertThrows(UnsupportedOperationException.class, it::hasPrevious);
+                }
+
+                {
+                    final ListIterator<Integer> it = v.mkList(1, 2, 3).listIterator(1);
+                    assertEquals(1, it.nextIndex());
+                    assertEquals(-1, it.previousIndex());
+                    assertTrue(it.hasNext());
+                    assertEquals(2, it.next().intValue());
+
+                    assertEquals(2, it.nextIndex());
+                    assertEquals(0, it.previousIndex());
+                    assertTrue(it.hasNext());
+                    assertEquals(3, it.next().intValue());
+
+                    assertEquals(3, it.nextIndex());
+                    assertEquals(1, it.previousIndex());
+                    assertFalse(it.hasNext());
+                    assertThrows(NoSuchElementException.class, it::next);
+                    assertThrows(UnsupportedOperationException.class, it::previous);
+                }
+            }
+            // TODO else test list iterator functionality
+        });
     }
 
     @Test default void testSubList() { //TODO AListTest for every sublist
