@@ -324,9 +324,9 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
             assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1).min());
             assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1, 2).min());
 
-            assertThrows(NoSuchElementException.class, () -> v.mkColl().min(keyCompatator));
-            assertEquals(entryOf(1), v.mkColl(1).min(keyCompatator));
-            assertEquals(entryOf(1), v.mkColl(2, 1, 3).min(keyCompatator));
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().min(keyComparator));
+            assertEquals(entryOf(1), v.mkColl(1).min(keyComparator));
+            assertEquals(entryOf(1), v.mkColl(2, 1, 3).min(keyComparator));
         });
     }
     @Test @Override default void testMax () {
@@ -335,9 +335,9 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
             assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1).max());
             assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1, 2).max());
 
-            assertThrows(NoSuchElementException.class, () -> v.mkColl().max(keyCompatator));
-            assertEquals(entryOf(1), v.mkColl(1).max(keyCompatator));
-            assertEquals(entryOf(3), v.mkColl(2, 3, 1).max(keyCompatator));
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().max(keyComparator));
+            assertEquals(entryOf(1), v.mkColl(1).max(keyComparator));
+            assertEquals(entryOf(3), v.mkColl(2, 3, 1).max(keyComparator));
         });
     }
 
@@ -359,7 +359,7 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
 
     //---------------------------- internal -------------------------------
 
-    Comparator<Map.Entry<Integer,Integer>> keyCompatator = (o1, o2) -> o1.getKey() - o2.getKey();
+    Comparator<Map.Entry<Integer,Integer>> keyComparator = Map.Entry.comparingByKey();
 
     default void doTest (Consumer<Variant> test) {
         variants().forEach(test);
@@ -384,9 +384,6 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
             return builder.build();
         }
 
-        public ASet<Map.Entry<Integer,Integer>> mkSet(Integer... values) {
-            return (ASet<Map.Entry<Integer,Integer>>) mkColl(values);
-        }
         public AMap<Integer,Integer> mkMap(Integer... values) {
             return (AMap<Integer,Integer>) mkColl(values);
         }

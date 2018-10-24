@@ -44,9 +44,13 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
     public boolean isDefined() {
         return nonEmpty();
     }
+    @Override public AOption<T> headOption() {
+        return this;
+    }
 
     @Override public abstract <U> AOption<U> map (Function<T,U> f);
     @Override public <U> AOption<U> flatMap (Function<T, Iterable<U>> f) {
+        //TODO optimized implementation
         return ACollectionSupport.flatMap(newBuilder(), this, f);
     }
     @Override public abstract <U> AOption<U> collect (Predicate<T> filter, Function<T, U> f);
@@ -70,7 +74,7 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
             private AOption<U> result = none();
 
             @Override public ACollectionBuilder<U, AOption<U>> add (U el) {
-                if (result.nonEmpty()) throw new IllegalStateException("an AOption can hold at most one element");
+                if (result.nonEmpty()) throw new IllegalArgumentException("an AOption can hold at most one element");
                 result = some(el);
                 return this;
             }

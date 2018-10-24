@@ -417,7 +417,7 @@ public class AMapSupport {
         }
 
         @Override public Comparator<Map.Entry<K,V>> comparator() {
-            return (o1, o2) -> map.comparator().compare(o1.getKey(), o2.getKey());
+            return Map.Entry.comparingByKey(map.comparator());
         }
 
         @Override public AVector<Map.Entry<K, V>> toVector () {
@@ -559,7 +559,7 @@ public class AMapSupport {
         }
     }
 
-    public static class EntryComparator<K,V> implements Comparator<Map.Entry<K,V>> {
+    public static class EntryComparator<K,V> implements Comparator<Map.Entry<K,V>> { //TODO replace with Map.Entry.comparingByKey
         private final Comparator<K> keyComparator;
 
         public EntryComparator (Comparator<K> keyComparator) {

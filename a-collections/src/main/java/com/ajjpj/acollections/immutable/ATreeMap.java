@@ -49,8 +49,15 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
     }
 
     @Override public V get(Object key) {
-        //noinspection unchecked
-        return RedBlackTree.get(root, (K) key, comparator).orNull(); //TODO skip 'get'
+
+        try {
+            //noinspection unchecked
+            return RedBlackTree.get(root, (K) key, comparator).orNull(); //TODO skip 'get'
+        }
+        catch (Exception e) {
+            // handle 'wrong type' exceptions thrown by the comparator because Java's API weirdly accepts 'Object' rather than 'K' as the key's type...
+            return null;
+        }
     }
     @Override public ATreeMap<K,V> updated(K key, V value) {
         return new ATreeMap<>(RedBlackTree.update(root, key, value, true, comparator), comparator);
@@ -82,8 +89,15 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
     }
 
     @Override public boolean containsKey (Object key) {
-        //noinspection unchecked
-        return RedBlackTree.get(root, (K) key, comparator).nonEmpty(); //TODO skip 'get', use 'lookup' directly
+
+        try {
+            //noinspection unchecked
+            return RedBlackTree.get(root, (K) key, comparator).nonEmpty(); //TODO skip 'get', use 'lookup' directly
+        }
+        catch (Exception e) {
+            // handle 'wrong type' exceptions thrown by the comparator because Java's API weirdly accepts 'Object' rather than 'K' as the key's type...
+            return false;
+        }
     }
 
     @Override public boolean containsValue (Object value) {

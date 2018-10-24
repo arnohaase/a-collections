@@ -1,5 +1,8 @@
 todo
 ----
+* AMap.mergeWith (Map other)
+* AMap.computed (K key, Function<K,V> f)
+
 
 
 
@@ -7,8 +10,6 @@ todo
 * AbstractImmutableSet
 * add mutable JU code to benchmarks
 * unit tests
-  * AMap
-  * CollectionOps<Map.Entry>
   * AIterator
   * AOption
 
