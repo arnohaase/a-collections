@@ -1,5 +1,6 @@
 package com.ajjpj.acollections.immutable;
 
+import com.ajjpj.acollections.AMapTests;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -7,7 +8,14 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class ATreeMapTest {
+public class ATreeMapTest implements AMapTests {
+    @Override public Iterable<Variant> variants () {
+        return Arrays.asList(
+                new Variant(() -> ATreeMap.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
+                new Variant(() -> ATreeMap.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
+        );
+    }
+
     final int size = 100_000;
     final int numIter = 1_000_000;
 
@@ -59,4 +67,5 @@ public class ATreeMapTest {
         }
         assertEquals(juMap, juMap2);
     }
+
 }

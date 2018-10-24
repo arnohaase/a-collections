@@ -172,30 +172,13 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
     }
 
     @Override public boolean equals(Object o) {
-        if (o instanceof Map) {
-            final Map<?,?> that = (Map<?, ?>) o;
-            return this.entrySet().equals(that.entrySet());
-        }
-
-        if (! (o instanceof Collection)) return false;
-        final Collection<?> that = (Collection<?>) o;
-        return this.size() == that.size() && this.containsAll(that);
+        return AMapSupport.equals(this, o);
     }
 
     //TODO hashCode
 
-    @Override public String toString () { //TODO move to AbstractImmutableMap
-        final StringBuilder sb = new StringBuilder(AHashMap.class.getSimpleName()).append("{");
-        boolean isFirst = true;
-        for (Map.Entry<K,V> e: this) {
-            if (isFirst) isFirst = false;
-            else sb.append(",");
-
-            sb.append(e.getKey()).append("=").append(e.getValue());
-        }
-
-        sb.append("}");
-        return sb.toString();
+    @Override public String toString () {
+        return AMapSupport.toString(AHashMap.class, this);
     }
 
     abstract static class AbstractBuilder<K,V> implements ACollectionBuilder<Map.Entry<K,V>, AHashMap<K,V>> {

@@ -10,6 +10,34 @@ import java.util.function.Predicate;
 
 
 public class AMapSupport {
+    public static String toString (Class<?> baseClass, AMap<?,?> m) {
+        final StringBuilder sb = new StringBuilder(baseClass.getSimpleName()).append("{");
+        boolean isFirst = true;
+        for (Map.Entry<?,?> e: m) {
+            if (isFirst) isFirst = false;
+            else sb.append(",");
+
+            sb.append(e.getKey()).append("=").append(e.getValue());
+        }
+
+        sb.append("}");
+        return sb.toString();
+    }
+
+    public static boolean equals(AMap<?,?> m, Object o) {
+        if (o instanceof Map) {
+            final Map<?,?> that = (Map<?, ?>) o;
+            return m.entrySet().equals(that.entrySet());
+        }
+
+        if (! (o instanceof Collection)) return false;
+        final Collection<?> that = (Collection<?>) o;
+        if (m.size() != that.size()) return false;
+        for (Object el: that) if (! m.contains(el)) return false;
+        return true;
+    }
+
+
     public static class KeySet<T> extends AbstractImmutableCollection<T> implements ASet<T>, ACollectionDefaults<T, AHashSet<T>>, ASetDefaults<T, AHashSet<T>> {
         private final AMap<T,?> map;
 
