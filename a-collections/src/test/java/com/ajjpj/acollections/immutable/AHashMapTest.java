@@ -1,7 +1,10 @@
 package com.ajjpj.acollections.immutable;
 
+import com.ajjpj.acollections.AMapTests;
+import com.ajjpj.acollections.util.AEquality;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -9,7 +12,14 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class AHashMapTest {
+public class AHashMapTest implements AMapTests {
+    @Override public Iterable<Variant> variants () {
+        return Arrays.asList(
+                new Variant(() -> AHashMap.builder(AEquality.EQUALS), null, false),
+                new Variant(() -> AHashMap.builder(AEquality.IDENTITY), null, true)
+        );
+    }
+
     final int size = 100_000;
     final int numIter = 10_000_000;
 

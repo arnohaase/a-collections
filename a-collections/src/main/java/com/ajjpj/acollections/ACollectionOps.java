@@ -29,6 +29,7 @@ public interface ACollectionOps<T> {
      */
     <U> ACollectionBuilder<U, ? extends ACollection<U>> newBuilder();
 
+    int size();
     boolean isEmpty();
     default boolean nonEmpty() {
         return ! isEmpty();

@@ -1,0 +1,432 @@
+package com.ajjpj.acollections;
+
+import com.ajjpj.acollections.immutable.AHashSet;
+import com.ajjpj.acollections.immutable.ALinkedList;
+import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.util.AEquality;
+import com.ajjpj.acollections.util.AOption;
+import org.junit.jupiter.api.Test;
+
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+
+public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
+    // These methods must be implemented by concrete test classes, customizing the tests per tested collection class
+
+    default boolean isSorted () { return false; }
+    default boolean isImmutable () {return true; }
+    Iterable<Variant> variants ();
+
+    //---------------------------- the tests ------------------------------
+
+    static Map.Entry<Integer,Integer> entryOf(int i) {
+        return new AbstractMap.SimpleImmutableEntry<>(i, 2*i+1);
+    }
+
+    default boolean isEven (Map.Entry<Integer,Integer> e) { return e.getKey()%2 == 0; }
+    default boolean isOdd (Map.Entry<Integer,Integer> e) { return e.getKey()%2 == 1; }
+    default int doubled (Map.Entry<Integer,Integer> e) { return 2*e.getKey(); }
+    default Map.Entry<Integer,Integer> doubledEntry (Map.Entry<Integer,Integer> e) { return entryOf(2*e.getKey()); }
+    default Map.Entry<Integer,Integer> sum (Map.Entry<Integer,Integer> a, Map.Entry<Integer,Integer> b) { return entryOf(a.getKey()+b.getKey()); }
+
+    //TODO equals, hashCode
+
+    @Test @Override default void testAEquality () {
+        doTest(v -> {
+            v.checkEquality(v.mkColl());
+            v.checkEquality(v.mkColl(1, 2, 3));
+        });
+    }
+
+    @Test @Override default void testIterator () {
+        doTest(v -> {
+            assertTrue(! v.mkColl().iterator().hasNext());
+            assertEquals(AVector.of(entryOf(1)), v.mkColl(1).iterator().toVector());
+
+            if (v.iterationOrder123() != null)
+                assertEquals(v.iterationOrder123(), v.mkColl(1, 2, 3).iterator().toVector());
+            else
+                assertEquals(v.mkColl(1, 2, 3).toSet(), v.mkColl(1, 2, 3).iterator().toSet());
+        });
+    }
+
+    //TODO iterator --> separate tests
+
+    @Test @Override default void testSize () {
+        doTest(v -> {
+            assertEquals(0, v.mkColl().size());
+            assertEquals(1, v.mkColl(1).size());
+            assertEquals(3, v.mkColl(1, 2, 3).size());
+        });
+    }
+
+    @Test @Override default void testIsEmpty () {
+        doTest(v -> {
+            assertTrue(v.mkColl().isEmpty());
+            assertFalse(v.mkColl(1).isEmpty());
+            assertFalse(v.mkColl(0).isEmpty());
+            assertFalse(v.mkColl(1, 2, 3).isEmpty());
+        });
+    }
+    @Test @Override default void testNonEmpty () {
+        doTest(v -> {
+            assertFalse(v.mkColl().nonEmpty());
+            assertTrue(v.mkColl(1).nonEmpty());
+            assertTrue(v.mkColl(0).nonEmpty());
+            assertTrue(v.mkColl(1, 2, 3).nonEmpty());
+        });
+    }
+
+    @Test @Override default void testHead () {
+        doTest(v -> {
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().head());
+            assertEquals(entryOf(1), v.mkColl(1).head());
+            if (v.iterationOrder123() != null)
+                assertEquals(v.mkColl(1, 2, 3).head(), v.iterationOrder123().head());
+            else {
+                assertTrue(AHashSet.of(entryOf(1), entryOf(2), entryOf(3)).contains(v.mkColl(1, 2, 3).head()));
+            }
+        });
+    }
+    @Test @Override default void testHeadOption () {
+        doTest(v -> {
+            assertTrue(v.mkColl().headOption().isEmpty());
+            assertTrue(v.mkColl(1).headOption().contains(entryOf(1)));
+            if (v.iterationOrder123() != null)
+                assertTrue(v.mkColl(1, 2, 3).headOption().contains(v.iterationOrder123().head()));
+            else {
+                assertTrue(v.mkColl(1, 2, 3).toSet().contains(v.mkColl(1, 2, 3).headOption().get()));
+            }
+        });
+    }
+
+    @Test @Override default void testToLinkedList () {
+        doTest(v -> {
+            assertEquals(ALinkedList.empty(), v.mkColl().toLinkedList());
+            assertEquals(AEquality.EQUALS, v.mkColl().toLinkedList().equality());
+
+            assertEquals(ALinkedList.of(entryOf(1)), v.mkColl(1).toLinkedList());
+            assertEquals(v.mkColl(1, 2, 3, 4).toLinkedList(), v.mkColl(1, 2, 3, 4));
+        });
+    }
+    @Test @Override default void testToVector () {
+        doTest(v -> {
+            assertEquals(AVector.empty(), v.mkColl());
+            assertEquals(AEquality.EQUALS, v.mkColl().toVector().equality());
+
+            assertEquals(AVector.of(entryOf(1)), v.mkColl(1).toVector());
+            assertEquals(v.mkColl(1, 2, 3, 4).toVector(), v.mkColl(1, 2, 3, 4));
+        });
+    }
+
+    @Test @Override default void testToSet () {
+        doTest(v -> {
+            assertTrue(v.mkColl().toSet().isEmpty());
+            if (! isSorted()) assertEquals(AEquality.EQUALS, v.mkColl().toSet().equality());
+
+            assertEquals(AHashSet.of(entryOf(1)), v.mkColl(1).toSet());
+            assertEquals(AHashSet.of(entryOf(1), entryOf(2), entryOf(3), entryOf(4)), v.mkColl(1, 2, 3, 4).toSet());
+        });
+    }
+    @Test @Override default void testToSortedSet () {
+        doTest(v -> {
+            assertThrows(UnsupportedOperationException.class, () -> v.mkColl().toSortedSet());
+            assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1).toSortedSet());
+            assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1, 2).toSortedSet());
+        });
+    }
+
+    @Test @Override default void testMap () {
+        doTest(v -> {
+            assertTrue(v.mkColl().map(this::doubled).isEmpty());
+            assertEquals(AEquality.EQUALS, v.mkColl().map(this::doubled).equality());
+            assertEquals(AHashSet.of(entryOf(2)), v.mkColl(1).map(this::doubledEntry).toSet());
+            assertEquals(AEquality.EQUALS, v.mkColl(1).map(this::doubled).equality());
+            assertEquals(AHashSet.of(entryOf(2), entryOf(4), entryOf(6)), v.mkColl(1, 2, 3).map(this::doubledEntry).toSet());
+        });
+    }
+    @Test @Override default void testFlatMap () {
+        doTest(v -> {
+            assertEquals(AVector.empty(), v.mkColl().flatMap(x -> AVector.of(doubled(x), doubled(x)+1)));
+            assertEquals(AEquality.EQUALS, v.mkColl().flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).equality());
+            assertEquals(AHashSet.of(2, 3), v.mkColl(1).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).toSet());
+            assertEquals(AEquality.EQUALS, v.mkColl(1).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).equality());
+            assertEquals(AHashSet.of(2, 3, 4, 5, 6, 7), v.mkColl(1, 2, 3).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).toSet());
+        });
+    }
+    @Test @Override default void testCollect () {
+        doTest(v -> {
+            assertEquals(v.mkColl(), v.mkColl().collect(this::isOdd, this::doubledEntry));
+            assertEquals(AEquality.EQUALS, v.mkColl().collect(this::isOdd, this::doubled).equality());
+            assertEquals(AHashSet.of(entryOf(2)), v.mkColl(1).collect(this::isOdd, this::doubledEntry).toSet());
+            assertEquals(AEquality.EQUALS, v.mkColl(1).collect(this::isOdd, this::doubled).equality());
+            assertEquals(AHashSet.of(entryOf(2), entryOf(6)), v.mkColl(1, 2, 3).collect(this::isOdd, this::doubledEntry).toSet());
+        });
+    }
+    @Test @Override default void testCollectFirst () {
+        doTest(v -> {
+            assertEquals(AOption.none(), v.mkColl().collectFirst(this::isOdd, this::doubled));
+            assertEquals(AOption.none(), v.mkColl(2).collectFirst(this::isOdd, this::doubled));
+            assertEquals(AOption.some(2), v.mkColl(1).collectFirst(this::isOdd, this::doubled));
+
+            final Map.Entry<Integer,Integer> firstOdd;
+            if (v.iterationOrder123() != null)
+                firstOdd = v.iterationOrder123().head();
+            else {
+                final Iterator<Map.Entry<Integer,Integer>> it = v.mkColl(1, 2, 3).iterator();
+                if (it.next() == entryOf(2)) firstOdd = it.next();
+                else firstOdd = v.mkColl(1, 2, 3).iterator().next();
+            }
+            assertEquals(AOption.some(2*firstOdd.getKey()), v.mkColl(1, 2, 3).collectFirst(this::isOdd, this::doubled));
+        });
+    }
+
+    @Test @Override default void testFilter () {
+        doTest(v -> {
+            assertEquals(v.mkColl(), v.mkColl().filter(this::isOdd));
+            v.checkEquality(v.mkColl().filter(this::isOdd));
+            assertEquals(v.mkColl(1), v.mkColl(1).filter(this::isOdd));
+            v.checkEquality(v.mkColl(1).filter(this::isOdd));
+            assertEquals(v.mkColl(1, 3), v.mkColl(1, 2, 3).filter(this::isOdd));
+        });
+    }
+    @Test @Override default void testFilterNot () {
+        doTest(v -> {
+            assertEquals(v.mkColl(), v.mkColl().filterNot(this::isEven));
+            v.checkEquality(v.mkColl().filterNot(this::isEven));
+            assertEquals(v.mkColl(1), v.mkColl(1).filterNot(this::isEven));
+            v.checkEquality(v.mkColl(1).filterNot(this::isEven));
+            assertEquals(v.mkColl(1, 3), v.mkColl(1, 2, 3).filterNot(this::isEven));
+        });
+    }
+
+    @Test @Override default void testFind () {
+        doTest(v -> {
+            assertEquals(AOption.none(), v.mkColl().find(this::isEven));
+            assertEquals(AOption.none(), v.mkColl(1).find(this::isEven));
+            assertEquals(AOption.some(entryOf(1)), v.mkColl(1).find(this::isOdd));
+            assertEquals(AOption.some(entryOf(2)), v.mkColl(1, 2, 3).find(this::isEven));
+        });
+    }
+
+    @Test @Override default void testForall () {
+        doTest(v -> {
+            assertTrue(v.mkColl().forall(this::isOdd));
+            assertTrue(v.mkColl(1).forall(this::isOdd));
+            assertFalse(v.mkColl(1).forall(this::isEven));
+            assertFalse(v.mkColl(1, 2, 3).forall(this::isOdd));
+            assertFalse(v.mkColl(1, 2, 3).forall(this::isEven));
+            assertTrue(v.mkColl(1, 2, 3).map(this::doubledEntry).forall(this::isEven));
+        });
+    }
+    @Test @Override default void testExists () {
+        doTest(v -> {
+            assertFalse(v.mkColl().exists(this::isOdd));
+            assertTrue(v.mkColl(1).exists(this::isOdd));
+            assertFalse(v.mkColl(1).exists(this::isEven));
+            assertTrue(v.mkColl(1, 2, 3).exists(this::isOdd));
+            assertTrue(v.mkColl(1, 2, 3).exists(this::isEven));
+            assertFalse(v.mkColl(1, 2, 3).map(this::doubledEntry).exists(this::isOdd));
+            assertTrue(v.mkColl(1, 2, 3).map(this::doubledEntry).exists(this::isEven));
+        });
+    }
+    @Test @Override default void testCount () {
+        doTest(v -> {
+            assertEquals(0, v.mkColl().count(this::isOdd));
+            assertEquals(1, v.mkColl(1).count(this::isOdd));
+            assertEquals(0, v.mkColl(1).count(this::isEven));
+            assertEquals(2, v.mkColl(1, 2, 3).count(this::isOdd));
+            assertEquals(1, v.mkColl(1, 2, 3).count(this::isEven));
+            assertEquals(0, v.mkColl(1, 2, 3).map(this::doubledEntry).count(this::isOdd));
+            assertEquals(3, v.mkColl(1, 2, 3).map(this::doubledEntry).count(this::isEven));
+        });
+    }
+    @Test @Override default void testContains () {
+        doTest(v -> {
+            assertFalse(v.mkColl().contains(entryOf(1)));
+            assertTrue(v.mkColl(1).contains(entryOf(1)));
+            assertFalse(v.mkColl(1).contains(entryOf(2)));
+            assertTrue(v.mkColl(1, 2, 3).contains(entryOf(1)));
+            assertTrue(v.mkColl(1, 2, 3).contains(entryOf(2)));
+            assertTrue(v.mkColl(1, 2, 3).contains(entryOf(3)));
+            assertFalse(v.mkColl(1, 2, 3).contains(entryOf(4)));
+        });
+    }
+
+    @Test @Override default void testReduce () {
+        doTest(v -> {
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().reduce(this::sum));
+            assertEquals(entryOf(1), v.mkColl(1).reduce(this::sum));
+            assertEquals(entryOf(6), v.mkColl(1, 2, 3).reduce(this::sum));
+
+            if (v.iterationOrder123() != null) {
+                final List<Map.Entry<Integer,Integer>> trace = new ArrayList<>();
+                v.mkColl(1, 2, 3).reduce((a, b) -> {
+                    trace.add(a);
+                    trace.add(b);
+                    return entryOf(0);
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), entryOf(0), v.iterationOrder123().get(2)), trace);
+            }
+        });
+    }
+    @Test @Override default void testReduceLeft () {
+        doTest(v -> {
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().reduceLeft(this::sum));
+            assertEquals(entryOf(1), v.mkColl(1).reduceLeft(this::sum));
+            assertEquals(entryOf(6), v.mkColl(1, 2, 3).reduceLeft(this::sum));
+
+            if (v.iterationOrder123() != null) {
+                final List<Map.Entry<Integer,Integer>> trace = new ArrayList<>();
+                v.mkColl(1, 2, 3).reduceLeft((a, b) -> {
+                    trace.add(a);
+                    trace.add(b);
+                    return entryOf(0);
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), entryOf(0), v.iterationOrder123().get(2)), trace);
+            }
+        });
+    }
+    @Test @Override default void testReduceLeftOption () {
+        doTest(v -> {
+            assertEquals(AOption.none(), v.mkColl().reduceLeftOption(this::sum));
+            assertEquals(AOption.some(entryOf(1)), v.mkColl(1).reduceLeftOption(this::sum));
+            assertEquals(AOption.some(entryOf(6)), v.mkColl(1, 2, 3).reduceLeftOption(this::sum));
+
+            if (v.iterationOrder123() != null) {
+                final List<Map.Entry<Integer,Integer>> trace = new ArrayList<>();
+                v.mkColl(1, 2, 3).reduceLeftOption((a, b) -> {
+                    trace.add(a);
+                    trace.add(b);
+                    return entryOf(0);
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), entryOf(0), v.iterationOrder123().get(2)), trace);
+            }
+        });
+    }
+
+    @Test @Override default void testFold () {
+        doTest(v -> {
+            assertEquals(entryOf(0), v.mkColl().fold(entryOf(0), this::sum));
+            assertEquals(entryOf(1), v.mkColl(1).fold(entryOf(0), this::sum));
+            assertEquals(entryOf(6), v.mkColl(1, 2, 3).fold(entryOf(0), this::sum));
+
+            if (v.iterationOrder123() != null) {
+                final List<Map.Entry<Integer,Integer>> trace = new ArrayList<>();
+                v.mkColl(1, 2, 3).fold(0, (a, b) -> {
+                    trace.add(b);
+                    return 0;
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), v.iterationOrder123().get(2)), trace);
+            }
+        });
+    }
+    @Test @Override default void testFoldLeft () {
+        doTest(v -> {
+            assertEquals(entryOf(0), v.mkColl().foldLeft(entryOf(0), this::sum));
+            assertEquals(entryOf(1), v.mkColl(1).foldLeft(entryOf(0), this::sum));
+            assertEquals(entryOf(6), v.mkColl(1, 2, 3).foldLeft(entryOf(0), this::sum));
+
+            if (v.iterationOrder123() != null) {
+                final List<Map.Entry<Integer,Integer>> trace = new ArrayList<>();
+                v.mkColl(1, 2, 3).foldLeft(0, (a, b) -> {
+                    trace.add(b);
+                    return 0;
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), v.iterationOrder123().get(2)), trace);
+            }
+        });
+    }
+
+    @Test @Override default void testMin () {
+        doTest(v -> {
+            assertThrows(UnsupportedOperationException.class, () -> v.mkColl().min());
+            assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1).min());
+            assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1, 2).min());
+
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().min(keyCompatator));
+            assertEquals(entryOf(1), v.mkColl(1).min(keyCompatator));
+            assertEquals(entryOf(1), v.mkColl(2, 1, 3).min(keyCompatator));
+        });
+    }
+    @Test @Override default void testMax () {
+        doTest(v -> {
+            assertThrows(UnsupportedOperationException.class, () -> v.mkColl().max());
+            assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1).max());
+            assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1, 2).max());
+
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().max(keyCompatator));
+            assertEquals(entryOf(1), v.mkColl(1).max(keyCompatator));
+            assertEquals(entryOf(3), v.mkColl(2, 3, 1).max(keyCompatator));
+        });
+    }
+
+    @Test @Override default void testMkString () {
+        doTest(v -> {
+            assertEquals("", v.mkColl().mkString("|"));
+            assertEquals("$%", v.mkColl().mkString("$", "|", "%"));
+            assertEquals("1=3", v.mkColl(1).mkString("|"));
+            assertEquals("$1=3%", v.mkColl(1).mkString("$", "|", "%"));
+
+            if (v.iterationOrder123() != null) {
+                assertEquals(v.iterationOrder123().mkString("|"), v.mkColl(1, 2, 3).mkString("|"));
+                assertEquals(v.iterationOrder123().mkString("$", "|", "%"), v.mkColl(1, 2, 3).mkString("$", "|", "%"));
+            }
+        });
+    }
+
+    //TODO 2x EntrySet; AMap
+
+    //---------------------------- internal -------------------------------
+
+    Comparator<Map.Entry<Integer,Integer>> keyCompatator = (o1, o2) -> o1.getKey() - o2.getKey();
+
+    default void doTest (Consumer<Variant> test) {
+        variants().forEach(test);
+    }
+
+    class Variant {
+        private final Supplier<ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>>> builderFactory;
+        private final AVector<Integer> iterationOrder123;
+        private final boolean isIdentity;
+
+        public Variant (Supplier<ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>>> builderFactory, AVector<Integer> iterationOrder123, boolean isIdentity) {
+            this.builderFactory = builderFactory;
+            this.iterationOrder123 = iterationOrder123;
+            this.isIdentity = isIdentity;
+        }
+
+        public ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>> newBuilder() {
+            return builderFactory.get();
+        }
+
+        public ACollectionOps<Map.Entry<Integer,Integer>> mkColl(Integer... values) {
+            final ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>> builder = newBuilder();
+            for(Integer v: values) builder.add(entryOf(v));
+            return builder.build();
+        }
+
+        public ASet<Map.Entry<Integer,Integer>> mkSet(Integer... values) {
+            return (ASet<Map.Entry<Integer,Integer>>) mkColl(values);
+        }
+        public AMap<Integer,Integer> mkMap(Integer... values) {
+            return (AMap<Integer,Integer>) mkColl(values);
+        }
+
+        public AVector<Map.Entry<Integer,Integer>> iterationOrder123() {
+            return this.iterationOrder123 != null ? iterationOrder123.map(AEntryCollectionOpsTests::entryOf) : null;
+        }
+
+        public boolean isIdentity() {
+            return isIdentity;
+        }
+
+        public void checkEquality(ACollectionOps<?> coll) {
+            assertEquals(builderFactory.get().equality(), coll.equality());
+        }
+    }
+}

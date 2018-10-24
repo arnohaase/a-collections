@@ -523,7 +523,7 @@ class RedBlackTree {
         }
 
         Map.Entry<A,B> entry() {
-            return new AMap.AMapEntry<>(key, value); //TODO make Tree implement Entry
+            return new AbstractMap.SimpleImmutableEntry<>(key, value); //TODO make Tree implement Entry
         }
 
         abstract Tree<A, B> black ();

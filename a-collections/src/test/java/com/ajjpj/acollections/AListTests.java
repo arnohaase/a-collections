@@ -65,7 +65,7 @@ public interface AListTests extends ACollectionTests {
         doTest(v -> {
             assertEquals(AVector.empty(), v.mkList().concat(v.mkList().iterator()));
             assertEquals(AVector.of(1), v.mkList().concat(v.mkList(1).iterator()));
-            assertEquals(AVector.of(1), v.mkList(1).concat(v.mkList()).iterator());
+            assertEquals(AVector.of(1), v.mkList(1).concat(v.mkList().iterator()));
 
             v.checkEquality(v.mkList(1).concat(AHashSet.<Integer>empty().iterator()));
             v.checkEquality(v.mkList(1).concat(AHashSet.<Integer>empty(AEquality.IDENTITY).iterator()));
@@ -107,9 +107,9 @@ public interface AListTests extends ACollectionTests {
             assertEquals(AVector.of(1, 2), v.mkList().patch(0, AVector.of(1, 2), 0));
             v.checkEquality(v.mkList().patch(0, AVector.of(1, 2), 0));
 
-            assertThrows(NoSuchElementException.class, () -> v.mkList().patch(1, AVector.of(1, 2), 0));
-            assertThrows(NoSuchElementException.class, () -> v.mkList().patch(-1, AVector.of(1, 2), 0));
-            assertThrows(NoSuchElementException.class, () -> v.mkList().patch(0, AVector.of(1, 2), 1));
+            assertThrows(IndexOutOfBoundsException.class, () -> v.mkList().patch(1, AVector.of(1, 2), 0));
+            assertThrows(IndexOutOfBoundsException.class, () -> v.mkList().patch(-1, AVector.of(1, 2), 0));
+            assertThrows(IndexOutOfBoundsException.class, () -> v.mkList().patch(0, AVector.of(1, 2), 1));
 
             assertEquals(AVector.of(2, 3, 1), v.mkList(1).patch(0, AVector.of(2, 3), 0));
             assertEquals(AVector.of(2, 3), v.mkList(1).patch(0, AVector.of(2, 3), 1));
@@ -121,15 +121,15 @@ public interface AListTests extends ACollectionTests {
             assertEquals(AVector.of(1, 3, 4, 2), v.mkList(1, 2).patch(1, AVector.of(3, 4), 0));
             assertEquals(AVector.of(1, 3, 4), v.mkList(1, 2).patch(1, AVector.of(3, 4), 1));
             assertEquals(AVector.of(1, 2, 3, 4), v.mkList(1, 2).patch(2, AVector.of(3, 4), 0));
-            assertThrows(NoSuchElementException.class, () -> v.mkList(1, 2).patch(-1, AVector.of(3, 4), 0));
-            assertThrows(NoSuchElementException.class, () -> v.mkList(1, 2).patch(3, AVector.of(3, 4), 0));
-            assertThrows(NoSuchElementException.class, () -> v.mkList(1, 2).patch(0, AVector.of(3, 4), 3));
+            assertThrows(IndexOutOfBoundsException.class, () -> v.mkList(1, 2).patch(-1, AVector.of(3, 4), 0));
+            assertThrows(IndexOutOfBoundsException.class, () -> v.mkList(1, 2).patch(3, AVector.of(3, 4), 0));
+            assertThrows(IndexOutOfBoundsException.class, () -> v.mkList(1, 2).patch(0, AVector.of(3, 4), 3));
 
             assertEquals(AVector.of(1, 2), v.mkList(1, 2).patch(0, AVector.empty(), 0));
-            assertEquals(AVector.of(1, 2), v.mkList(1, 2).patch(0, AVector.empty(), 1));
-            assertEquals(AVector.of(1, 2), v.mkList(1, 2).patch(0, AVector.empty(), 2));
+            assertEquals(AVector.of(2), v.mkList(1, 2).patch(0, AVector.empty(), 1));
+            assertEquals(AVector.empty(), v.mkList(1, 2).patch(0, AVector.empty(), 2));
             assertEquals(AVector.of(1, 2), v.mkList(1, 2).patch(1, AVector.empty(), 0));
-            assertEquals(AVector.of(1, 2), v.mkList(1, 2).patch(1, AVector.empty(), 1));
+            assertEquals(AVector.of(1), v.mkList(1, 2).patch(1, AVector.empty(), 1));
             assertEquals(AVector.of(1, 2), v.mkList(1, 2).patch(2, AVector.empty(), 0));
 
             AList<Integer> l = v.mkList(1);
@@ -270,11 +270,8 @@ public interface AListTests extends ACollectionTests {
     @Test default void testReverseIterator() {
         doTest(v -> {
             assertEquals(AVector.empty(), v.mkList().reverseIterator().toVector());
-            v.checkEquality(v.mkList().reverseIterator().toVector());
             assertEquals(AVector.of(1), v.mkList(1).reverseIterator().toVector());
-            v.checkEquality(v.mkList().reverseIterator().toVector());
             assertEquals(AVector.of(2, 1), v.mkList(1, 2).reverseIterator().toVector());
-            v.checkEquality(v.mkList().reverseIterator().toVector());
         });
     }
 

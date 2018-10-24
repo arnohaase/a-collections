@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public interface ACollectionTests {
+public interface ACollectionTests extends ACollectionOpsTests {
     // These methods must be implemented by concrete test classes, customizing the tests per tested collection class
 
     default boolean isSorted() { return false; }
@@ -43,14 +43,14 @@ public interface ACollectionTests {
         }
     }
 
-    @Test default void testAEquality() {
+    @Test @Override default void testAEquality() {
         doTest(v -> {
             v.checkEquality(v.mkColl());
             v.checkEquality(v.mkColl(1, 2, 3));
         });
     }
 
-    @Test default void testIterator() {
+    @Test @Override default void testIterator() {
         doTest(v -> {
             assertTrue(! v.mkColl().iterator().hasNext());
             assertEquals(AVector.of(1), v.mkColl(1).iterator().toVector());
@@ -92,7 +92,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testSize() {
+    @Test @Override default void testSize() {
         doTest(v -> {
             assertEquals(0, v.mkColl().size());
             assertEquals(1, v.mkColl(1).size());
@@ -100,7 +100,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testIsEmpty() {
+    @Test @Override default void testIsEmpty() {
         doTest(v -> {
             assertTrue(v.mkColl().isEmpty());
             assertFalse(v.mkColl(1).isEmpty());
@@ -108,7 +108,7 @@ public interface ACollectionTests {
             assertFalse(v.mkColl(1, 2, 3).isEmpty());
         });
     }
-    @Test default void testNonEmpty() {
+    @Test @Override default void testNonEmpty() {
         doTest(v -> {
             assertFalse(v.mkColl().nonEmpty());
             assertTrue(v.mkColl(1).nonEmpty());
@@ -117,7 +117,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testHead() {
+    @Test @Override default void testHead() {
         doTest(v -> {
             assertThrows(NoSuchElementException.class, () -> v.mkColl().head());
             assertEquals(1, v.mkColl(1).head().intValue());
@@ -128,7 +128,7 @@ public interface ACollectionTests {
             }
         });
     }
-    @Test default void testHeadOption() {
+    @Test @Override default void testHeadOption() {
         doTest(v -> {
             assertTrue(v.mkColl().headOption().isEmpty());
             assertTrue(v.mkColl(1).headOption().contains(1));
@@ -140,7 +140,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testToLinkedList() {
+    @Test @Override default void testToLinkedList() {
         doTest(v -> {
             assertEquals(ALinkedList.empty(), v.mkColl().toLinkedList());
             v.checkEquality(v.mkColl().toLinkedList());
@@ -149,7 +149,7 @@ public interface ACollectionTests {
             assertEquals(v.mkColl(1, 2, 3, 4).toLinkedList(), v.mkColl(1, 2, 3, 4));
         });
     }
-    @Test default void testToVector() {
+    @Test @Override default void testToVector() {
         doTest(v -> {
             assertEquals(AVector.empty(), v.mkColl());
             v.checkEquality(v.mkColl().toVector());
@@ -159,7 +159,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testToSet() {
+    @Test @Override default void testToSet() {
         doTest(v -> {
             assertTrue(v.mkColl().toSet().isEmpty());
             if (! isSorted()) v.checkEquality(v.mkColl().toSet());
@@ -168,7 +168,7 @@ public interface ACollectionTests {
             assertEquals(AHashSet.of(1, 2, 3, 4), v.mkColl(1, 2, 3, 4).toSet());
         });
     }
-    @Test default void testToSortedSet() {
+    @Test @Override default void testToSortedSet() {
         doTest(v -> {
             assertTrue(v.mkColl().toSortedSet().isEmpty());
             assertEquals(ATreeSet.of(1), v.mkColl(1).toSortedSet());
@@ -176,7 +176,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testMap() {
+    @Test @Override default void testMap() {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().map(this::doubled));
             v.checkEquality(v.mkColl().map(this::doubled));
@@ -185,7 +185,7 @@ public interface ACollectionTests {
             assertEquals(v.mkColl(2, 4, 6), v.mkColl(1, 2, 3).map(this::doubled));
         });
     }
-    @Test default void testFlatMap() {
+    @Test @Override default void testFlatMap() {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().flatMap(x -> AVector.of(2*x, 2*x+1)));
             v.checkEquality(v.mkColl().flatMap(x -> AVector.of(2*x, 2*x+1)));
@@ -194,7 +194,7 @@ public interface ACollectionTests {
             assertEquals(v.mkColl(2, 3, 4, 5, 6, 7), v.mkColl(1, 2, 3).flatMap(x -> AVector.of(2*x, 2*x+1)));
         });
     }
-    @Test default void testCollect() {
+    @Test @Override default void testCollect() {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().collect(this::isOdd, this::doubled));
             v.checkEquality(v.mkColl().collect(this::isOdd, this::doubled));
@@ -203,13 +203,11 @@ public interface ACollectionTests {
             assertEquals(v.mkColl(2, 6), v.mkColl(1, 2, 3).collect(this::isOdd, this::doubled));
         });
     }
-    @Test default void testCollectFirst() {
+    @Test @Override default void testCollectFirst() {
         doTest(v -> {
             assertEquals(AOption.none(), v.mkColl().collectFirst(this::isOdd, this::doubled));
-            v.checkEquality(v.mkColl().collect(this::isOdd, this::doubled));
             assertEquals(AOption.none(), v.mkColl(2).collectFirst(this::isOdd, this::doubled));
             assertEquals(AOption.some(2), v.mkColl(1).collectFirst(this::isOdd, this::doubled));
-            v.checkEquality(v.mkColl(1).collect(this::isOdd, this::doubled));
 
             final int firstOdd;
             if (v.iterationOrder123() != null)
@@ -223,7 +221,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testFilter() {
+    @Test @Override default void testFilter() {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().filter(this::isOdd));
             v.checkEquality(v.mkColl().filter(this::isOdd));
@@ -232,7 +230,7 @@ public interface ACollectionTests {
             assertEquals(v.mkColl(1, 3), v.mkColl(1, 2, 3).filter(this::isOdd));
         });
     }
-    @Test default void testFilterNot() {
+    @Test @Override default void testFilterNot() {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().filterNot(this::isEven));
             v.checkEquality(v.mkColl().filterNot(this::isEven));
@@ -242,7 +240,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testFind() {
+    @Test @Override default void testFind() {
         doTest(v -> {
             assertEquals(AOption.none(), v.mkColl().find(this::isEven));
             assertEquals(AOption.none(), v.mkColl(1).find(this::isEven));
@@ -251,7 +249,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testForall() {
+    @Test @Override default void testForall() {
         doTest(v -> {
             assertTrue(v.mkColl().forall(this::isOdd));
             assertTrue(v.mkColl(1).forall(this::isOdd));
@@ -261,7 +259,7 @@ public interface ACollectionTests {
             assertTrue(v.mkColl(1, 2, 3).map(this::doubled).forall(this::isEven));
         });
     }
-    @Test default void testExists() {
+    @Test @Override default void testExists() {
         doTest(v -> {
             assertFalse(v.mkColl().exists(this::isOdd));
             assertTrue(v.mkColl(1).exists(this::isOdd));
@@ -272,7 +270,7 @@ public interface ACollectionTests {
             assertTrue(v.mkColl(1, 2, 3).map(this::doubled).exists(this::isEven));
         });
     }
-    @Test default void testCount() {
+    @Test @Override default void testCount() {
         doTest(v -> {
             assertEquals(0, v.mkColl().count(this::isOdd));
             assertEquals(1, v.mkColl(1).count(this::isOdd));
@@ -321,7 +319,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testReduce() {
+    @Test @Override default void testReduce() {
         doTest(v -> {
             assertThrows(NoSuchElementException.class, () -> v.mkColl().reduce(this::sum));
             assertEquals(1, v.mkColl(1).reduce(this::sum).intValue());
@@ -338,7 +336,7 @@ public interface ACollectionTests {
             }
         });
     }
-    @Test default void testReduceLeft() {
+    @Test @Override default void testReduceLeft() {
         doTest(v -> {
             assertThrows(NoSuchElementException.class, () -> v.mkColl().reduceLeft(this::sum));
             assertEquals(1, v.mkColl(1).reduceLeft(this::sum).intValue());
@@ -355,7 +353,7 @@ public interface ACollectionTests {
             }
         });
     }
-    @Test default void testReduceLeftOption() {
+    @Test @Override default void testReduceLeftOption() {
         doTest(v -> {
             assertEquals(AOption.none(), v.mkColl().reduceLeftOption(this::sum));
             assertEquals(AOption.some(1), v.mkColl(1).reduceLeftOption(this::sum));
@@ -373,7 +371,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testFold() {
+    @Test @Override default void testFold() {
         doTest(v -> {
             assertEquals(0, v.mkColl().fold(0, this::sum).intValue());
             assertEquals(1, v.mkColl(1).fold(0, this::sum).intValue());
@@ -389,7 +387,7 @@ public interface ACollectionTests {
             }
         });
     }
-    @Test default void testFoldLeft() {
+    @Test @Override default void testFoldLeft() {
         doTest(v -> {
             assertEquals(0, v.mkColl().foldLeft(0, this::sum).intValue());
             assertEquals(1, v.mkColl(1).foldLeft(0, this::sum).intValue());
@@ -406,7 +404,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testMin() {
+    @Test @Override default void testMin() {
         doTest(v -> {
             assertThrows(NoSuchElementException.class, () -> v.mkColl().min());
             assertEquals(1, v.mkColl(1).min().intValue());
@@ -414,7 +412,7 @@ public interface ACollectionTests {
             assertEquals(3, v.mkColl(2, 1, 3).min(Comparator.<Integer>naturalOrder().reversed()).intValue());
         });
     }
-    @Test default void testMax() {
+    @Test @Override default void testMax() {
         doTest(v -> {
             assertThrows(NoSuchElementException.class, () -> v.mkColl().max());
             assertEquals(1, v.mkColl(1).max().intValue());
@@ -423,7 +421,7 @@ public interface ACollectionTests {
         });
     }
 
-    @Test default void testMkString() {
+    @Test @Override default void testMkString() {
         doTest(v -> {
             assertEquals("", v.mkColl().mkString("|"));
             assertEquals("$%", v.mkColl().mkString("$", "|", "%"));
@@ -437,8 +435,7 @@ public interface ACollectionTests {
         });
     }
 
-    //TODO keySet, entrySet, Range; AMap
-
+    //TODO 2x EntrySet; AMap
 
     //---------------------------- internal -------------------------------
 

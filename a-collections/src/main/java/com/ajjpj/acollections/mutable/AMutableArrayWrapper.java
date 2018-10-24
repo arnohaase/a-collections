@@ -65,6 +65,7 @@ public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMuta
     }
 
     @Override public T last () {
+        if (isEmpty()) throw new NoSuchElementException();
         return inner[inner.length-1];
     }
 
@@ -94,6 +95,11 @@ public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMuta
     @Override public AMutableArrayWrapper<T> dropRight (int n) {
         if (n >= size()) return empty();
         return take(size()-n);
+    }
+
+    @Override public AMutableArrayWrapper<T> patch (int idx, List<T> patch, int numReplaced) {
+        this.inner = AListDefaults.super.patch(idx, patch, numReplaced).inner;
+        return this;
     }
 
     @Override public AIterator<T> iterator () {

@@ -59,15 +59,16 @@ public class ARange extends AbstractImmutableCollection<Integer> implements ALis
     }
 
     @Override public Integer last () {
+        if(isEmpty()) throw new NoSuchElementException();
         return get(size() - 1);
     }
 
     @Override public AList<Integer> take (int n) {
-        return size() <= n ? AVector.empty() : new ARange(from, from + n*step, step);
+        return n >= size() ? this : new ARange(from, from + n*step, step);
     }
 
     @Override public AList<Integer> takeRight (int n) {
-        return size() <= n ? AVector.empty() : new ARange(to - n*step, to, step);
+        return n >= size() ? this : new ARange(last() - (n-1)*step, to, step);
     }
 
     @Override public AList<Integer> takeWhile (Predicate<Integer> f) {
@@ -210,10 +211,23 @@ public class ARange extends AbstractImmutableCollection<Integer> implements ALis
     @Override public int indexOf (Object o) {
         if (! (o instanceof Integer)) return -1;
 
-        final int fromStart = ((Integer)o) - from;
-        if (fromStart % step != 0) return -1;
+        final Integer i = (Integer) o;
+        if (step > 0) {
+            if (i < from || i >= to) return -1;
 
-        return -1; //TODO special case for integer division - negative numerator and denominator
+            final int fromStart = ((Integer)o) - from;
+            if (fromStart % step != 0) return -1;
+
+            return fromStart / step;
+        }
+        else {
+            if (i > from || i <= to) return -1;
+
+            final int fromStart = ((Integer)o) - from;
+            if (fromStart % (-step) != 0) return -1;
+
+            return fromStart / step;
+        }
     }
 
     @Override public int lastIndexOf (Object o) {

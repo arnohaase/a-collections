@@ -161,7 +161,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
             //noinspection unchecked
             AVector<T> result = (AVector<T>) that;
             final Iterator<T> it = reverseIterator();
-            while (it.hasNext()) result.prepend(it.next());
+            while (it.hasNext()) result = result.prepend(it.next());
             return result;
         }
         // both collections are non-trivial in size, and neither dominates the other --> rebuilding the entire AVector
@@ -171,15 +171,15 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     @Override public AIterator<T> reverseIterator () {
         //TODO more efficient implementation along the lines of Itr
         return new AbstractAIterator<T>() {
-            int i = size();
+            int nextIdx = size()-1;
 
             @Override public boolean hasNext () {
-                return 0<i;
+                return nextIdx >= 0;
             }
 
             @Override public T next () {
                 if (!hasNext()) throw new NoSuchElementException();
-                return get(i);
+                return get(nextIdx--);
             }
         };
     }

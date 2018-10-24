@@ -1,11 +1,16 @@
 package com.ajjpj.acollections.immutable;
 
-import com.ajjpj.acollections.*;
+import com.ajjpj.acollections.ACollectionBuilder;
+import com.ajjpj.acollections.AIterator;
+import com.ajjpj.acollections.AList;
+import com.ajjpj.acollections.AbstractAIterator;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
 import com.ajjpj.acollections.util.AEquality;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -93,20 +98,26 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> updated (int idx, T o) {
-        final Builder<T> builder = new Builder<>(equality);
+        if (idx < 0) throw new IndexOutOfBoundsException();
+        try {
+            final Builder<T> builder = new Builder<>(equality);
 
-        ALinkedList<T> l = this;
-        for(int i=0; i<idx; i++) {
-            builder.add(l.head());
+            ALinkedList<T> l = this;
+            for(int i=0; i<idx; i++) {
+                builder.add(l.head());
+                l = l.tail();
+            }
+
+            builder.add(o);
             l = l.tail();
+
+            for (T el: l)
+                builder.add(el);
+            return builder.build();
         }
-
-        builder.add(o);
-        l = l.tail();
-
-        for (T el: l)
-            builder.add(el);
-        return builder.build();
+        catch (NoSuchElementException e) {
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     @Override public AEquality equality () {
@@ -122,14 +133,16 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> init () {
+        if(isEmpty()) throw new NoSuchElementException();
         return dropRight(1);
     }
 
     @Override public ALinkedList<T> take (int n) {
-        if (n < 0) throw new IllegalArgumentException();
+        if (n < 0) return nil();
         final Builder<T> builder = new Builder<>(equality);
         ALinkedList<T> l = this;
         for(int i=0; i<n; i++) {
+            if (l.isEmpty()) break;
             builder.add(l.head());
             l = l.tail();
         }
@@ -142,15 +155,17 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> drop (int n) {
-        if (n < 0) throw new IllegalArgumentException();
+        if (n < 0) return this; //throw new IllegalArgumentException();
         ALinkedList<T> l = this;
-        for (int i=0; i<n; i++)
+        for (int i=0; i<n; i++) {
+            if(l.isEmpty()) return nil();
             l = l.tail();
+        }
         return l;
     }
 
     @Override public ALinkedList<T> dropRight (int n) {
-        if (n < 0) throw new IllegalArgumentException();
+        if (n < 0) return this;
         return take(size() - n);
     }
 
@@ -180,7 +195,10 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> subList (int fromIndex, int toIndex) {
-        return drop(fromIndex).take(toIndex - fromIndex);
+        if (fromIndex < 0) throw new IndexOutOfBoundsException();
+        final ALinkedList<T> result = drop(fromIndex).take(toIndex - fromIndex);
+        if (result.size() != toIndex - fromIndex) throw new IndexOutOfBoundsException();
+        return result;
     }
 
     @Override public boolean addAll (int index, Collection<? extends T> c) {
@@ -297,7 +315,9 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
             return true;
         }
 
-        @Override public T head () { throw new NoSuchElementException(); }
+        @Override public T head () {
+            throw new NoSuchElementException();
+        }
         @Override public ALinkedList<T> tail () {
             throw new NoSuchElementException();
         }

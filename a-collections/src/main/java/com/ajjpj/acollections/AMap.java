@@ -4,6 +4,7 @@ import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Map;
+import java.util.Objects;
 
 
 public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Iterable<Map.Entry<K,V>> {
@@ -28,33 +29,4 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
 
     AIterator<K> keysIterator();
     AIterator<V> valuesIterator();
-
-    class AMapEntry<K,V> implements Map.Entry<K,V> {
-        private final K key;
-        private final V value;
-
-        public AMapEntry (K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        @Override public K getKey () {
-            return key;
-        }
-
-        @Override public V getValue () {
-            return value;
-        }
-
-        @Override public V setValue (V value) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override public String toString () {
-            return "AMapEntry{" +
-                    "key=" + key +
-                    ", value=" + value +
-                    '}';
-        }
-    }
 }

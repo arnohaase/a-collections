@@ -239,8 +239,7 @@ public class AMapSupport {
         }
 
         @Override public boolean contains (Object o) {
-            //noinspection SuspiciousMethodCalls
-            return map.containsKey(o);
+            return map.contains(o);
         }
 
         @Override public boolean containsAll (Collection<?> c) {

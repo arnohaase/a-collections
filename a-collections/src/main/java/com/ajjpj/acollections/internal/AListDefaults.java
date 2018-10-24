@@ -13,18 +13,22 @@ import java.util.function.Predicate;
 public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefaults<T,C>, AList<T> {
     AList<T> updated(int idx, T o);
     default C patch(int idx, List<T> patch, int numReplaced) {
+        if(idx<0) throw new IndexOutOfBoundsException();
         //noinspection unchecked
         final ACollectionBuilder<T, C> builder = (ACollectionBuilder<T, C>) newBuilder();
 
         final Iterator<T> it = iterator();
         for(int i=0; i<idx; i++) {
+            if (! it.hasNext()) throw new IndexOutOfBoundsException();
             builder.add(it.next());
         }
 
         for (T el: patch)
             builder.add(el);
-        for (int i=0; i<numReplaced; i++)
+        for (int i=0; i<numReplaced; i++) {
+            if (! it.hasNext()) throw new IndexOutOfBoundsException();
             it.next();
+        }
 
         builder.addAll(it);
         return builder.build();

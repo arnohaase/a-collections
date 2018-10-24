@@ -864,34 +864,9 @@ public class RedBlackTree {
         }
     }
 
-    private static class EntryImpl<A, B> implements Map.Entry<A, B> {
-        private final A key;
-        private final B value;
-
-        EntryImpl (A key, B value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        @Override
-        public A getKey () {
-            return key;
-        }
-
-        @Override
-        public B getValue () {
-            return value;
-        }
-
-        @Override
-        public B setValue (B value) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
     public static class EntriesIterator<A, B> extends TreeIterator<A, B, Map.Entry<A, B>> {
         public Map.Entry<A, B> nextResult(final Tree<A, B> tree) {
-            return new EntryImpl<>(tree.key(), tree.value());
+            return new AbstractMap.SimpleImmutableEntry<>(tree.key(), tree.value());
         }
 
         public EntriesIterator(final Tree<A, B> tree, final AOption<A> focus, final Comparator<A> evidence$16) {
