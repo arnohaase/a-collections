@@ -4,6 +4,8 @@ import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.mutable.AMutableListWrapper;
+import com.ajjpj.acollections.mutable.AMutableSetWrapper;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Collection;
@@ -43,6 +45,10 @@ public interface ACollectionOps<T> {
         return toSortedSet((Comparator) Comparator.naturalOrder());
     }
     ATreeSet<T> toSortedSet(Comparator<T> comparator);
+
+    AMutableListWrapper<T> toMutableList();
+    AMutableSetWrapper<T> toMutableSet();
+    //TODO toMap
 
     <U> ACollection<U> map(Function<T,U> f);
     <U> ACollection<U> flatMap(Function<T, Iterable<U>> f);

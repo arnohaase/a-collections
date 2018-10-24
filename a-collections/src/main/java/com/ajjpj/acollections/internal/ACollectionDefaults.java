@@ -7,6 +7,8 @@ import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.mutable.AMutableListWrapper;
+import com.ajjpj.acollections.mutable.AMutableSetWrapper;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Collection;
@@ -53,6 +55,13 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
     }
     @Override default ATreeSet<T> toSortedSet(Comparator<T> comparator) {
         return ATreeSet.from(this, comparator);
+    }
+
+    @Override default AMutableListWrapper<T> toMutableList () {
+        return AMutableListWrapper.from(this);
+    }
+    @Override default AMutableSetWrapper<T> toMutableSet () {
+        return AMutableSetWrapper.from(this);
     }
 
     @Override default C filter(Predicate<T> f) {

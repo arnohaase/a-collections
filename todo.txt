@@ -6,12 +6,15 @@ todo
 
 
 
+* Documentation
+  * JavaDoc
+  * README.md
+  * package.java
 
 * AbstractImmutableSet
 * add mutable JU code to benchmarks
 * unit tests
   * AIterator
-  * AOption
 
 
 

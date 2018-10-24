@@ -10,6 +10,7 @@ import com.ajjpj.acollections.internal.ASetDefaults;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -22,8 +23,25 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
         return new AMutableSetWrapper<>(inner);
     }
 
+    public static <T> AMutableSetWrapper<T> from(Iterator<T> it) {
+        return AMutableSetWrapper.<T>builder().addAll(it).build();
+    }
+    public static <T> AMutableSetWrapper<T> from(Iterable<T> iterable) {
+        return AMutableSetWrapper.<T>builder().addAll(iterable).build();
+    }
+
+    public static <T> AMutableSetWrapper<T> of(T o1) {
+        return AMutableSetWrapper.<T>builder().add(o1).build();
+    }
+
+    //TODO static factories, empty
+
     public AMutableSetWrapper (Set<T> inner) {
         this.inner = inner;
+    }
+
+    @Override public AMutableSetWrapper<T> toMutableSet () {
+        return this;
     }
 
     @Override public ASet<T> added (T o) {

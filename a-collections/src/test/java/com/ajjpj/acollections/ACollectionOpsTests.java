@@ -8,6 +8,8 @@ public interface ACollectionOpsTests {
     void testToVector();
     void testToSet();
     void testToSortedSet();
+    void testToMutableList();
+    void testToMutableSet();
 
     void testSize();
     void testIsEmpty();

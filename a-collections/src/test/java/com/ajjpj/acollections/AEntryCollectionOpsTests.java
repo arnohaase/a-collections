@@ -3,6 +3,7 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
 import org.junit.jupiter.api.Test;
 
@@ -105,7 +106,7 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     }
     @Test @Override default void testToVector () {
         doTest(v -> {
-            assertEquals(AVector.empty(), v.mkColl());
+            assertEquals(AVector.empty(), v.mkColl().toVector());
             assertEquals(AVector.of(entryOf(1)), v.mkColl(1).toVector());
             assertEquals(v.mkColl(1, 2, 3, 4).toVector(), v.mkColl(1, 2, 3, 4));
         });
@@ -123,6 +124,21 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
             assertThrows(UnsupportedOperationException.class, () -> v.mkColl().toSortedSet());
             assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1).toSortedSet());
             assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1, 2).toSortedSet());
+        });
+    }
+
+    @Test @Override default void testToMutableList() {
+        doTest(v -> {
+            assertEquals(AMutableListWrapper.empty(), v.mkColl().toMutableList());
+            assertEquals(AMutableListWrapper.of(entryOf(1)), v.mkColl(1).toMutableList());
+            assertEquals(v.mkColl(1, 2, 3, 4).toMutableList().toVector(), v.mkColl(1, 2, 3, 4));
+        });
+    }
+    @Test @Override default void testToMutableSet() {
+        doTest(v -> {
+            assertTrue(v.mkColl().toMutableSet().isEmpty());
+            assertEquals(AHashSet.of(entryOf(1)), v.mkColl(1).toMutableSet());
+            assertEquals(AHashSet.of(entryOf(1), entryOf(2), entryOf(3), entryOf(4)), v.mkColl(1, 2, 3, 4).toMutableSet());
         });
     }
 

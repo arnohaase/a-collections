@@ -4,6 +4,7 @@ import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
 import org.junit.jupiter.api.Test;
 
@@ -160,6 +161,21 @@ public interface ACollectionTests extends ACollectionOpsTests {
             assertTrue(v.mkColl().toSortedSet().isEmpty());
             assertEquals(ATreeSet.of(1), v.mkColl(1).toSortedSet());
             assertEquals(ATreeSet.of(1, 2, 3, 4), v.mkColl(2, 1, 4, 3).toSortedSet());
+        });
+    }
+
+    @Test @Override default void testToMutableList() {
+        doTest(v -> {
+            assertEquals(AMutableListWrapper.empty(), v.mkColl().toMutableList());
+            assertEquals(AMutableListWrapper.of(1), v.mkColl(1).toMutableList());
+            assertEquals(v.mkColl(1, 2, 3, 4).toMutableList().toVector(), v.mkColl(1, 2, 3, 4));
+        });
+    }
+    @Test @Override default void testToMutableSet() {
+        doTest(v -> {
+            assertTrue(v.mkColl().toMutableSet().isEmpty());
+            assertEquals(AHashSet.of(1), v.mkColl(1).toMutableSet());
+            assertEquals(AHashSet.of(1, 2, 3, 4), v.mkColl(1, 2, 3, 4).toMutableSet());
         });
     }
 

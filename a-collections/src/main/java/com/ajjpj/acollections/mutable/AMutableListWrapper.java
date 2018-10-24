@@ -3,11 +3,9 @@ package com.ajjpj.acollections.mutable;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
-import com.ajjpj.acollections.immutable.AHashSet;
-import com.ajjpj.acollections.immutable.ALinkedList;
-import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.internal.ACollectionSupport;
+import com.ajjpj.acollections.internal.AListDefaults;
 import com.ajjpj.acollections.internal.AListIterator;
 import com.ajjpj.acollections.util.AOption;
 
@@ -24,7 +22,7 @@ import java.util.stream.StreamSupport;
  * Always AEquality.EQUALS --> least surprise
  *
  */
-public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDefaults
+public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrapper<T>> {
     private final List<T> inner;
 
     public static <T> AMutableListWrapper<T> wrap(List<T> inner) {
@@ -39,8 +37,29 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
         return inner;
     }
 
+    public static <T> AMutableListWrapper<T> empty() {
+        return new AMutableListWrapper<>(new ArrayList<>());
+    }
+
+    public static <T> AMutableListWrapper<T> from(Iterator<T> it) {
+        return AMutableListWrapper.<T>builder().addAll(it).build();
+    }
+    public static <T> AMutableListWrapper<T> from(Iterable<T> iterable) {
+        return AMutableListWrapper.<T>builder().addAll(iterable).build();
+    }
+
+    public static <T> AMutableListWrapper<T> of(T o1) {
+        return AMutableListWrapper.<T>builder().add(o1).build();
+    }
+
+    //TODO static factories
+
     @Override public <U> ACollectionBuilder<U, AMutableListWrapper<U>> newBuilder () {
         return builder();
+    }
+
+    @Override public AMutableListWrapper<T> toMutableList () {
+        return this;
     }
 
     @Override
@@ -88,7 +107,7 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
     }
 
     @Override
-    public <U> AList<U> flatMap (Function<T, Iterable<U>> f) {
+    public <U> AMutableListWrapper<U> flatMap (Function<T, Iterable<U>> f) {
         Function<T, Stream<U>> g = t -> StreamSupport.stream(f.apply(t).spliterator(), false);
         List<U> mappedInner = inner.stream()
              .flatMap(g)
@@ -97,7 +116,7 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
     }
 
     @Override
-    public AList<T> filterNot (Predicate<T> f) {
+    public AMutableListWrapper<T> filterNot (Predicate<T> f) {
         return filter(f.negate());
     }
 
@@ -117,24 +136,6 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
             return AOption.none();
         }
         return AOption.some(iterator().next());
-    }
-
-    @Override
-    public ALinkedList<T> toLinkedList () {
-        return ALinkedList.from(this);
-    }
-
-    @Override
-    public AVector<T> toVector () {
-        return AVector.from(this);
-    }
-
-    @Override public AHashSet<T> toSet () {
-        return AHashSet.from(this);
-    }
-
-    @Override public ATreeSet<T> toSortedSet(Comparator<T> comparator) {
-        return ATreeSet.from(this, comparator);
     }
 
     @Override
@@ -223,26 +224,26 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
     }
 
     @Override
-    public AList<T> prepend (T o) {
+    public AMutableListWrapper<T> prepend (T o) {
         inner.add(0, o);
         return this;
     }
 
     @Override
-    public AList<T> append (T o) {
+    public AMutableListWrapper<T> append (T o) {
         inner.add(o);
         return this;
     }
 
     @Override
-    public AList<T> updated (int idx, T o) {
+    public AMutableListWrapper<T> updated (int idx, T o) {
         inner.set(idx, o);
         return this;
     }
 
 
     @Override
-    public AList<T> concat(Iterator<? extends T> that) {
+    public AMutableListWrapper<T> concat(Iterator<? extends T> that) {
         while (that.hasNext()) {
             inner.add(that.next());
         }
@@ -250,12 +251,12 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
     }
 
     @Override
-    public AList<T> concat(Iterable<? extends T> that) {
+    public AMutableListWrapper<T> concat(Iterable<? extends T> that) {
         return concat(that.iterator());
     }
 
     @Override
-    public AList<T> patch (int idx, List<T> patch, int numReplaced) {
+    public AMutableListWrapper<T> patch (int idx, List<T> patch, int numReplaced) {
         for (int i = 0; i<numReplaced; i++)
             inner.remove(idx);
         inner.addAll(idx, patch);
@@ -268,22 +269,22 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
     }
 
     @Override
-    public AList<T> init () {
+    public AMutableListWrapper<T> init () {
         return drop(1);
     }
 
     @Override
-    public AList<T> tail () {
+    public AMutableListWrapper<T> tail () {
         return dropRight(1);
     }
 
     @Override
-    public AList<T> takeRight (int n) {
+    public AMutableListWrapper<T> takeRight (int n) {
         return new AMutableListWrapper<>(inner.subList(inner.size()-n, inner.size()));
     }
 
     @Override
-    public AList<T> dropRight (int n) {
+    public AMutableListWrapper<T> dropRight (int n) {
         return new AMutableListWrapper<>(inner.subList(0, n+1));
     }
 
@@ -305,7 +306,7 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
     }
 
     @Override
-    public AList<T> takeWhile (Predicate<T> f) {
+    public AMutableListWrapper<T> takeWhile (Predicate<T> f) {
         List<T> updatedInner = new ArrayList<>();
         for (T o: this) {
             if (!f.test(o)) break;
@@ -334,17 +335,17 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
     }
 
     @Override
-    public AList<T> take (int n) {
+    public AMutableListWrapper<T> take (int n) {
         return new AMutableListWrapper<>(inner.subList(0, n-1));
     }
 
     @Override
-    public AList<T> drop (int n) {
+    public AMutableListWrapper<T> drop (int n) {
         return new AMutableListWrapper<>(inner.subList(n, inner.size()-1));
     }
 
     @Override
-    public AList<T> reverse () {
+    public AMutableListWrapper<T> reverse () {
         List<T> updatedInner = new ArrayList<>();
         for (T e: inner) updatedInner.add(0, e);
         return new AMutableListWrapper<>(updatedInner);
@@ -357,13 +358,13 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
     }
 
     @Override
-    public <U> AList<U> map (Function<T, U> f) {
+    public <U> AMutableListWrapper<U> map (Function<T, U> f) {
         List<U> updatedInner = inner.stream().map(f).collect(Collectors.toList());
         return new AMutableListWrapper<>(updatedInner);
     }
 
     @Override
-    public AList<T> filter (Predicate<T> f) {
+    public AMutableListWrapper<T> filter (Predicate<T> f) {
         List<T> updatedInner = inner.stream().filter(f).collect(Collectors.toList());
         return new AMutableListWrapper<>(updatedInner);
     }

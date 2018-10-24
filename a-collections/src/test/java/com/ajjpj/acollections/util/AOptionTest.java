@@ -2,11 +2,12 @@ package com.ajjpj.acollections.util;
 
 import com.ajjpj.acollections.ACollectionOpsTests;
 import com.ajjpj.acollections.AIterator;
-import com.ajjpj.acollections.ASortedSet;
 import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.mutable.AMutableListWrapper;
+import com.ajjpj.acollections.mutable.AMutableSetWrapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
@@ -14,9 +15,9 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static com.ajjpj.acollections.util.AOption.none;
+import static com.ajjpj.acollections.util.AOption.some;
 import static org.junit.jupiter.api.Assertions.*;
-
-import static com.ajjpj.acollections.util.AOption.*;
 
 
 public class AOptionTest implements ACollectionOpsTests {
@@ -89,6 +90,14 @@ public class AOptionTest implements ACollectionOpsTests {
 
         assertEquals(AVector.of(1, 5, 9), some(5).toSortedSet().added(1).added(9).toVector());
         assertEquals(AVector.of(9, 5, 1), some(5).toSortedSet(Comparator.<Integer>naturalOrder().reversed()).added(1).added(9).toVector());
+    }
+    @Override @Test public void testToMutableList () {
+        assertTrue(none().toMutableList().isEmpty());
+        assertEquals(AMutableListWrapper.of(1), some(1).toMutableList());
+    }
+    @Override @Test public void testToMutableSet () {
+        assertTrue(none().toMutableSet().isEmpty());
+        assertEquals(AMutableSetWrapper.of("a"), some("a").toMutableSet());
     }
 
     @Override @Test public void testSize () {
