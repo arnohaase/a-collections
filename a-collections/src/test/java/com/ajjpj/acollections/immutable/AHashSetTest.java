@@ -2,7 +2,6 @@ package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.ASetTests;
-import com.ajjpj.acollections.util.AEquality;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -17,9 +16,8 @@ public class AHashSetTest implements ASetTests {
     final int numIter = 10_000_000;
 
     @Override public Iterable<Variant> variants () {
-        return Arrays.asList(
-                new Variant(() -> AHashSet.builder(AEquality.EQUALS), null, false),
-                new Variant(() -> AHashSet.builder(AEquality.IDENTITY), null, true)
+        return Collections.singletonList(
+                new Variant(AHashSet::builder, null)
         );
     }
 

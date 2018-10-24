@@ -16,9 +16,6 @@ import java.util.function.Supplier;
 
 
 public abstract class AOption<T> extends AbstractImmutableCollection<T> implements ACollectionDefaults<T, AOption<T>> {
-    @Override public AEquality equality () {
-        return AEquality.EQUALS;
-    }
 
     public abstract T get();
     public abstract T orElse(T defaultValue);
@@ -71,10 +68,6 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
 
         return new ACollectionBuilder<U, AOption<U>>() {
             private AOption<U> result = none();
-
-            @Override public AEquality equality () {
-                return AEquality.EQUALS;
-            }
 
             @Override public ACollectionBuilder<U, AOption<U>> add (U el) {
                 if (result.nonEmpty()) throw new IllegalStateException("an AOption can hold at most one element");

@@ -1,19 +1,17 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.AListTests;
-import com.ajjpj.acollections.util.AEquality;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class ALinkedListTest implements AListTests {
     @Override public Iterable<Variant> variants () {
-        return Arrays.asList(
-                new Variant(() -> ALinkedList.builder(AEquality.EQUALS), AVector.of(1, 2, 3), false),
-                new Variant(() -> ALinkedList.builder(AEquality.IDENTITY), AVector.of(1, 2, 3), true)
+        return Collections.singletonList(
+                new Variant(ALinkedList::builder, AVector.of(1, 2, 3))
         );
     }
 

@@ -5,7 +5,6 @@ import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.ASetDefaults;
 import com.ajjpj.acollections.internal.ASetSupport;
-import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
@@ -93,7 +92,7 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
     }
 
     @Override public AHashSet<T> toSet () {
-        return AHashSet.from(this, AEquality.EQUALS);
+        return AHashSet.from(this);
     }
     @Override public ATreeSet<T> added (T o) {
         return new ATreeSet<>(RedBlackTree.update(root, o, null, true, comparator), comparator);
@@ -171,10 +170,6 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return RedBlackTree.keysIterator(root, start, comparator);
     }
 
-    @Override public AEquality equality () {
-        return AEquality.fromComparator(comparator);
-    }
-
     @Override public AIterator<T> iterator () {
         return RedBlackTree.keysIterator(root, AOption.none(), comparator);
     }
@@ -234,10 +229,6 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
 
         public Builder (Comparator<T> comparator) {
             this.comparator = comparator;
-        }
-
-        @Override public AEquality equality () {
-            return AEquality.fromComparator(comparator);
         }
 
         @Override public ACollectionBuilder<T, ATreeSet<T>> add (T el) {

@@ -4,7 +4,6 @@ import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AMapSupport;
-import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
@@ -65,8 +64,11 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
         return RedBlackTree.count(root);
     }
 
-    @Override public AEquality keyEquality () {
-        return AEquality.fromComparator(comparator);
+    @Override public boolean contains (Object o) {
+        if (! (o instanceof Map.Entry)) return false;
+        //noinspection unchecked
+        final Map.Entry<K,V> e = (Entry<K,V>) o;
+        return getOptional(e.getKey()).contains(e.getValue());
     }
 
     @Override public boolean containsKey (Object key) {
@@ -74,9 +76,9 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
         return RedBlackTree.get(root, (K) key, comparator).nonEmpty(); //TODO skip 'get', use 'lookup' directly
     }
 
-    @Override public boolean containsValue (V value, AEquality equality) {
+    @Override public boolean containsValue (Object value) {
         return RedBlackTree.valuesIterator(root, AOption.none(), comparator)
-                .exists(v -> equality.equals(v, value));
+                .exists(v -> Objects.equals(v, value));
     }
 
     @Override public AOption<V> getOptional (K key) {
@@ -101,10 +103,6 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
 
     @Override public boolean isEmpty () {
         return root == null;
-    }
-
-    @Override public boolean containsValue (Object value) {
-        return values().contains(value);
     }
 
     @Override  public V put (K key, V value) {
@@ -195,10 +193,6 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
 
         Builder (Comparator<K> comparator) {
             this.result = ATreeMap.empty(comparator);
-        }
-
-        @Override public AEquality equality () {
-            return result.equality();
         }
 
         public ACollectionBuilder<Entry<K, V>, ATreeMap<K, V>> add (K key, V value) {

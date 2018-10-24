@@ -6,35 +6,23 @@ import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.AbstractAIterator;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
-import com.ajjpj.acollections.util.AEquality;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 
 public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, ALinkedList<T>> {
-    private final AEquality equality;
-
-    private ALinkedList (AEquality equality) {
-        this.equality = equality;
-    }
-
     public static <T> ALinkedList<T> from(Iterable<T> that) {
         return fromIterator(that.iterator());
     }
-    public static <T> ALinkedList<T> from(Iterable<T> that, AEquality equality) {
-        return fromIterator(that.iterator(), equality);
-    }
 
     public static <T> ALinkedList<T> fromIterator(Iterator<T> it) {
-        return fromIterator(it, AEquality.EQUALS);
-    }
-    public static <T> ALinkedList<T> fromIterator(Iterator<T> it, AEquality equality) {
         return ALinkedList
-                .<T>builder(equality)
+                .<T>builder()
                 .addAll(it)
                 .build();
     }
@@ -53,34 +41,24 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
 
-    public static <T> ALinkedList<T> empty(AEquality equality) {
-        return nil(equality);
-    }
     public static <T> ALinkedList<T> empty() {
         return nil();
     }
     public static <T> ALinkedList<T> nil() {
-        return nil(AEquality.EQUALS);
-    }
-
-    public static <T> ALinkedList<T> nil(AEquality equality) {
-        if (equality == AEquality.EQUALS)
-            //noinspection unchecked
-            return Nil.EQUALS;
-        return new Nil<>(equality);
+        return Nil.INSTANCE;
     }
 
     @Override public <U> Builder<U> newBuilder () {
-        return builder(equality);
+        return builder();
     }
 
     @Override public ALinkedList<T> prepend(T o) {
-        return new HeadTail<>(o, this, equality);
+        return new HeadTail<>(o, this);
     }
 
     @Override public ALinkedList<T> append(T o) {
         return ALinkedList
-                .<T>builder(equality)
+                .<T>builder()
                 .addAll(this)
                 .add(o)
                 .build();
@@ -88,7 +66,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
 
     @Override public ALinkedList<T> concat (Iterator<? extends T> that) {
         return ALinkedList
-                .<T>builder(equality)
+                .<T>builder()
                 .addAll(this)
                 .addAll(that)
                 .build();
@@ -100,7 +78,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     @Override public ALinkedList<T> updated (int idx, T o) {
         if (idx < 0) throw new IndexOutOfBoundsException();
         try {
-            final Builder<T> builder = new Builder<>(equality);
+            final Builder<T> builder = new Builder<>();
 
             ALinkedList<T> l = this;
             for(int i=0; i<idx; i++) {
@@ -120,10 +98,6 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         }
     }
 
-    @Override public AEquality equality () {
-        return equality;
-    }
-
     @Override public T last () {
         if (isEmpty()) throw new NoSuchElementException();
         ALinkedList<T> l = this;
@@ -139,7 +113,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
 
     @Override public ALinkedList<T> take (int n) {
         if (n < 0) return nil();
-        final Builder<T> builder = new Builder<>(equality);
+        final Builder<T> builder = new Builder<>();
         ALinkedList<T> l = this;
         for(int i=0; i<n; i++) {
             if (l.isEmpty()) break;
@@ -183,7 +157,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
 
     @Override public ALinkedList<T> reverse () {
         // This is a more efficient implementation than the generic builder-based code from AListDefaults
-        ALinkedList<T> result = nil(equality);
+        ALinkedList<T> result = nil();
         for (T o: this) {
             result = result.prepend(o);
         }
@@ -230,7 +204,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         int idx=0;
         int result = -1;
         for (T candidate: this) {
-            if (equality.equals(candidate, o))
+            if (Objects.equals(candidate, o))
                 result = idx;
             idx += 1;
         }
@@ -258,8 +232,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         private final T head;
         private ALinkedList<T> tail; // mutable only during construction - this allows for some optimizations
 
-        HeadTail (T head, ALinkedList<T> tail, AEquality equality) {
-            super(equality);
+        HeadTail (T head, ALinkedList<T> tail) {
             this.head = head;
             this.tail = tail;
         }
@@ -305,10 +278,9 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     private static class Nil<T> extends ALinkedList<T> {
-        static final Nil EQUALS = new Nil(AEquality.EQUALS);
+        static final Nil INSTANCE = new Nil();
 
-        Nil(AEquality equality) {
-            super(equality);
+        private Nil() {
         }
 
         @Override public boolean isEmpty () {
@@ -340,33 +312,22 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     public static <T> Builder<T> builder() {
-        return builder(AEquality.EQUALS);
-    }
-    public static <T> Builder<T> builder(AEquality equality) {
-        return new Builder<>(equality);
+        return new Builder<>();
     }
 
     public static class Builder<T> implements ACollectionBuilder<T, ALinkedList<T>> {
-        private ALinkedList<T> result;
+        private ALinkedList<T> result = nil();
         private HeadTail<T> last;
         private boolean wasBuilt=false;
-
-        Builder (AEquality equality) {
-            result = nil(equality);
-        }
-
-        @Override public AEquality equality () {
-            return result.equality();
-        }
 
         public Builder<T> add(T o) {
             if (wasBuilt) throw new IllegalStateException();
             if(result.isEmpty()) {
-                last = new HeadTail<>(o, result, result.equality);
+                last = new HeadTail<>(o, result);
                 result = last;
             }
             else {
-                final HeadTail<T> newLast = new HeadTail<>(o, last.tail(), last.equality());
+                final HeadTail<T> newLast = new HeadTail<>(o, last.tail());
                 last.tail = newLast;
                 last = newLast;
             }

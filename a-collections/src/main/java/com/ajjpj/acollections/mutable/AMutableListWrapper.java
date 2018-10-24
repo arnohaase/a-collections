@@ -9,7 +9,6 @@ import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListIterator;
-import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
@@ -36,7 +35,6 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
         this.inner = inner;
     }
 
-    @Override public AEquality equality () { return AEquality.EQUALS; }
     public List<T> inner() {
         return inner;
     }
@@ -64,7 +62,7 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
             Iterator<T> thatIterator = that.iterator();
             Iterator<T> innerIterator = inner.iterator();
             while (that.iterator().hasNext()){
-                if (AEquality.EQUALS.notEquals(thatIterator.next(), innerIterator.next())){
+                if (! Objects.equals(thatIterator.next(), innerIterator.next())){
                     return false;
                 }
             }
@@ -123,16 +121,16 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
 
     @Override
     public ALinkedList<T> toLinkedList () {
-        return ALinkedList.from(this, AEquality.EQUALS);
+        return ALinkedList.from(this);
     }
 
     @Override
     public AVector<T> toVector () {
-        return AVector.from(this, AEquality.EQUALS);
+        return AVector.from(this);
     }
 
     @Override public AHashSet<T> toSet () {
-        return AHashSet.from(this, AEquality.EQUALS);
+        return AHashSet.from(this);
     }
 
     @Override public ATreeSet<T> toSortedSet(Comparator<T> comparator) {
@@ -300,7 +298,7 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
         final Iterator<T> i = inner.listIterator(inner.size() - that.size());
         final Iterator<T> j = that.iterator();
         while (i.hasNext() && j.hasNext())
-            if (equality().notEquals(i.next(), j.next()))
+            if (! Objects.equals(i.next(), j.next()))
                 return false;
 
         return ! j.hasNext();
@@ -487,10 +485,6 @@ public class AMutableListWrapper<T> implements AList<T> { //TODO extend AListDef
 
         @Override public AMutableListWrapper<T> build () {
             return AMutableListWrapper.wrap(inner);
-        }
-
-        @Override public AEquality equality () {
-            return AEquality.EQUALS;
         }
     }
 }

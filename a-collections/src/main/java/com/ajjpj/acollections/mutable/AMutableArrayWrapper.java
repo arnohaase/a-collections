@@ -6,7 +6,6 @@ import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.AbstractAIterator;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
-import com.ajjpj.acollections.util.AEquality;
 
 import java.util.*;
 import java.util.function.Function;
@@ -147,10 +146,6 @@ public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMuta
         return ACollectionSupport.collect(newBuilder(), this, filter, f);
     }
 
-    @Override public AEquality equality () {
-        return AEquality.EQUALS;
-    }
-
     @Override public boolean isEmpty () {
         return size() == 0;
     }
@@ -282,7 +277,7 @@ public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMuta
         final Iterator it1 = this.iterator();
         final Iterator it2 = ((Iterable) o).iterator();
         while (it1.hasNext() && it2.hasNext()) {
-            if (!equality().equals(it1.next(), it2.next())) return false;
+            if (!Objects.equals(it1.next(), it2.next())) return false;
         }
         return !it1.hasNext() && !it2.hasNext();
     }
@@ -291,7 +286,7 @@ public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMuta
         //TODO extract to ACollectionSupport / AbstractMutableCollection
         int result = 1;
         for (T o: this)
-            result = 31*result + equality().hashCode(o);
+            result = 31*result + Objects.hashCode(o);
 
         return result;
     }
@@ -311,10 +306,6 @@ public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMuta
         @Override public AMutableArrayWrapper<T> build () {
             //noinspection unchecked
             return new AMutableArrayWrapper(l.toArray(new Object[0]));
-        }
-
-        @Override public AEquality equality () {
-            return AEquality.EQUALS;
         }
     }
 }

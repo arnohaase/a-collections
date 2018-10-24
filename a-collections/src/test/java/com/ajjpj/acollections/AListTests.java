@@ -1,8 +1,6 @@
 package com.ajjpj.acollections;
 
-import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.AVector;
-import com.ajjpj.acollections.util.AEquality;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -15,8 +13,6 @@ public interface AListTests extends ACollectionTests {
     @Test default void testPrepend() {
         doTest(v -> {
             assertEquals(AVector.of(1), v.mkList().prepend(1));
-            v.checkEquality(v.mkList().prepend(1));
-
             assertEquals(AVector.of(2, 1, 3), v.mkList().prepend(3).prepend(1).prepend(2));
 
             AList<Integer> l = v.mkList();
@@ -30,8 +26,6 @@ public interface AListTests extends ACollectionTests {
     @Test default void testAppend() {
         doTest(v -> {
             assertEquals(AVector.of(1), v.mkList().append(1));
-            v.checkEquality(v.mkList().append(1));
-
             assertEquals(AVector.of(2, 1, 3), v.mkList().append(2).append(1).append(3));
 
             AList<Integer> l = v.mkList();
@@ -48,9 +42,6 @@ public interface AListTests extends ACollectionTests {
             assertEquals(AVector.of(1), v.mkList().concat(v.mkList(1)));
             assertEquals(AVector.of(1), v.mkList(1).concat(v.mkList()));
 
-            v.checkEquality(v.mkList(1).concat(AHashSet.empty()));
-            v.checkEquality(v.mkList(1).concat(AHashSet.empty(AEquality.IDENTITY)));
-
             assertEquals(AVector.of(2, 4, 3, 1, 2), v.mkList(2, 4).concat(AVector.of(3, 1, 2)));
 
             AList<Integer> l = v.mkList(1);
@@ -66,9 +57,6 @@ public interface AListTests extends ACollectionTests {
             assertEquals(AVector.empty(), v.mkList().concat(v.mkList().iterator()));
             assertEquals(AVector.of(1), v.mkList().concat(v.mkList(1).iterator()));
             assertEquals(AVector.of(1), v.mkList(1).concat(v.mkList().iterator()));
-
-            v.checkEquality(v.mkList(1).concat(AHashSet.<Integer>empty().iterator()));
-            v.checkEquality(v.mkList(1).concat(AHashSet.<Integer>empty(AEquality.IDENTITY).iterator()));
 
             assertEquals(AVector.of(2, 4, 3, 1, 2), v.mkList(2, 4).concat(AVector.of(3, 1, 2).iterator()));
 
@@ -87,7 +75,6 @@ public interface AListTests extends ACollectionTests {
             assertThrows(IndexOutOfBoundsException.class, () -> v.mkList(1).updated(1, 2));
 
             assertEquals(AVector.of(2), v.mkList(1).updated(0, 2));
-            v.checkEquality(v.mkList(1).updated(0, 2));
 
             assertEquals(AVector.of(3, 2), v.mkList(1, 2).updated(0, 3));
             assertEquals(AVector.of(1, 3), v.mkList(1, 2).updated(1, 3));
@@ -105,7 +92,6 @@ public interface AListTests extends ACollectionTests {
     @Test default void testPatch() {
         doTest(v -> {
             assertEquals(AVector.of(1, 2), v.mkList().patch(0, AVector.of(1, 2), 0));
-            v.checkEquality(v.mkList().patch(0, AVector.of(1, 2), 0));
 
             assertThrows(IndexOutOfBoundsException.class, () -> v.mkList().patch(1, AVector.of(1, 2), 0));
             assertThrows(IndexOutOfBoundsException.class, () -> v.mkList().patch(-1, AVector.of(1, 2), 0));
@@ -258,11 +244,8 @@ public interface AListTests extends ACollectionTests {
     @Test default void testReverse() {
         doTest(v -> {
             assertEquals(AVector.empty(), v.mkList().reverse());
-            v.checkEquality(v.mkList().reverse());
             assertEquals(AVector.of(1), v.mkList(1).reverse());
-            v.checkEquality(v.mkList(1).reverse());
             assertEquals(AVector.of(2, 1), v.mkList(1, 2).reverse());
-            v.checkEquality(v.mkList(1, 2).reverse());
 
             //TODO mutable?!
         });
@@ -291,11 +274,6 @@ public interface AListTests extends ACollectionTests {
             assertFalse(v.mkList(1, 2).startsWith(AVector.of(2)));
             assertTrue(v.mkList(1, 2).startsWith(AVector.of(1, 2)));
             assertFalse(v.mkList(1, 2).startsWith(AVector.of(2, 1)));
-
-            if (v.isIdentity()) {
-                //noinspection UnnecessaryBoxing
-                assertFalse(v.mkList(1).startsWith(AVector.of(new Integer(1))));
-            }
         });
     }
     @Test default void testEndsWith() {
@@ -314,11 +292,6 @@ public interface AListTests extends ACollectionTests {
             assertFalse(v.mkList(1, 2).endsWith(AVector.of(1)));
             assertTrue(v.mkList(1, 2).endsWith(AVector.of(1, 2)));
             assertFalse(v.mkList(1, 2).endsWith(AVector.of(2, 1)));
-
-            if (v.isIdentity()) {
-                //noinspection UnnecessaryBoxing
-                assertFalse(v.mkList(1).endsWith(AVector.of(new Integer(1))));
-            }
         });
     }
 
@@ -386,11 +359,6 @@ public interface AListTests extends ACollectionTests {
             assertEquals(1, v.mkList(1, 2, 1).indexOf(2));
             assertEquals(1, v.mkList(1, 2, 2, 1, 2).indexOf(2));
             assertEquals(-1, v.mkList(1, 2, 2, 1, 2).indexOf(3));
-
-            if (v.isIdentity()) {
-                //noinspection UnnecessaryBoxing
-                assertEquals(-1, v.mkList(1).indexOf(new Integer(1)));
-            }
         });
     }
     @Test default void testLastIndexOf() {
@@ -402,11 +370,6 @@ public interface AListTests extends ACollectionTests {
             assertEquals(1, v.mkList(1, 2, 1).lastIndexOf(2));
             assertEquals(4, v.mkList(1, 2, 2, 1, 2).lastIndexOf(2));
             assertEquals(-1, v.mkList(1, 2, 2, 1, 2).lastIndexOf(3));
-
-            if (v.isIdentity()) {
-                //noinspection UnnecessaryBoxing
-                assertEquals(-1, v.mkList(1).lastIndexOf(new Integer(1)));
-            }
         });
     }
 

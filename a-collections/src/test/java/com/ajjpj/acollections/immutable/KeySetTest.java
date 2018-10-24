@@ -3,17 +3,16 @@ package com.ajjpj.acollections.immutable;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.ASetTests;
-import com.ajjpj.acollections.util.AEquality;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 
 public class KeySetTest implements ASetTests {
     private static class KeySetBuilder implements ACollectionBuilder<Integer, ASet<Integer>> {
         private AHashMap<Integer, Integer> map;
 
-        KeySetBuilder(AEquality equality) {
-            this.map = AHashMap.empty(equality);
+        KeySetBuilder() {
+            this.map = AHashMap.empty();
         }
 
         @Override public ACollectionBuilder<Integer, ASet<Integer>> add (Integer el) {
@@ -24,16 +23,11 @@ public class KeySetTest implements ASetTests {
         @Override public ASet<Integer> build () {
             return map.keySet();
         }
-
-        @Override public AEquality equality () {
-            return map.keyEquality();
-        }
     }
 
     @Override public Iterable<Variant> variants () {
-        return Arrays.asList(
-                new Variant(() -> new KeySetBuilder(AEquality.EQUALS), null, false),
-                new Variant(() -> new KeySetBuilder(AEquality.IDENTITY), null, true)
+        return Collections.singletonList(
+                new Variant(KeySetBuilder::new, null)
         );
     }
 }

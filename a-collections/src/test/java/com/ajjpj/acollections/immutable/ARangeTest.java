@@ -2,7 +2,6 @@ package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.AListTests;
-import com.ajjpj.acollections.util.AEquality;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -12,7 +11,6 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class ARangeTest implements AListTests {
@@ -186,11 +184,7 @@ public class ARangeTest implements AListTests {
 
     static class RangeVariant extends Variant {
         public RangeVariant () {
-            super(null, AVector.of(1, 2, 3), false);
-        }
-
-        @Override public void checkEquality (ACollection<Integer> coll) {
-            assertEquals (coll.equality(), AEquality.EQUALS);
+            super(null, AVector.of(1, 2, 3));
         }
 
         @Override public ACollection<Integer> mkColl (Integer... values) {

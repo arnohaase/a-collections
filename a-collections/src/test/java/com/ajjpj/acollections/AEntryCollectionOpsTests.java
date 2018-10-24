@@ -3,7 +3,6 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.AVector;
-import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 import org.junit.jupiter.api.Test;
 
@@ -34,13 +33,6 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     default Map.Entry<Integer,Integer> sum (Map.Entry<Integer,Integer> a, Map.Entry<Integer,Integer> b) { return entryOf(a.getKey()+b.getKey()); }
 
     //TODO equals, hashCode
-
-    @Test @Override default void testAEquality () {
-        doTest(v -> {
-            v.checkEquality(v.mkColl());
-            v.checkEquality(v.mkColl(1, 2, 3));
-        });
-    }
 
     @Test @Override default void testIterator () {
         doTest(v -> {
@@ -107,8 +99,6 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     @Test @Override default void testToLinkedList () {
         doTest(v -> {
             assertEquals(ALinkedList.empty(), v.mkColl().toLinkedList());
-            assertEquals(AEquality.EQUALS, v.mkColl().toLinkedList().equality());
-
             assertEquals(ALinkedList.of(entryOf(1)), v.mkColl(1).toLinkedList());
             assertEquals(v.mkColl(1, 2, 3, 4).toLinkedList(), v.mkColl(1, 2, 3, 4));
         });
@@ -116,7 +106,6 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     @Test @Override default void testToVector () {
         doTest(v -> {
             assertEquals(AVector.empty(), v.mkColl());
-            assertEquals(AEquality.EQUALS, v.mkColl().toVector().equality());
             assertEquals(AVector.of(entryOf(1)), v.mkColl(1).toVector());
             assertEquals(v.mkColl(1, 2, 3, 4).toVector(), v.mkColl(1, 2, 3, 4));
         });
@@ -125,8 +114,6 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     @Test @Override default void testToSet () {
         doTest(v -> {
             assertTrue(v.mkColl().toSet().isEmpty());
-            if (! isSorted()) assertEquals(AEquality.EQUALS, v.mkColl().toSet().equality());
-
             assertEquals(AHashSet.of(entryOf(1)), v.mkColl(1).toSet());
             assertEquals(AHashSet.of(entryOf(1), entryOf(2), entryOf(3), entryOf(4)), v.mkColl(1, 2, 3, 4).toSet());
         });
@@ -142,45 +129,21 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     @Test @Override default void testMap () {
         doTest(v -> {
             assertTrue(v.mkColl().map(this::doubled).isEmpty());
-
-            if (isSorted()) v.checkEquality(v.mkColl().map(this::doubled));
-            else assertEquals(AEquality.EQUALS, v.mkColl().map(this::doubled).equality());
-
             assertEquals(AHashSet.of(entryOf(2)), v.mkColl(1).map(this::doubledEntry).toSet());
-
-            if (isSorted()) v.checkEquality(v.mkColl(1).map(this::doubled));
-            else assertEquals(AEquality.EQUALS, v.mkColl(1).map(this::doubled).equality());
-
             assertEquals(AHashSet.of(2, 4, 6), v.mkColl(1, 2, 3).map(this::doubled).toSet());
         });
     }
     @Test @Override default void testFlatMap () {
         doTest(v -> {
             assertEquals(AVector.empty(), v.mkColl().flatMap(x -> AVector.of(doubled(x), doubled(x)+1)));
-
-            if (isSorted()) v.checkEquality(v.mkColl().flatMap(x -> AVector.of(doubled(x), doubled(x)+1)));
-            else assertEquals(AEquality.EQUALS, v.mkColl().flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).equality());
-
             assertEquals(AHashSet.of(2, 3), v.mkColl(1).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).toSet());
-
-            if (isSorted()) v.checkEquality(v.mkColl(1).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)));
-            else assertEquals(AEquality.EQUALS, v.mkColl(1).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).equality());
-
             assertEquals(AHashSet.of(2, 3, 4, 5, 6, 7), v.mkColl(1, 2, 3).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).toSet());
         });
     }
     @Test @Override default void testCollect () {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().collect(this::isOdd, this::doubledEntry));
-
-            if (isSorted()) v.checkEquality(v.mkColl().collect(this::isOdd, this::doubled));
-            else assertEquals(AEquality.EQUALS, v.mkColl().collect(this::isOdd, this::doubled).equality());
-
             assertEquals(AHashSet.of(entryOf(2)), v.mkColl(1).collect(this::isOdd, this::doubledEntry).toSet());
-
-            if (isSorted()) v.checkEquality(v.mkColl(1).collect(this::isOdd, this::doubled));
-            else assertEquals(AEquality.EQUALS, v.mkColl(1).collect(this::isOdd, this::doubled).equality());
-
             assertEquals(AHashSet.of(2, 6), v.mkColl(1, 2, 3).collect(this::isOdd, this::doubled).toSet());
         });
     }
@@ -205,18 +168,14 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     @Test @Override default void testFilter () {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().filter(this::isOdd));
-            v.checkEquality(v.mkColl().filter(this::isOdd));
             assertEquals(v.mkColl(1), v.mkColl(1).filter(this::isOdd));
-            v.checkEquality(v.mkColl(1).filter(this::isOdd));
             assertEquals(v.mkColl(1, 3), v.mkColl(1, 2, 3).filter(this::isOdd));
         });
     }
     @Test @Override default void testFilterNot () {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().filterNot(this::isEven));
-            v.checkEquality(v.mkColl().filterNot(this::isEven));
             assertEquals(v.mkColl(1), v.mkColl(1).filterNot(this::isEven));
-            v.checkEquality(v.mkColl(1).filterNot(this::isEven));
             assertEquals(v.mkColl(1, 3), v.mkColl(1, 2, 3).filterNot(this::isEven));
         });
     }
@@ -409,12 +368,10 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     class Variant {
         private final Supplier<ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>>> builderFactory;
         private final AVector<Integer> iterationOrder123;
-        private final boolean isIdentity;
 
-        public Variant (Supplier<ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>>> builderFactory, AVector<Integer> iterationOrder123, boolean isIdentity) {
+        public Variant (Supplier<ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>>> builderFactory, AVector<Integer> iterationOrder123) {
             this.builderFactory = builderFactory;
             this.iterationOrder123 = iterationOrder123;
-            this.isIdentity = isIdentity;
         }
 
         public ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>> newBuilder() {
@@ -436,14 +393,6 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
 
         public AVector<Map.Entry<Integer,Integer>> iterationOrder123() {
             return this.iterationOrder123 != null ? iterationOrder123.map(AEntryCollectionOpsTests::entryOf) : null;
-        }
-
-        public boolean isIdentity() {
-            return isIdentity;
-        }
-
-        public void checkEquality(ACollectionOps<?> coll) {
-            assertEquals(builderFactory.get().equality(), coll.equality());
         }
     }
 }

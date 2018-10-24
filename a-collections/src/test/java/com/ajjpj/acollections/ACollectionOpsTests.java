@@ -2,8 +2,6 @@ package com.ajjpj.acollections;
 
 
 public interface ACollectionOpsTests {
-    void testAEquality();
-
     void testIterator();
 
     void testToLinkedList();

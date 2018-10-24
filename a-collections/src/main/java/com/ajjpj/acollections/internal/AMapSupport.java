@@ -2,7 +2,6 @@ package com.ajjpj.acollections.internal;
 
 import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.immutable.*;
-import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
@@ -31,15 +30,11 @@ public class AMapSupport {
         }
 
         @Override public AHashSet<T> intersect (Set<T> that) {
-            return AHashSet.fromIterator(iterator().filter(that::contains), equality());
+            return AHashSet.fromIterator(iterator().filter(that::contains));
         }
 
         @Override public ASet<T> diff (Set<T> that) {
-            return AHashSet.fromIterator(iterator().filterNot(that::contains), equality());
-        }
-
-        @Override public AEquality equality () {
-            return map.keyEquality();
+            return AHashSet.fromIterator(iterator().filterNot(that::contains));
         }
 
         @Override public AIterator<T> iterator () {
@@ -47,7 +42,7 @@ public class AMapSupport {
         }
 
         @Override public <U> ACollectionBuilder<U, AHashSet<U>> newBuilder () {
-            return AHashSet.builder(map.keyEquality());
+            return AHashSet.builder();
         }
 
         @Override public boolean isEmpty () {
@@ -103,10 +98,6 @@ public class AMapSupport {
             this.map = map;
         }
 
-        @Override public AEquality equality () {
-            return AEquality.EQUALS;
-        }
-
         @Override public AIterator<T> iterator () {
             return map.iterator().map(Map.Entry::getValue);
         }
@@ -144,7 +135,7 @@ public class AMapSupport {
         }
 
         @Override public boolean contains (Object o) {
-            return ACollectionDefaults.super.contains(o);
+            return exists(x -> Objects.equals(x, o));
         }
 
         @Override public boolean containsAll (Collection<?> c) {
@@ -180,27 +171,23 @@ public class AMapSupport {
         }
 
         @Override public AHashSet<Map.Entry<K,V>> added (Map.Entry<K,V> o) {
-            return AHashSet.from(this, equality()).added(o);
+            return AHashSet.from(this).added(o);
         }
 
         @Override public AHashSet<Map.Entry<K,V>> removed (Map.Entry<K,V> o) {
-            return AHashSet.from(this, equality()).removed(o);
+            return AHashSet.from(this).removed(o);
         }
 
         @Override public AHashSet<Map.Entry<K,V>> union (Iterable<Map.Entry<K,V>> that) {
-            return AHashSet.from(this, equality()).union(that);
+            return AHashSet.from(this).union(that);
         }
 
         @Override public AHashSet<Map.Entry<K,V>> intersect (Set<Map.Entry<K,V>> that) {
-            return AHashSet.fromIterator(iterator().filter(that::contains), equality());
+            return AHashSet.fromIterator(iterator().filter(that::contains));
         }
 
         @Override public ASet<Map.Entry<K,V>> diff (Set<Map.Entry<K,V>> that) {
-            return AHashSet.fromIterator(iterator().filterNot(that::contains), equality());
-        }
-
-        @Override public AEquality equality () {
-            return AEquality.EQUALS;
+            return AHashSet.fromIterator(iterator().filterNot(that::contains));
         }
 
         @Override public AIterator<Map.Entry<K,V>> iterator () {
@@ -208,7 +195,7 @@ public class AMapSupport {
         }
 
         @Override public <U> ACollectionBuilder<U, AHashSet<U>> newBuilder () {
-            return AHashSet.builder(AEquality.EQUALS);
+            return AHashSet.builder();
         }
 
         @Override public boolean isEmpty () {
@@ -332,10 +319,6 @@ public class AMapSupport {
 
         @Override public AIterator<T> iterator (AOption<T> start) {
             return map.keysIterator(start);
-        }
-
-        @Override public AEquality equality () {
-            return map.keyEquality();
         }
 
         @Override public AIterator<T> iterator () {
@@ -484,10 +467,6 @@ public class AMapSupport {
             return map.iterator(start.map(Map.Entry::getKey));
         }
 
-        @Override public AEquality equality () {
-            return AEquality.fromComparator(new EntryComparator<>(map.comparator()));
-        }
-
         @Override public AIterator<Map.Entry<K,V>> iterator () {
             return map.iterator();
         }
@@ -528,7 +507,7 @@ public class AMapSupport {
 
         @Override
         public boolean contains (Object o) {
-            return map.containsKey(o);
+            return map.contains(o);
         }
 
         @Override public boolean containsAll (Collection<?> c) {

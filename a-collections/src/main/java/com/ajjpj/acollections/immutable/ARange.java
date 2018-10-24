@@ -6,9 +6,10 @@ import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.AbstractAIterator;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
-import com.ajjpj.acollections.util.AEquality;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -140,10 +141,6 @@ public class ARange extends AbstractImmutableCollection<Integer> implements ALis
     @Override public Integer max () {
         if (isEmpty()) throw new NoSuchElementException();
         return step < 0 ? from : last();
-    }
-
-    @Override public AEquality equality () {
-        return AEquality.EQUALS;
     }
 
     @Override public AIterator<Integer> iterator () {

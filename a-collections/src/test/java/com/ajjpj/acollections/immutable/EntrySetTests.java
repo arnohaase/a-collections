@@ -3,9 +3,8 @@ package com.ajjpj.acollections.immutable;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AEntryCollectionOpsTests;
 import com.ajjpj.acollections.ASet;
-import com.ajjpj.acollections.util.AEquality;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 
@@ -13,8 +12,8 @@ public class EntrySetTests implements AEntryCollectionOpsTests {
     private static class Builder implements ACollectionBuilder<Map.Entry<Integer, Integer>, ASet<Map.Entry<Integer,Integer>>> {
         private final AHashMap.Builder<Integer,Integer> builder;
 
-        Builder (AEquality equality) {
-            this.builder = AHashMap.builder(equality);
+        Builder () {
+            this.builder = AHashMap.builder();
         }
 
         @Override public ACollectionBuilder<Map.Entry<Integer, Integer>, ASet<Map.Entry<Integer, Integer>>> add (Map.Entry<Integer, Integer> el) {
@@ -25,16 +24,11 @@ public class EntrySetTests implements AEntryCollectionOpsTests {
         @Override public ASet<Map.Entry<Integer, Integer>> build () {
             return builder.build().entrySet();
         }
-
-        @Override public AEquality equality () {
-            return AEquality.EQUALS; // regardless of AMap equality, the entry set is based on EQUALS
-        }
     }
 
     @Override public Iterable<Variant> variants () {
-        return Arrays.asList(
-                new Variant(() -> new Builder(AEquality.EQUALS), null, false),
-                new Variant(() -> new Builder(AEquality.IDENTITY), null, false) // regardless of AMap equality, the entry set is based on EQUALS
+        return Collections.singletonList(
+                new Variant(Builder::new, null)
         );
     }
 }

@@ -1,6 +1,5 @@
 package com.ajjpj.acollections;
 
-import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Comparator;
@@ -9,9 +8,6 @@ import java.util.Map;
 
 public interface ASortedMap<K,V> extends AMap<K,V> {
     Comparator<K> comparator();
-    default AEquality keyEquality() {
-        return AEquality.fromComparator(comparator());
-    }
 
     /**
      * Count all the nodes with keys greater than or equal to the lower bound and less than the upper bound.

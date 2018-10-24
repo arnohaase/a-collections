@@ -2,7 +2,7 @@ package com.ajjpj.acollections.mutable;
 
 import com.ajjpj.acollections.ASetTests;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 
 public class AMutableSetWrapperTest implements ASetTests {
@@ -11,9 +11,8 @@ public class AMutableSetWrapperTest implements ASetTests {
     }
 
     @Override public Iterable<Variant> variants () {
-        //noinspection ArraysAsListWithZeroOrOneArgument
-        return Arrays.asList (
-                new Variant(AMutableSetWrapper::builder, null, false)
+        return Collections.singletonList(
+                new Variant(AMutableSetWrapper::builder, null)
         );
     }
 }

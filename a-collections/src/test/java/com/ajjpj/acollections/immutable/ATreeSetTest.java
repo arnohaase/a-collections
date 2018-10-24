@@ -16,14 +16,13 @@ public class ATreeSetTest implements ASetTests  {
 
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
-                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3), false),
-                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1), false)
+                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
+                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
         );
     }
 
 
-    @Test
-    @Override public void testToSortedSet() {
+    @Test @Override public void testToSortedSet() {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().toSortedSet());
             assertEquals(v.mkColl(1), v.mkColl(1).toSortedSet());

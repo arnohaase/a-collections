@@ -85,7 +85,7 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
     AIterator<T> reverseIterator();
 
     default boolean contains(Object o) {
-        return exists(el -> equality().equals(el, o));
+        return exists(el -> Objects.equals(el, o));
     }
 
     default boolean startsWith(List<T> that) {
@@ -93,7 +93,7 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
 
         final Iterator<T> itThis = this.iterator();
         for (T aThat: that) {
-            if (equality().notEquals(itThis.next(), aThat))
+            if (! Objects.equals(itThis.next(), aThat))
                 return false;
         }
         return true;
@@ -102,7 +102,7 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
         final Iterator<T> i = this.iterator().drop(size() - that.size());
         final Iterator<T> j = that.iterator();
         while (i.hasNext() && j.hasNext())
-            if (equality().notEquals(i.next(), j.next()))
+            if (! Objects.equals(i.next(), j.next()))
                 return false;
 
         return ! j.hasNext();
@@ -135,7 +135,7 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
     @Override default int indexOf (Object o) {
         int result = 0;
         for (T el: this) {
-            if (equality().equals(el, o)) return result;
+            if (Objects.equals(el, o)) return result;
             result += 1;
         }
         return -1;
@@ -145,7 +145,7 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
         int result = size()-1;
         final Iterator<T> it = reverseIterator();
         while (it.hasNext()) {
-            if (equality().equals(it.next(), o)) return result;
+            if (Objects.equals(it.next(), o)) return result;
             result -= 1;
         }
         return -1;

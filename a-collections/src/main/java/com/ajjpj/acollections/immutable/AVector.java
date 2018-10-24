@@ -3,30 +3,23 @@ package com.ajjpj.acollections.immutable;
 import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
-import com.ajjpj.acollections.util.AEquality;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public abstract class AVector<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, AVector<T>> {
+public class AVector<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, AVector<T>> {
     private static final int Log2ConcatFaster = 5;
     private static final int TinyAppendFaster = 2;
 
     public static <T> AVector<T> from(Iterable<T> that) {
         return fromIterator(that.iterator());
     }
-    public static <T> AVector<T> from(Iterable<T> that, AEquality equality) {
-        return fromIterator(that.iterator(), equality);
-    }
 
     public static <T> AVector<T> fromIterator(Iterator<T> it) {
-        return fromIterator(it, AEquality.EQUALS);
-    }
-    public static <T> AVector<T> fromIterator(Iterator<T> it, AEquality equality) {
         return AVector
-                .<T>builder(equality)
+                .<T>builder()
                 .addAll(it)
                 .build();
     }
@@ -74,16 +67,10 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     }
 
     @SuppressWarnings("StaticInitializerReferencesSubClass")
-    private static final AVector EMPTY = new AVectorEquals<>(0, 0, 0);
+    private static final AVector EMPTY = new AVector<>(0, 0, 0);
 
     public static <T> AVector<T> empty() {
-        return empty(AEquality.EQUALS);
-    }
-    @SuppressWarnings("unchecked")
-    public static <T> AVector<T> empty(AEquality equality) {
-        if (equality == AEquality.EQUALS) return EMPTY;
-        if (equality == AEquality.IDENTITY) return new AVectorIdentity<>(0, 0, 0);
-        return new AVectorCustomEquality<>(0, 0, 0, equality);
+        return EMPTY;
     }
 
     private final VectorPointer<T> pointer = new VectorPointer<T>();
@@ -100,9 +87,9 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         this.focus = focus;
     }
 
-    abstract AVector<T> newInstance (int startIndex, int endIndex, int focus);
-    @Override public abstract AEquality equality();
-    @Override public abstract <U> ACollectionBuilder<U, AVector<U>> newBuilder();
+    @Override public <U> ACollectionBuilder<U, AVector<U>> newBuilder() {
+        return builder();
+    }
 
     @Override public AVector<T> toVector () {
         return this;
@@ -136,7 +123,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
      */
     public AVector<T> concat (Iterator<? extends T> that) {
         return AVector
-                .<T>builder(equality())
+                .<T>builder()
                 .addAll(this)
                 .addAll(that)
                 .build();
@@ -234,17 +221,17 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
 
 
     @Override public AVector<T> take(int n) {
-        if (n <= 0) return empty(equality());
+        if (n <= 0) return empty();
         if (startIndex + n < endIndex) return dropBack0(startIndex + n);
         return this;
     }
     @Override public AVector<T> drop(int n) {
         if (n <= 0) return this;
         if (startIndex + n < endIndex) return dropFront0(startIndex + n);
-        return empty(equality());
+        return empty();
     }
     @Override public AVector<T> takeRight(int n) {
-        if (n <= 0) return empty(equality());
+        if (n <= 0) return empty();
         if (endIndex - n > startIndex) return dropFront0(endIndex - n);
         return this;
     }
@@ -252,7 +239,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     @Override public AVector<T> dropRight(int n) {
         if (n <= 0) return this;
         if (endIndex - n > startIndex) return dropBack0(endIndex - n);
-        return empty(equality());
+        return empty();
     }
 
     @Override public boolean isEmpty() {
@@ -270,7 +257,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
 
     @Override public AVector<T> updated(int index, T elem) {
         final int idx = checkRangeConvert(index);
-        final AVector<T> s = newInstance(startIndex, endIndex, idx);
+        final AVector<T> s = new AVector<>(startIndex, endIndex, idx);
         s.pointer.initFrom(pointer);
         s.dirty = dirty;
         s.gotoPosWritable(focus, idx, focus ^ idx);  // if dirty commit changes; go to new pos and prepare for writing
@@ -303,7 +290,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
             final int lo = (startIndex - 1) & 31;
 
             if (startIndex != blockIndex + 32) {
-                final AVector<T> s = newInstance(startIndex - 1, endIndex, blockIndex);
+                final AVector<T> s = new AVector<>(startIndex - 1, endIndex, blockIndex);
                 s.pointer.initFrom(pointer);
                 s.dirty = dirty;
                 s.gotoPosWritable(focus, blockIndex, focus ^ blockIndex);
@@ -320,7 +307,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
                     if (pointer.depth > 1) {
                         final int newBlockIndex = blockIndex + shift;
                         final int newFocus = focus + shift;
-                        final AVector<T> s = newInstance(startIndex - 1 + shift, endIndex + shift, newBlockIndex);
+                        final AVector<T> s = new AVector<>(startIndex - 1 + shift, endIndex + shift, newBlockIndex);
                         s.pointer.initFrom(pointer);
                         s.dirty = dirty;
                         s.shiftTopLevel(0, shiftBlocks); // shift right by n blocks
@@ -331,7 +318,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
                         final int newBlockIndex = blockIndex + 32;
                         final int newFocus = focus;
 
-                        final AVector<T> s = newInstance(startIndex - 1 + shift, endIndex + shift, newBlockIndex);
+                        final AVector<T> s = new AVector<>(startIndex - 1 + shift, endIndex + shift, newBlockIndex);
                         s.pointer.initFrom(pointer);
                         s.dirty = dirty;
                         s.shiftTopLevel(0, shiftBlocks); // shift right by n elements
@@ -346,7 +333,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
                     final int newBlockIndex = blockIndex + move;
                     final int newFocus = focus + move;
 
-                    final AVector<T> s = newInstance(startIndex - 1 + move, endIndex + move, newBlockIndex);
+                    final AVector<T> s = new AVector<>(startIndex - 1 + move, endIndex + move, newBlockIndex);
                     s.pointer.initFrom(pointer);
                     s.dirty = dirty;
                     s.gotoFreshPosWritable(newFocus, newBlockIndex, newFocus ^ newBlockIndex); // could optimize: we know it will create a whole branch
@@ -355,7 +342,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
                 } else {
                     final int newFocus = focus;
 
-                    final AVector<T> s = newInstance(startIndex - 1, endIndex, blockIndex);
+                    final AVector<T> s = new AVector<>(startIndex - 1, endIndex, blockIndex);
                     s.pointer.initFrom(pointer);
                     s.dirty = dirty;
                     s.gotoFreshPosWritable(newFocus, blockIndex, newFocus ^ blockIndex);
@@ -368,7 +355,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
             // empty vector, just insert single element at the back
             final Object[] elems = new Object[32];
             elems[31] = value;
-            final AVector<T> s = newInstance(31, 32, 0);
+            final AVector<T> s = new AVector<>(31, 32, 0);
             s.pointer.depth = 1;
             s.pointer.display0 = elems;
             return s;
@@ -381,7 +368,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
             int lo = endIndex & 31;
 
             if (endIndex != blockIndex) {
-                final AVector<T> s = newInstance(startIndex, endIndex + 1, blockIndex);
+                final AVector<T> s = new AVector<>(startIndex, endIndex + 1, blockIndex);
                 s.pointer.initFrom(pointer);
                 s.dirty = dirty;
                 s.gotoPosWritable(focus, blockIndex, focus ^ blockIndex);
@@ -395,7 +382,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
                     if (pointer.depth > 1) {
                         final int newBlockIndex = blockIndex - shift;
                         final int newFocus = focus - shift;
-                        final AVector<T> s = newInstance(startIndex - shift, endIndex + 1 - shift, newBlockIndex);
+                        final AVector<T> s = new AVector<>(startIndex - shift, endIndex + 1 - shift, newBlockIndex);
                         s.pointer.initFrom(pointer);
                         s.dirty = dirty;
                         s.shiftTopLevel(shiftBlocks, 0); // shift left by n blocks
@@ -406,7 +393,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
                         final int newBlockIndex = blockIndex - 32;
                         final int newFocus = focus;
 
-                        final AVector<T> s = newInstance(startIndex - shift, endIndex + 1 - shift, newBlockIndex);
+                        final AVector<T> s = new AVector<>(startIndex - shift, endIndex + 1 - shift, newBlockIndex);
                         s.pointer.initFrom(pointer);
                         s.dirty = dirty;
                         s.shiftTopLevel(shiftBlocks, 0); // shift right by n elements
@@ -417,7 +404,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
                 } else {
                     final int newFocus = focus;
 
-                    final AVector<T> s = newInstance(startIndex, endIndex + 1, blockIndex);
+                    final AVector<T> s = new AVector<>(startIndex, endIndex + 1, blockIndex);
                     s.pointer.initFrom(pointer);
                     s.dirty = dirty;
                     s.gotoFreshPosWritable(newFocus, blockIndex, newFocus ^ blockIndex);
@@ -429,7 +416,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         } else {
             final Object[] elems = new Object[32];
             elems[0] = value;
-            final AVector<T> s = newInstance(0, 1, 0);
+            final AVector<T> s = new AVector<>(0, 1, 0);
             s.pointer.depth = 1;
             s.pointer.display0 = elems;
             return s;
@@ -589,7 +576,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         final int shift = (cutIndex & ~((1 << (5 * d)) - 1));
 
         // need to init with full display iff going to cutIndex requires swapping block at level >= d
-        final AVector<T> s = newInstance(cutIndex - shift, endIndex - shift, blockIndex - shift);
+        final AVector<T> s = new AVector<>(cutIndex - shift, endIndex - shift, blockIndex - shift);
         s.pointer.initFrom(pointer);
         s.dirty = dirty;
         s.gotoPosWritable(focus, blockIndex, focus ^ blockIndex);
@@ -605,7 +592,7 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         final int d = requiredDepth(xor);
         final int shift = (startIndex & ~((1 << (5 * d)) - 1));
 
-        final AVector<T> s = newInstance(startIndex - shift, cutIndex - shift, blockIndex - shift);
+        final AVector<T> s = new AVector<>(startIndex - shift, cutIndex - shift, blockIndex - shift);
         s.pointer.initFrom(pointer);
         s.dirty = dirty;
         s.gotoPosWritable(focus, blockIndex, focus ^ blockIndex);
@@ -1133,15 +1120,11 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
     }
 
     public static <T> Builder<T> builder() {
-        return builder(AEquality.EQUALS);
-    }
-    public static <T> Builder<T> builder(AEquality equality) {
-        return new Builder<>(equality);
+        return new Builder<>();
     }
 
     public static class Builder<T> implements ACollectionBuilder<T,AVector<T>> {
         private final VectorPointer<T> pointer = new VectorPointer<T>();
-        private final AEquality equality;
 
         int blockIndex = 0;
         int lo = 0;
@@ -1151,14 +1134,9 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
         // possible alternative: start with display0 = null, blockIndex = -32, lo = 32
         // to avoid allocating initial array if the result will be empty anyways
 
-        Builder (AEquality equality) {
-            this.equality = equality;
+        Builder () {
             pointer.display0 = new Object[32];
             pointer.depth = 1;
-        }
-
-        @Override public AEquality equality () {
-            return equality;
         }
 
         public Builder<T> add(T elem) {
@@ -1180,74 +1158,14 @@ public abstract class AVector<T> extends AbstractImmutableCollection<T> implemen
             wasBuilt = true;
 
             final int size = blockIndex + lo;
-            if (size == 0) return empty(equality);
+            if (size == 0) return empty();
 
             // should focus front or back?
-            final AVector<T> s;
-            if (equality == AEquality.EQUALS) s = new AVectorEquals<>(0, size, 0);
-            else if (equality == AEquality.IDENTITY) s = new AVectorIdentity<>(0, size, 0);
-            else s = new AVectorCustomEquality<>(0, size, 0, equality);
+            final AVector<T> s = new AVector<>(0, size, 0);
 
             s.pointer.initFrom(pointer);
             if (pointer.depth > 1) s.pointer.gotoPos(0, size - 1); // we're currently focused to size - 1, not size!
             return s;
-        }
-    }
-
-    private static class AVectorEquals<T> extends AVector<T> {
-        AVectorEquals (int startIndex, int endIndex, int focus) {
-            super(startIndex, endIndex, focus);
-        }
-
-        @Override AVector<T> newInstance (int startIndex, int endIndex, int focus) {
-            return new AVectorEquals<>(startIndex, endIndex, focus);
-        }
-
-        @Override public <U> Builder<U> newBuilder () {
-            return new Builder<>(AEquality.EQUALS);
-        }
-
-        @Override public AEquality equality () {
-            return AEquality.EQUALS;
-        }
-    }
-
-    private static class AVectorIdentity<T> extends AVector<T> {
-        AVectorIdentity (int startIndex, int endIndex, int focus) {
-            super(startIndex, endIndex, focus);
-        }
-
-        @Override AVector<T> newInstance (int startIndex, int endIndex, int focus) {
-            return new AVectorIdentity<>(startIndex, endIndex, focus);
-        }
-
-        @Override public <U> Builder<U> newBuilder () {
-            return new Builder<>(AEquality.IDENTITY);
-        }
-
-        @Override public AEquality equality () {
-            return AEquality.IDENTITY;
-        }
-    }
-
-    private static class AVectorCustomEquality<T> extends AVector<T> {
-        private final AEquality equality;
-
-        AVectorCustomEquality(int startIndex, int endIndex, int focus, AEquality equality) {
-            super(startIndex, endIndex, focus);
-            this.equality = equality;
-        }
-
-        @Override AVector<T> newInstance (int startIndex, int endIndex, int focus) {
-            return new AVectorEquals<>(startIndex, endIndex, focus);
-        }
-
-        @Override public <U> Builder<U> newBuilder () {
-            return new Builder<>(equality);
-        }
-
-        @Override public AEquality equality () {
-            return equality;
         }
     }
 }

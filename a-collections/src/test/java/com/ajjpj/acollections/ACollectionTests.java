@@ -43,13 +43,6 @@ public interface ACollectionTests extends ACollectionOpsTests {
         }
     }
 
-    @Test @Override default void testAEquality() {
-        doTest(v -> {
-            v.checkEquality(v.mkColl());
-            v.checkEquality(v.mkColl(1, 2, 3));
-        });
-    }
-
     @Test @Override default void testIterator() {
         doTest(v -> {
             assertTrue(! v.mkColl().iterator().hasNext());
@@ -143,8 +136,6 @@ public interface ACollectionTests extends ACollectionOpsTests {
     @Test @Override default void testToLinkedList() {
         doTest(v -> {
             assertEquals(ALinkedList.empty(), v.mkColl().toLinkedList());
-            v.checkEquality(v.mkColl().toLinkedList());
-
             assertEquals(ALinkedList.of(1), v.mkColl(1).toLinkedList());
             assertEquals(v.mkColl(1, 2, 3, 4).toLinkedList(), v.mkColl(1, 2, 3, 4));
         });
@@ -152,8 +143,6 @@ public interface ACollectionTests extends ACollectionOpsTests {
     @Test @Override default void testToVector() {
         doTest(v -> {
             assertEquals(AVector.empty(), v.mkColl());
-            v.checkEquality(v.mkColl().toVector());
-
             assertEquals(AVector.of(1), v.mkColl(1).toVector());
             assertEquals(v.mkColl(1, 2, 3, 4).toVector(), v.mkColl(1, 2, 3, 4));
         });
@@ -162,8 +151,6 @@ public interface ACollectionTests extends ACollectionOpsTests {
     @Test @Override default void testToSet() {
         doTest(v -> {
             assertTrue(v.mkColl().toSet().isEmpty());
-            if (! isSorted()) v.checkEquality(v.mkColl().toSet());
-
             assertEquals(AHashSet.of(1), v.mkColl(1).toSet());
             assertEquals(AHashSet.of(1, 2, 3, 4), v.mkColl(1, 2, 3, 4).toSet());
         });
@@ -179,27 +166,21 @@ public interface ACollectionTests extends ACollectionOpsTests {
     @Test @Override default void testMap() {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().map(this::doubled));
-            v.checkEquality(v.mkColl().map(this::doubled));
             assertEquals(v.mkColl(2), v.mkColl(1).map(this::doubled));
-            v.checkEquality(v.mkColl(1).map(this::doubled));
             assertEquals(v.mkColl(2, 4, 6), v.mkColl(1, 2, 3).map(this::doubled));
         });
     }
     @Test @Override default void testFlatMap() {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().flatMap(x -> AVector.of(2*x, 2*x+1)));
-            v.checkEquality(v.mkColl().flatMap(x -> AVector.of(2*x, 2*x+1)));
             assertEquals(v.mkColl(2, 3), v.mkColl(1).flatMap(x -> AVector.of(2*x, 2*x+1)));
-            v.checkEquality(v.mkColl(1).flatMap(x -> AVector.of(2*x, 2*x+1)));
             assertEquals(v.mkColl(2, 3, 4, 5, 6, 7), v.mkColl(1, 2, 3).flatMap(x -> AVector.of(2*x, 2*x+1)));
         });
     }
     @Test @Override default void testCollect() {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().collect(this::isOdd, this::doubled));
-            v.checkEquality(v.mkColl().collect(this::isOdd, this::doubled));
             assertEquals(v.mkColl(2), v.mkColl(1).collect(this::isOdd, this::doubled));
-            v.checkEquality(v.mkColl(1).collect(this::isOdd, this::doubled));
             assertEquals(v.mkColl(2, 6), v.mkColl(1, 2, 3).collect(this::isOdd, this::doubled));
         });
     }
@@ -224,18 +205,14 @@ public interface ACollectionTests extends ACollectionOpsTests {
     @Test @Override default void testFilter() {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().filter(this::isOdd));
-            v.checkEquality(v.mkColl().filter(this::isOdd));
             assertEquals(v.mkColl(1), v.mkColl(1).filter(this::isOdd));
-            v.checkEquality(v.mkColl(1).filter(this::isOdd));
             assertEquals(v.mkColl(1, 3), v.mkColl(1, 2, 3).filter(this::isOdd));
         });
     }
     @Test @Override default void testFilterNot() {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().filterNot(this::isEven));
-            v.checkEquality(v.mkColl().filterNot(this::isEven));
             assertEquals(v.mkColl(1), v.mkColl(1).filterNot(this::isEven));
-            v.checkEquality(v.mkColl(1).filterNot(this::isEven));
             assertEquals(v.mkColl(1, 3), v.mkColl(1, 2, 3).filterNot(this::isEven));
         });
     }
@@ -290,9 +267,6 @@ public interface ACollectionTests extends ACollectionOpsTests {
             assertTrue(v.mkColl(1, 2, 3).contains(2));
             assertTrue(v.mkColl(1, 2, 3).contains(3));
             assertFalse(v.mkColl(1, 2, 3).contains(4));
-
-            //noinspection UnnecessaryBoxing
-            assertEquals(!v.isIdentity(), v.mkColl(1).contains(new Integer(1)));
         });
     }
     @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
@@ -313,9 +287,6 @@ public interface ACollectionTests extends ACollectionOpsTests {
             assertTrue(v.mkColl(1, 2, 3).containsAll(Arrays.asList(1, 2)));
             assertTrue(v.mkColl(1, 2, 3).containsAll(Arrays.asList(3, 2, 1)));
             assertFalse(v.mkColl(1, 2, 3).containsAll(Arrays.asList(3, 2, 4)));
-
-            //noinspection UnnecessaryBoxing
-            assertEquals(!v.isIdentity(), v.mkColl(1).containsAll(Arrays.asList(new Integer(1))));
         });
     }
 
@@ -446,12 +417,10 @@ public interface ACollectionTests extends ACollectionOpsTests {
     class Variant {
         private final Supplier<ACollectionBuilder<Integer, ? extends ACollection<Integer>>> builderFactory;
         private final AVector<Integer> iterationOrder123;
-        private final boolean isIdentity;
 
-        public Variant (Supplier<ACollectionBuilder<Integer, ? extends ACollection<Integer>>> builderFactory, AVector<Integer> iterationOrder123, boolean isIdentity) {
+        public Variant (Supplier<ACollectionBuilder<Integer, ? extends ACollection<Integer>>> builderFactory, AVector<Integer> iterationOrder123) {
             this.builderFactory = builderFactory;
             this.iterationOrder123 = iterationOrder123;
-            this.isIdentity = isIdentity;
         }
 
         public ACollectionBuilder<Integer, ? extends ACollection<Integer>> newBuilder() {
@@ -474,14 +443,6 @@ public interface ACollectionTests extends ACollectionOpsTests {
 
         public AVector<Integer> iterationOrder123() {
             return this.iterationOrder123;
-        }
-
-        public boolean isIdentity() {
-            return isIdentity;
-        }
-
-        public void checkEquality(ACollection<Integer> coll) {
-            assertEquals(builderFactory.get().equality(), coll.equality());
         }
     }
 }

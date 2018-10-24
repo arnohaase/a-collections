@@ -7,7 +7,6 @@ import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.ASetDefaults;
-import com.ajjpj.acollections.util.AEquality;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -50,10 +49,6 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
     @Override public AMutableSetWrapper<T> diff (Set<T> that) {
         inner.removeAll(that);
         return this;
-    }
-
-    @Override public AEquality equality () {
-        return AEquality.EQUALS;
     }
 
     @Override public AIterator<T> iterator () {
@@ -158,10 +153,6 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
 
         @Override public AMutableSetWrapper<T> build () {
             return AMutableSetWrapper.wrap(result);
-        }
-
-        @Override public AEquality equality () {
-            return AEquality.EQUALS;
         }
     }
 }
