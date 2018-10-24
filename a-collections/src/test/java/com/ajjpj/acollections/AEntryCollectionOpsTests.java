@@ -117,7 +117,6 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
         doTest(v -> {
             assertEquals(AVector.empty(), v.mkColl());
             assertEquals(AEquality.EQUALS, v.mkColl().toVector().equality());
-
             assertEquals(AVector.of(entryOf(1)), v.mkColl(1).toVector());
             assertEquals(v.mkColl(1, 2, 3, 4).toVector(), v.mkColl(1, 2, 3, 4));
         });
@@ -143,28 +142,46 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     @Test @Override default void testMap () {
         doTest(v -> {
             assertTrue(v.mkColl().map(this::doubled).isEmpty());
-            assertEquals(AEquality.EQUALS, v.mkColl().map(this::doubled).equality());
+
+            if (isSorted()) v.checkEquality(v.mkColl().map(this::doubled));
+            else assertEquals(AEquality.EQUALS, v.mkColl().map(this::doubled).equality());
+
             assertEquals(AHashSet.of(entryOf(2)), v.mkColl(1).map(this::doubledEntry).toSet());
-            assertEquals(AEquality.EQUALS, v.mkColl(1).map(this::doubled).equality());
-            assertEquals(AHashSet.of(entryOf(2), entryOf(4), entryOf(6)), v.mkColl(1, 2, 3).map(this::doubledEntry).toSet());
+
+            if (isSorted()) v.checkEquality(v.mkColl(1).map(this::doubled));
+            else assertEquals(AEquality.EQUALS, v.mkColl(1).map(this::doubled).equality());
+
+            assertEquals(AHashSet.of(2, 4, 6), v.mkColl(1, 2, 3).map(this::doubled).toSet());
         });
     }
     @Test @Override default void testFlatMap () {
         doTest(v -> {
             assertEquals(AVector.empty(), v.mkColl().flatMap(x -> AVector.of(doubled(x), doubled(x)+1)));
-            assertEquals(AEquality.EQUALS, v.mkColl().flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).equality());
+
+            if (isSorted()) v.checkEquality(v.mkColl().flatMap(x -> AVector.of(doubled(x), doubled(x)+1)));
+            else assertEquals(AEquality.EQUALS, v.mkColl().flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).equality());
+
             assertEquals(AHashSet.of(2, 3), v.mkColl(1).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).toSet());
-            assertEquals(AEquality.EQUALS, v.mkColl(1).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).equality());
+
+            if (isSorted()) v.checkEquality(v.mkColl(1).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)));
+            else assertEquals(AEquality.EQUALS, v.mkColl(1).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).equality());
+
             assertEquals(AHashSet.of(2, 3, 4, 5, 6, 7), v.mkColl(1, 2, 3).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).toSet());
         });
     }
     @Test @Override default void testCollect () {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().collect(this::isOdd, this::doubledEntry));
-            assertEquals(AEquality.EQUALS, v.mkColl().collect(this::isOdd, this::doubled).equality());
+
+            if (isSorted()) v.checkEquality(v.mkColl().collect(this::isOdd, this::doubled));
+            else assertEquals(AEquality.EQUALS, v.mkColl().collect(this::isOdd, this::doubled).equality());
+
             assertEquals(AHashSet.of(entryOf(2)), v.mkColl(1).collect(this::isOdd, this::doubledEntry).toSet());
-            assertEquals(AEquality.EQUALS, v.mkColl(1).collect(this::isOdd, this::doubled).equality());
-            assertEquals(AHashSet.of(entryOf(2), entryOf(6)), v.mkColl(1, 2, 3).collect(this::isOdd, this::doubledEntry).toSet());
+
+            if (isSorted()) v.checkEquality(v.mkColl(1).collect(this::isOdd, this::doubled));
+            else assertEquals(AEquality.EQUALS, v.mkColl(1).collect(this::isOdd, this::doubled).equality());
+
+            assertEquals(AHashSet.of(2, 6), v.mkColl(1, 2, 3).collect(this::isOdd, this::doubled).toSet());
         });
     }
     @Test @Override default void testCollectFirst () {
@@ -178,7 +195,7 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
                 firstOdd = v.iterationOrder123().head();
             else {
                 final Iterator<Map.Entry<Integer,Integer>> it = v.mkColl(1, 2, 3).iterator();
-                if (it.next() == entryOf(2)) firstOdd = it.next();
+                if (it.next().equals(entryOf(2))) firstOdd = it.next();
                 else firstOdd = v.mkColl(1, 2, 3).iterator().next();
             }
             assertEquals(AOption.some(2*firstOdd.getKey()), v.mkColl(1, 2, 3).collectFirst(this::isOdd, this::doubled));
@@ -220,7 +237,7 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
             assertFalse(v.mkColl(1).forall(this::isEven));
             assertFalse(v.mkColl(1, 2, 3).forall(this::isOdd));
             assertFalse(v.mkColl(1, 2, 3).forall(this::isEven));
-            assertTrue(v.mkColl(1, 2, 3).map(this::doubledEntry).forall(this::isEven));
+            assertTrue(v.mkColl(2, 4, 6).forall(this::isEven));
         });
     }
     @Test @Override default void testExists () {
@@ -230,8 +247,8 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
             assertFalse(v.mkColl(1).exists(this::isEven));
             assertTrue(v.mkColl(1, 2, 3).exists(this::isOdd));
             assertTrue(v.mkColl(1, 2, 3).exists(this::isEven));
-            assertFalse(v.mkColl(1, 2, 3).map(this::doubledEntry).exists(this::isOdd));
-            assertTrue(v.mkColl(1, 2, 3).map(this::doubledEntry).exists(this::isEven));
+            assertFalse(v.mkColl(2, 4, 6).exists(this::isOdd));
+            assertTrue(v.mkColl(2, 4, 6).exists(this::isEven));
         });
     }
     @Test @Override default void testCount () {
@@ -241,8 +258,8 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
             assertEquals(0, v.mkColl(1).count(this::isEven));
             assertEquals(2, v.mkColl(1, 2, 3).count(this::isOdd));
             assertEquals(1, v.mkColl(1, 2, 3).count(this::isEven));
-            assertEquals(0, v.mkColl(1, 2, 3).map(this::doubledEntry).count(this::isOdd));
-            assertEquals(3, v.mkColl(1, 2, 3).map(this::doubledEntry).count(this::isEven));
+            assertEquals(0, v.mkColl(2, 4, 6).count(this::isOdd));
+            assertEquals(3, v.mkColl(2, 4, 6).count(this::isEven));
         });
     }
     @Test @Override default void testContains () {

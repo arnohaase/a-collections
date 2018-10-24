@@ -3,7 +3,6 @@ package com.ajjpj.acollections.internal;
 import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.ACollectionOps;
-import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.ATreeSet;
@@ -44,13 +43,13 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
     }
 
     @Override default ALinkedList<T> toLinkedList() {
-        return ALinkedList.from(this, equality());
+        return ALinkedList.from(this);
     }
     @Override default AVector<T> toVector() {
-        return AVector.from(this, equality());
+        return AVector.from(this);
     }
     @Override default AHashSet<T> toSet() {
-        return AHashSet.from(this, equality());
+        return AHashSet.from(this);
     }
     @Override default ATreeSet<T> toSortedSet(Comparator<T> comparator) {
         return ATreeSet.from(this, comparator);
@@ -61,7 +60,6 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
         for (T o: this) if (f.test(o)) builder.add(o);
         //noinspection unchecked
         return (C) builder.build();
-
     }
     @Override default C filterNot(Predicate<T> f) {
         return filter(f.negate());
@@ -83,9 +81,6 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
     }
     @Override default int count(Predicate<T> f) {
         return iterator().count(f);
-    }
-    default boolean contains(Object o) {
-        return exists(el -> equality().equals(el, o));
     }
 
     @Override default T reduce(BiFunction<T,T,T> f) {

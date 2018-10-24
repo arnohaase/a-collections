@@ -19,8 +19,6 @@ import java.util.function.Predicate;
  *  use (e.g. for {@link AMap}.
  */
 public interface ACollectionOps<T> {
-
-    AEquality equality();
     AIterator<T> iterator ();
 
     /**

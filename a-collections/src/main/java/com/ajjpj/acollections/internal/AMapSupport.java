@@ -1,10 +1,7 @@
 package com.ajjpj.acollections.internal;
 
 import com.ajjpj.acollections.*;
-import com.ajjpj.acollections.immutable.AHashSet;
-import com.ajjpj.acollections.immutable.ATreeSet;
-import com.ajjpj.acollections.immutable.AVector;
-import com.ajjpj.acollections.immutable.AbstractImmutableCollection;
+import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.util.AEquality;
 import com.ajjpj.acollections.util.AOption;
 
@@ -178,6 +175,10 @@ public class AMapSupport {
             this.map = map;
         }
 
+        @Override public ATreeSet<Map.Entry<K, V>> toSortedSet () {
+            throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
+        }
+
         @Override public AHashSet<Map.Entry<K,V>> added (Map.Entry<K,V> o) {
             return AHashSet.from(this, equality()).added(o);
         }
@@ -199,7 +200,7 @@ public class AMapSupport {
         }
 
         @Override public AEquality equality () {
-            return map.keyEquality();
+            return AEquality.EQUALS;
         }
 
         @Override public AIterator<Map.Entry<K,V>> iterator () {
@@ -207,7 +208,7 @@ public class AMapSupport {
         }
 
         @Override public <U> ACollectionBuilder<U, AHashSet<U>> newBuilder () {
-            return AHashSet.builder(map.keyEquality());
+            return AHashSet.builder(AEquality.EQUALS);
         }
 
         @Override public boolean isEmpty () {
@@ -232,6 +233,14 @@ public class AMapSupport {
 
         @Override public AHashSet<Map.Entry<K,V>> filterNot (Predicate<Map.Entry<K,V>> f) {
             return ACollectionDefaults.super.filterNot(f);
+        }
+
+        @Override public Map.Entry<K, V> min () {
+            throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
+        }
+
+        @Override public Map.Entry<K, V> max () {
+            throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
         }
 
         @Override public int size () {
@@ -400,6 +409,26 @@ public class AMapSupport {
             return (o1, o2) -> map.comparator().compare(o1.getKey(), o2.getKey());
         }
 
+        @Override public AVector<Map.Entry<K, V>> toVector () {
+            return AVector.from(this);
+        }
+        @Override public ALinkedList<Map.Entry<K, V>> toLinkedList () {
+            return ALinkedList.from(this);
+        }
+        @Override public AHashSet<Map.Entry<K, V>> toSet () {
+            return AHashSet.from(this);
+        }
+        @Override public ATreeSet<Map.Entry<K,V>> toSortedSet() {
+            throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
+        }
+
+        @Override public Map.Entry<K, V> min () {
+            throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
+        }
+        @Override public Map.Entry<K, V> max () {
+            throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
+        }
+
         @Override public ATreeSet<Map.Entry<K,V>> added (Map.Entry<K,V> o) {
             return ATreeSet.from(this, comparator()).added(o);
         }
@@ -456,7 +485,7 @@ public class AMapSupport {
         }
 
         @Override public AEquality equality () {
-            return map.keyEquality();
+            return AEquality.fromComparator(new EntryComparator<>(map.comparator()));
         }
 
         @Override public AIterator<Map.Entry<K,V>> iterator () {
@@ -464,7 +493,7 @@ public class AMapSupport {
         }
 
         @Override public <U> ACollectionBuilder<U, ATreeSet<U>> newBuilder () {
-            return ATreeSet.builder((Comparator) map.comparator()); //TODO this is somewhat happy - better alternatives?
+            return ATreeSet.builder((Comparator) map.comparator()); //TODO this is somewhat hacky - better alternatives?
         }
 
         @Override public boolean isEmpty () {
@@ -484,10 +513,13 @@ public class AMapSupport {
         }
 
         @Override public ATreeSet<Map.Entry<K,V>> filter (Predicate<Map.Entry<K,V>> f) {
-            return ACollectionDefaults.super.filter(f);
+            final ACollectionBuilder<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>> builder = ATreeSet.builder(new EntryComparator<>(map.comparator()));
+            for (Map.Entry<K,V> o: this) if (f.test(o)) builder.add(o);
+            //noinspection unchecked
+            return builder.build();
         }
         @Override public ATreeSet<Map.Entry<K,V>> filterNot (Predicate<Map.Entry<K,V>> f) {
-            return ACollectionDefaults.super.filterNot(f);
+            return filter(f.negate());
         }
 
         @Override public int size () {
@@ -517,6 +549,35 @@ public class AMapSupport {
 
         @Override public String toString () {
             return ACollectionSupport.toString(SortedKeySet.class, this);
+        }
+    }
+
+    public static class EntryComparator<K,V> implements Comparator<Map.Entry<K,V>> {
+        private final Comparator<K> keyComparator;
+
+        public EntryComparator (Comparator<K> keyComparator) {
+            this.keyComparator = keyComparator;
+        }
+
+        @Override public int compare (Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+            return keyComparator.compare(o1.getKey(), o2.getKey());
+        }
+
+        @Override public String toString () {
+            return "EntryComparator{" +
+                    "keyComparator=" + keyComparator +
+                    '}';
+        }
+
+        @Override public boolean equals (Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            final EntryComparator<?, ?> that = (EntryComparator<?, ?>) o;
+            return Objects.equals(keyComparator, that.keyComparator);
+        }
+
+        @Override public int hashCode () {
+            return Objects.hash(keyComparator);
         }
     }
 }

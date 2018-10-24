@@ -140,10 +140,10 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
     }
 
     @Override public Entry<K, V> min () {
-        throw new UnsupportedOperationException("pass in a Comparator exlicitly to comare entries");
+        throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
     }
     @Override public Entry<K, V> max () {
-        throw new UnsupportedOperationException("pass in a Comparator exlicitly to comare entries");
+        throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
     }
 
     @Override public boolean contains (Object o) {
