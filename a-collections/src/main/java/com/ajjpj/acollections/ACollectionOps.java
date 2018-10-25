@@ -50,6 +50,7 @@ public interface ACollectionOps<T> {
         return toSortedSet((Comparator) Comparator.naturalOrder());
     }
     ATreeSet<T> toSortedSet(Comparator<T> comparator);
+    <K,V> AMap<K,V> toMap();
 
     AMutableListWrapper<T> toMutableList();
     AMutableSetWrapper<T> toMutableSet();

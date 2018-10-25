@@ -3,10 +3,7 @@ package com.ajjpj.acollections.immutable;
 import com.ajjpj.acollections.AMapTests;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,6 +14,17 @@ public class AHashMapTest implements AMapTests {
                 new Variant(AHashMap::builder, null)
         );
     }
+
+    @Test public void testToMap() {
+        // this test is here rather than in ACollectionOpsTests because those tests work on collections of Integer, and the functionality
+        //  is generic enough to be sufficiently tested by just using AVector
+        assertEquals(AHashMap.empty(), AVector.empty().toMap());
+        assertEquals(AHashMap.empty().updated(1, 2), AVector.of(new AbstractMap.SimpleImmutableEntry<>(1, 2)).toMap());
+        assertEquals(
+                AHashMap.empty().updated(1, 2).updated(3, 4).updated(5, 6),
+                AVector.of(new AbstractMap.SimpleImmutableEntry<>(1, 2), new AbstractMap.SimpleImmutableEntry<>(3, 4), new AbstractMap.SimpleImmutableEntry<>(5, 6)).toMap());
+    }
+
 
     final int size = 100_000;
     final int numIter = 10_000_000;

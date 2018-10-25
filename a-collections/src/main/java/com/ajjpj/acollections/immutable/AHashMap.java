@@ -21,6 +21,7 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
 //        if (equality == AEquality.IDENTITY) return new AIdentityHashMap<>(CompactHashMap.EMPTY);
     }
 
+
     //TODO fromIterator, fromIterable, of, fromMap, ...
 
     AHashMap () {
@@ -43,8 +44,11 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
     public static <K,V> AHashMap<K,V> fromIterator(Iterator<Entry<K,V>> iterator) {
         return AHashMap.<K,V> builder().addAll(iterator).build();
     }
-    public static <K,V> AHashMap<K,V> fromIterable(Iterable<Entry<K,V>> iterable) {
+    public static <K,V> AHashMap<K,V> from(Iterable<Entry<K,V>> iterable) {
         return AHashMap.<K,V> builder().addAll(iterable).build();
+    }
+    public static <K,V> AHashMap<K,V> fromMap(Map<K,V> m) {
+        return AHashMap.<K,V> builder().addAll(m.entrySet().iterator()).build();
     }
 
     public static <K,V> Builder<K,V> builder() {

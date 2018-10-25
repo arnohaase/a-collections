@@ -56,6 +56,10 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
     @Override default ATreeSet<T> toSortedSet(Comparator<T> comparator) {
         return ATreeSet.from(this, comparator);
     }
+    @Override default <K, V> AMap<K, V> toMap () {
+        //noinspection unchecked
+        return AHashMap.from((Iterable<Map.Entry<K,V>>)this);
+    }
 
     @Override default AMutableListWrapper<T> toMutableList () {
         return AMutableListWrapper.from(this);

@@ -15,10 +15,6 @@ todo
 
 
 
-* stream()
-  * stream integration: collectors
-  * spliterator()
-
 * CHAMP algorithm
 * tuning of RedBlackTree
 
