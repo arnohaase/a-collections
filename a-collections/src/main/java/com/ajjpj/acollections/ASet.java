@@ -1,6 +1,7 @@
 package com.ajjpj.acollections;
 
 import java.util.Set;
+import java.util.function.Function;
 
 
 public interface ASet<T> extends ACollection<T>, Set<T> {

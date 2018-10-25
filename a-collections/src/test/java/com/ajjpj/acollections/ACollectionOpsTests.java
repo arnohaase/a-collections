@@ -36,6 +36,8 @@ public interface ACollectionOpsTests {
     void testReduceLeft();
     void testReduceLeftOption();
 
+    void testGroupBy();
+
     void testMin();
     void testMax();
 

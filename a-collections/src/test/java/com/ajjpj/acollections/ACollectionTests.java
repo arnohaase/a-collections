@@ -1,9 +1,6 @@
 package com.ajjpj.acollections;
 
-import com.ajjpj.acollections.immutable.AHashSet;
-import com.ajjpj.acollections.immutable.ALinkedList;
-import com.ajjpj.acollections.immutable.ATreeSet;
-import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
 import org.junit.jupiter.api.Test;
@@ -391,6 +388,13 @@ public interface ACollectionTests extends ACollectionOpsTests {
         });
     }
 
+    @Test @Override default void testGroupBy() {
+        doTest(v -> {
+            assertTrue(v.mkColl().groupBy(this::isOdd).isEmpty());
+            assertEquals(AHashMap.empty().updated(true, v.mkColl(1, 3)).updated(false, v.mkColl(2)), v.mkColl(1, 2, 3).groupBy(this::isOdd));
+        });
+    }
+
     @Test @Override default void testMin() {
         doTest(v -> {
             assertThrows(NoSuchElementException.class, () -> v.mkColl().min());
@@ -421,8 +425,6 @@ public interface ACollectionTests extends ACollectionOpsTests {
             }
         });
     }
-
-    //TODO 2x EntrySet; AMap
 
     //---------------------------- internal -------------------------------
 

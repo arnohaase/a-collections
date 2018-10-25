@@ -2,10 +2,7 @@ package com.ajjpj.acollections.util;
 
 import com.ajjpj.acollections.ACollectionOpsTests;
 import com.ajjpj.acollections.AIterator;
-import com.ajjpj.acollections.immutable.AHashSet;
-import com.ajjpj.acollections.immutable.ALinkedList;
-import com.ajjpj.acollections.immutable.ATreeSet;
-import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.mutable.AMutableSetWrapper;
 import org.junit.jupiter.api.Test;
@@ -223,6 +220,11 @@ public class AOptionTest implements ACollectionOpsTests {
     @Override @Test public void testReduceLeftOption () {
         assertEquals(none(), none().reduceLeftOption((a, b) -> null));
         assertEquals(some("a"), some("a").reduceLeftOption((a,b) -> null));
+    }
+
+    @Override @Test public void testGroupBy () {
+        assertTrue(none().groupBy(Function.identity()).isEmpty());
+        assertEquals(AHashMap.builder().add("a", some("abc")).build(), some("abc").groupBy(s -> s.substring(0, 1)));
     }
 
     @Override @Test public void testMin () {

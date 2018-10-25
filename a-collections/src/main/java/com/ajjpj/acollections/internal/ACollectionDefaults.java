@@ -3,16 +3,16 @@ package com.ajjpj.acollections.internal;
 import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.ACollectionOps;
-import com.ajjpj.acollections.immutable.AHashSet;
-import com.ajjpj.acollections.immutable.ALinkedList;
-import com.ajjpj.acollections.immutable.ATreeSet;
-import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.AMap;
+import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.mutable.AMutableSetWrapper;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -65,7 +65,7 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
     }
 
     @Override default C filter(Predicate<T> f) {
-        final ACollectionBuilder<T, ? extends ACollection<T>> builder = newBuilder();
+        final ACollectionBuilder<T, ? extends ACollectionOps<T>> builder = newBuilder();
         for (T o: this) if (f.test(o)) builder.add(o);
         //noinspection unchecked
         return (C) builder.build();
@@ -106,6 +106,20 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
     }
     @Override default <U> U foldLeft(U zero, BiFunction<U,T,U> f) {
         return iterator().fold(zero, f);
+    }
+
+    @Override default <K> AMap<K, C> groupBy (Function<T, K> keyExtractor) {
+        Map<K,ACollectionBuilder<T,C>> builders = new HashMap<>();
+        for(T o: this) {
+            //noinspection unchecked
+            builders.computeIfAbsent(keyExtractor.apply(o), x -> (ACollectionBuilder) newBuilder())
+                    .add(o);
+        }
+
+        AHashMap.Builder<K,C> result = AHashMap.builder();
+        for (Map.Entry<K, ACollectionBuilder<T, C>> e: builders.entrySet())
+            result.add(e.getKey(), e.getValue().build());
+        return result.build();
     }
 
     @Override default T min() {

@@ -2,6 +2,7 @@ package com.ajjpj.acollections.util;
 
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
+import com.ajjpj.acollections.AMap;
 import com.ajjpj.acollections.immutable.AbstractImmutableCollection;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
@@ -58,6 +59,20 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
     @Override public abstract AOption<T> filter (Predicate<T> f);
     @Override public AOption<T> filterNot (Predicate<T> f) {
         return ACollectionDefaults.super.filterNot(f);
+    }
+
+    @Override
+    public int size () {
+        return 0;
+    }
+
+    @Override
+    public boolean isEmpty () {
+        return false;
+    }
+
+    @Override public <K> AMap<K, AOption<T>> groupBy (Function<T, K> keyExtractor) {
+        return ACollectionDefaults.super.groupBy(keyExtractor);
     }
 
     @Override public abstract boolean contains(Object o);

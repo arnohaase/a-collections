@@ -3,6 +3,7 @@ package com.ajjpj.acollections.immutable;
 import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
+import com.ajjpj.acollections.internal.AMapDefaults;
 import com.ajjpj.acollections.internal.AMapSupport;
 import com.ajjpj.acollections.util.AOption;
 
@@ -11,7 +12,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.Entry<K,V>, ATreeMap<K,V>> {
+public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.Entry<K,V>, ATreeMap<K,V>>, AMapDefaults<K,V,ATreeMap<K,V>> {
     private final RedBlackTree.Tree<K,V> root;
     private final Comparator<K> comparator;
 
@@ -125,6 +126,11 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
         return ATreeMap.<K,V>builder(comparator).addAll(iterator().filter(f)).build();
     }
 
+    @Override public <K1> AMap<K1, ATreeMap<K, V>> groupBy (Function<Entry<K, V>, K1> keyExtractor) {
+        //noinspection unchecked
+        return (AMap<K1, ATreeMap<K, V>>) AMapSupport.groupBy(this, keyExtractor);
+    }
+
     @Override public boolean isEmpty () {
         return root == null;
     }
@@ -154,7 +160,7 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
     }
 
     @Override public ASortedSet<Entry<K, V>> entrySet () { //TODO ASortedSet
-        return new AMapSupport.SortedEntrySet<K,V>(this);
+        return new AMapSupport.SortedEntrySet<>(this);
     }
 
     @Override public Comparator<K> comparator () {
@@ -208,8 +214,12 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
         return RedBlackTree.valuesIterator(root, start, comparator);
     }
 
-    @Override public <U> ACollectionBuilder<U, ? extends ACollection<U>> newBuilder () {
-        throw new UnsupportedOperationException("Implementing this well goes beyond the boundaries of Java's type system. Use static AHashMap.builder() instead.");
+    @Override public <U> ACollectionBuilder<U, ? extends ACollectionOps<U>> newBuilder () {
+        throw new UnsupportedOperationException("Implementing this well goes beyond the boundaries of Java's type system. Use static ATreeMap.builder() instead.");
+    }
+    @Override public <K1, V1> ACollectionBuilder<Entry<K1, V1>, ATreeMap<K1, V1>> newEntryBuilder () {
+        //noinspection unchecked
+        return new Builder(Comparator.naturalOrder());
     }
 
     @Override public boolean equals (Object obj) {

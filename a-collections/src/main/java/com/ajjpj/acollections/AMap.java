@@ -3,6 +3,7 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Map;
+import java.util.function.Function;
 
 
 public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Iterable<Map.Entry<K,V>> {
@@ -13,6 +14,8 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
 
     AMap<K,V> updated(K key, V value);
     AMap<K,V> removed(K key);
+
+    <U> AMap<K,U> mapValues(Function<V,U> f);
 
     ASet<K> keySet();
     ACollection<V> values();

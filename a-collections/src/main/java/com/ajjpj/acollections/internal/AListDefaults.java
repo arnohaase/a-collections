@@ -3,10 +3,12 @@ package com.ajjpj.acollections.internal;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
+import com.ajjpj.acollections.AMap;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 
@@ -125,11 +127,15 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
         return new ASimpleListIterator<>(this.iterator(), index);
     }
 
-    default C filter(Predicate<T> f) {
+    @Override default C filter(Predicate<T> f) {
         return ACollectionDefaults.super.filter(f);
     }
-    default C filterNot(Predicate<T> f) {
+    @Override default C filterNot(Predicate<T> f) {
         return filter(f.negate());
+    }
+
+    @Override default <K> AMap<K, C> groupBy (Function<T, K> keyExtractor) {
+        return ACollectionDefaults.super.groupBy(keyExtractor);
     }
 
     @Override default int indexOf (Object o) {

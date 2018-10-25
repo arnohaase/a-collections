@@ -11,6 +11,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public interface AMapTests extends AEntryCollectionOpsTests {
+    @Test default void testMapValues() {
+        doTest(v -> {
+            assertTrue (v.mkMap().mapValues(x -> x+1).isEmpty());
+            assertEquals (AHashMap.empty().updated(1, 2).updated(2, 4).updated(3, 6), v.mkMap(1, 2, 3).mapValues(x -> x-1));
+        });
+    }
 
     @Test default void testContainsKey() {
         doTest(v -> {

@@ -2,6 +2,7 @@ package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
+import com.ajjpj.acollections.AMap;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.ASetDefaults;
@@ -152,6 +153,10 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
 
     @Override public AHashSet<T> filterNot (Predicate<T> f) {
         return filter(f.negate());
+    }
+
+    @Override public <K> AMap<K, AHashSet<T>> groupBy (Function<T, K> keyExtractor) {
+        return ACollectionDefaults.super.groupBy(keyExtractor);
     }
 
     @Override public int size () {

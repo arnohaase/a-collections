@@ -202,6 +202,10 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return ACollectionDefaults.super.filterNot(f);
     }
 
+    @Override public <K> AMap<K, ATreeSet<T>> groupBy (Function<T, K> keyExtractor) {
+        return ACollectionDefaults.super.groupBy(keyExtractor);
+    }
+
     @Override public int size () {
         return RedBlackTree.count(root);
     }

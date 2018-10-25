@@ -3,6 +3,7 @@ package com.ajjpj.acollections.immutable;
 import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
+import com.ajjpj.acollections.internal.AMapDefaults;
 import com.ajjpj.acollections.internal.AMapSupport;
 import com.ajjpj.acollections.util.AOption;
 
@@ -11,7 +12,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Map.Entry<K,V>, AHashMap<K,V>> {
+public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Map.Entry<K,V>, AHashMap<K,V>>, AMapDefaults<K,V,AHashMap<K,V>> {
     private final CompactHashMap<MapEntryWithEquality> compactHashMap;
 
     @SuppressWarnings("unchecked")
@@ -115,6 +116,10 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
     @Override public <U> ACollectionBuilder<U, ? extends ACollection<U>> newBuilder () {
         throw new UnsupportedOperationException("Implementing this well goes beyond the boundaries of Java's type system. Use static AHashMap.builder() instead.");
     }
+    @Override public <K1, V1> ACollectionBuilder<Entry<K1, V1>, AHashMap<K1, V1>> newEntryBuilder () {
+        return builder();
+    }
+
     @Override public <U> ACollection<U> map (Function<Entry<K, V>, U> f) {
         return ACollectionSupport.map(AVector.builder(), this, f);
     }
@@ -123,6 +128,11 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
     }
     @Override public <U> ACollection<U> collect (Predicate<Entry<K, V>> filter, Function<Entry<K, V>, U> f) {
         return ACollectionSupport.collect(AVector.builder(), this, filter, f);
+    }
+
+    @Override public <K1> AMap<K1, AHashMap<K, V>> groupBy (Function<Entry<K, V>, K1> keyExtractor) {
+        //noinspection unchecked
+        return (AMap<K1, AHashMap<K, V>>) AMapSupport.groupBy(this, keyExtractor);
     }
 
     @Override public Entry<K, V> min () {

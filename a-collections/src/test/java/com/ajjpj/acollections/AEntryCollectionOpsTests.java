@@ -1,5 +1,6 @@
 package com.ajjpj.acollections;
 
+import com.ajjpj.acollections.immutable.AHashMap;
 import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.AVector;
@@ -331,6 +332,14 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
                 });
                 assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), v.iterationOrder123().get(2)), trace);
             }
+        });
+    }
+
+    @Test @Override default void testGroupBy () {
+        doTest(v -> {
+            assertTrue(v.mkColl().groupBy(this::isOdd).isEmpty());
+            assertEquals(AHashMap.empty().updated(true, v.mkColl(1, 3)).updated(false, v.mkColl(2)),
+                    v.mkColl(1, 2, 3).groupBy(this::isOdd));
         });
     }
 

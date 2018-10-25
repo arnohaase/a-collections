@@ -1,9 +1,6 @@
 package com.ajjpj.acollections.mutable;
 
-import com.ajjpj.acollections.ACollection;
-import com.ajjpj.acollections.ACollectionBuilder;
-import com.ajjpj.acollections.AIterator;
-import com.ajjpj.acollections.ASet;
+import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.ASetDefaults;
@@ -99,6 +96,10 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
 
     @Override public AMutableSetWrapper<T> filterNot (Predicate<T> f) {
         return ACollectionDefaults.super.filterNot(f);
+    }
+
+    @Override public <K> AMap<K, AMutableSetWrapper<T>> groupBy (Function<T, K> keyExtractor) {
+        return ACollectionDefaults.super.groupBy(keyExtractor);
     }
 
     @Override public int size () {

@@ -3,8 +3,12 @@ package com.ajjpj.acollections.internal;
 import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.ACollectionOps;
+import com.ajjpj.acollections.AMap;
+import com.ajjpj.acollections.immutable.AHashMap;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 

@@ -1,13 +1,13 @@
 package com.ajjpj.acollections.internal;
 
-import com.ajjpj.acollections.ACollectionBuilder;
-import com.ajjpj.acollections.AIterator;
-import com.ajjpj.acollections.ASet;
+import com.ajjpj.acollections.*;
+
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 
 public interface ASetDefaults<T, C extends ASet<T>> extends ASet<T> {
     //TODO other ASet methods
-
 
     @Override default AIterator<C> subsets () {
         //noinspection unchecked

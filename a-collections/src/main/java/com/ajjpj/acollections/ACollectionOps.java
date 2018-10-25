@@ -10,6 +10,7 @@ import com.ajjpj.acollections.util.AOption;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -26,7 +27,11 @@ public interface ACollectionOps<T> {
      * This is public API, but it was added largely for internal use: Having this method allows generically implementing transformation
      *  methods like {@link #map(Function)}.
      */
-    <U> ACollectionBuilder<U, ? extends ACollection<U>> newBuilder();
+    <U> ACollectionBuilder<U, ? extends ACollectionOps<U>> newBuilder();
+
+    default <K,V> ACollectionBuilder<Map.Entry<K,V>, ? extends ACollectionOps<Map.Entry<K,V>>> newEntryBuilder() {
+        return newBuilder();
+    };
 
     int size();
     boolean isEmpty();
@@ -74,6 +79,8 @@ public interface ACollectionOps<T> {
         return foldLeft(zero, f);
     }
     <U> U foldLeft(U zero, BiFunction<U,T,U> f);
+
+    <K> AMap<K,? extends ACollectionOps<T>> groupBy(Function<T,K> keyExtractor);
 
     T min();
     T min(Comparator<T> comparator);
