@@ -26,10 +26,6 @@ public class SortedKeySetTest implements ASetTests {
         }
     }
 
-    @Override public boolean isSorted () {
-        return true;
-    }
-
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
                 new Variant(() -> new KeySetBuilder(Comparator.naturalOrder()), AVector.of(1, 2, 3)),

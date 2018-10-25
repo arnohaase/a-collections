@@ -10,10 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class ATreeSetTest implements ASetTests  {
-    @Override public boolean isSorted () {
-        return true;
-    }
-
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
                 new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),

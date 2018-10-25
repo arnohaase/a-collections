@@ -16,7 +16,6 @@ todo
 * unit tests
   * forEach
   * stream, parallelStream
-  * AIterator
 
 * ASortedSet.reverseIterator()
 

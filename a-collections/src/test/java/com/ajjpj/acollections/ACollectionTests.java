@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public interface ACollectionTests extends ACollectionOpsTests {
     // These methods must be implemented by concrete test classes, customizing the tests per tested collection class
 
-    default boolean isSorted() { return false; }
     default boolean isImmutable() {return true; }
     Iterable<Variant> variants();
 
@@ -39,6 +39,51 @@ public interface ACollectionTests extends ACollectionOpsTests {
                 assertThrows(UnsupportedOperationException.class, () -> v.mkColl().clear());
             });
         }
+        //TODO else tests for mutators
+    }
+
+    @Test default void testStream() {
+        doTest(v -> {
+            assertTrue (v.mkColl().stream().map(this::doubled).collect(Collectors.toList()).isEmpty());
+            assertEquals (Collections.singletonList(2), v.mkColl(1).stream().map(this::doubled).collect(Collectors.toList()));
+            if (v.iterationOrder123() != null)
+                assertEquals (v.iterationOrder123().map(this::doubled), v.mkColl(1, 2, 3).stream().map(this::doubled).collect(Collectors.toList()));
+            else
+                assertEquals (AHashSet.of(2, 4, 6), v.mkColl(1, 2, 3).stream().map(this::doubled).collect(Collectors.toSet()));
+        });
+    }
+    @Test default void testParallelStream() {
+        doTest(v -> {
+            assertTrue (v.mkColl().parallelStream().map(this::doubled).collect(Collectors.toList()).isEmpty());
+            assertEquals (Collections.singletonList(2), v.mkColl(1).parallelStream().map(this::doubled).collect(Collectors.toList()));
+            if (v.iterationOrder123() != null)
+                assertEquals (v.iterationOrder123().map(this::doubled), v.mkColl(1, 2, 3).parallelStream().map(this::doubled).collect(Collectors.toList()));
+            else
+                assertEquals (AHashSet.of(2, 4, 6), v.mkColl(1, 2, 3).parallelStream().map(this::doubled).collect(Collectors.toSet()));
+        });
+    }
+
+    @Test default void testForEach() {
+        doTest(v -> {
+            v.mkColl().forEach(i -> {
+                throw new RuntimeException("never called");
+            });
+
+            AMutableListWrapper<Integer> trace = AMutableListWrapper.empty();
+            //noinspection UseBulkOperation
+            v.mkColl(1).forEach(trace::add);
+            //noinspection AssertEqualsBetweenInconvertibleTypes
+            assertEquals (AVector.of(1), trace);
+
+            trace.clear();
+            //noinspection UseBulkOperation
+            v.mkColl(1, 2, 3).forEach(trace::add);
+            if (v.iterationOrder123() != null)
+                //noinspection AssertEqualsBetweenInconvertibleTypes
+                assertEquals(v.iterationOrder123(), trace);
+            else
+                assertEquals(AHashSet.of(1, 2, 3), trace.toSet());
+        });
     }
 
     @Test @Override default void testIterator() {
@@ -52,8 +97,6 @@ public interface ACollectionTests extends ACollectionOpsTests {
                 assertEquals(v.mkColl(1, 2, 3).toSet(), v.mkColl(1, 2, 3).iterator().toSet());
         });
     }
-
-    //TODO iterator --> separate tests
 
     @Test default void testToArray() {
         doTest(v -> {
