@@ -14,7 +14,11 @@ todo
 * AbstractImmutableSet
 * add mutable JU code to benchmarks
 * unit tests
+  * forEach
+  * stream, parallelStream
   * AIterator
+
+* ASortedSet.reverseIterator()
 
 
 

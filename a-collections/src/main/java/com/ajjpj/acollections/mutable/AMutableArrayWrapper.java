@@ -22,7 +22,11 @@ public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMuta
         return new AMutableArrayWrapper(new Object[0]);
     }
 
-    public AMutableArrayWrapper (T[] inner) {
+    public static <T> AMutableArrayWrapper<T> wrap(T[] inner) {
+        return new AMutableArrayWrapper<>(inner);
+    }
+
+    AMutableArrayWrapper (T[] inner) {
         this.inner = inner;
     }
 

@@ -15,7 +15,7 @@ public class AMapSupport {
         //noinspection unchecked
         for(Map.Entry<K,V> o: (Iterable<Map.Entry<K,V>>) coll) {
             //noinspection unchecked
-            builders.computeIfAbsent(keyExtractor.apply(o), x -> (ACollectionBuilder) coll.newEntryBuilder())
+            builders.computeIfAbsent(keyExtractor.apply(o), x -> coll.newEntryBuilder())
                     .add(o);
         }
 
