@@ -1,11 +1,5 @@
 todo
 ----
-* AMap.mergeWith (Map other)
-* AMap.computed (K key, Function<K,V> f)
-
-
-
-
 * Documentation
   * JavaDoc
   * README.md
@@ -14,8 +8,7 @@ todo
 * AbstractImmutableSet
 * add mutable JU code to benchmarks
 * unit tests
-  * forEach
-  * stream, parallelStream
+  * entry iterators
 
 * ASortedSet.reverseIterator()
 

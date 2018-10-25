@@ -15,6 +15,14 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
     AMap<K,V> updated(K key, V value);
     AMap<K,V> removed(K key);
 
+    default <K1 extends K, V1 extends V> AMap<K,V> withAll (Map<K1, V1> other) {
+        AMap<K,V> result = this;
+        for (Map.Entry<K1,V1> e: other.entrySet()) {
+            result = result.updated(e.getKey(), e.getValue());
+        }
+        return result;
+    }
+
     <U> AMap<K,U> mapValues(Function<V,U> f);
 
     ASet<K> keySet();

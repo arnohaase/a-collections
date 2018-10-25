@@ -99,6 +99,21 @@ public interface AMapTests extends AEntryCollectionOpsTests {
         });
     }
 
+    @Test default void testWithAll() {
+        doTest(v -> {
+            assertTrue(v.mkMap().withAll(v.mkMap()).isEmpty());
+            assertEquals(v.mkMap(1), v.mkMap().withAll(v.mkMap(1)));
+            assertEquals(v.mkMap(1), v.mkMap(1).withAll(v.mkMap()));
+            assertEquals(v.mkMap(1), v.mkMap(1).withAll(v.mkMap(1)));
+            assertEquals(v.mkMap(1, 2), v.mkMap(1).withAll(v.mkMap(2)));
+
+            // in case of conflict, the second map wins
+            final AMap<Integer, Integer> m1 = v.mkMap().updated(1, 1);
+            final AMap<Integer, Integer> m2 = v.mkMap().updated(1, 2);
+            assertEquals(2, m1.withAll(m2).get(1).intValue());
+        });
+    }
+
     @Test default void testKeySet() {
         doTest(v -> {
             assertTrue(v.mkMap().keySet().isEmpty());
