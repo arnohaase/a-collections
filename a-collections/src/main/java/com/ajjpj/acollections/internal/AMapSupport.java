@@ -211,50 +211,50 @@ public class AMapSupport {
         }
     }
 
-    public static class EntrySet<K,V,T extends Map.Entry<K,V>> extends AbstractImmutableCollection<T> implements ASet<T>, ACollectionDefaults<T, AHashSet<T>>, ASetDefaults<T, AHashSet<T>> {
+    public static class EntrySet<K,V> extends AbstractImmutableCollection<Map.Entry<K,V>> implements ASet<Map.Entry<K,V>>, ACollectionDefaults<Map.Entry<K,V>, AHashSet<Map.Entry<K,V>>>, ASetDefaults<Map.Entry<K,V>, AHashSet<Map.Entry<K,V>>> {
         private final AMap<K,V> map;
 
         public EntrySet (AMap<K, V> map) {
             this.map = map;
         }
 
-        @Override public ATreeSet<T> toSortedSet () {
+        @Override public ATreeSet<Map.Entry<K,V>> toSortedSet () {
             throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
         }
 
-        @Override public AHashSet<T> added (T o) {
+        @Override public AHashSet<Map.Entry<K,V>> added (Map.Entry<K,V> o) {
             return AHashSet.from(this).added(o);
         }
 
-        @Override public AHashSet<T> removed (T o) {
+        @Override public AHashSet<Map.Entry<K,V>> removed (Map.Entry<K,V> o) {
             return AHashSet.from(this).removed(o);
         }
 
-        @Override public AHashSet<T> union (Iterable<T> that) {
+        @Override public AHashSet<Map.Entry<K,V>> union (Iterable<Map.Entry<K,V>> that) {
             return AHashSet.from(this).union(that);
         }
 
-        @Override public AHashSet<T> intersect (Set<T> that) {
+        @Override public AHashSet<Map.Entry<K,V>> intersect (Set<Map.Entry<K,V>> that) {
             return AHashSet.fromIterator(iterator().filter(that::contains));
         }
 
-        @Override public ASet<T> diff (Set<T> that) {
+        @Override public ASet<Map.Entry<K,V>> diff (Set<Map.Entry<K,V>> that) {
             return AHashSet.fromIterator(iterator().filterNot(that::contains));
         }
 
-        @Override public AIterator<AHashSet<T>> subsets () {
+        @Override public AIterator<AHashSet<Map.Entry<K,V>>> subsets () {
             return ASetSupport.subsets(this, this::newBuilder);
         }
 
-        @Override public AIterator<AHashSet<T>> subsets (int len) {
+        @Override public AIterator<AHashSet<Map.Entry<K,V>>> subsets (int len) {
             return ASetSupport.subsets(len, this, this::newBuilder);
         }
 
-        @Override public <K> AMap<K, AHashSet<T>> groupBy (Function<T, K> keyExtractor) {
+        @Override public <K1> AMap<K1, AHashSet<Map.Entry<K,V>>> groupBy (Function<Map.Entry<K,V>, K1> keyExtractor) {
             return ACollectionDefaults.super.groupBy(keyExtractor);
         }
 
-        @Override public AIterator<T> iterator () {
+        @Override public AIterator<Map.Entry<K,V>> iterator () {
             //noinspection unchecked
             return (AIterator) map.iterator();
         }
@@ -267,31 +267,31 @@ public class AMapSupport {
             return map.isEmpty();
         }
 
-        @Override public <U> ACollection<U> map (Function<T, U> f) {
+        @Override public <U> ACollection<U> map (Function<Map.Entry<K,V>, U> f) {
             return ACollectionSupport.map(newBuilder(), this, f);
         }
 
-        @Override public <U> ACollection<U> flatMap (Function<T, Iterable<U>> f) {
+        @Override public <U> ACollection<U> flatMap (Function<Map.Entry<K,V>, Iterable<U>> f) {
             return ACollectionSupport.flatMap(newBuilder(), this, f);
         }
 
-        @Override public <U> ACollection<U> collect (Predicate<T> filter, Function<T, U> f) {
+        @Override public <U> ACollection<U> collect (Predicate<Map.Entry<K,V>> filter, Function<Map.Entry<K,V>, U> f) {
             return ACollectionSupport.collect(newBuilder(), this, filter, f);
         }
 
-        @Override public AHashSet<T> filter (Predicate<T> f) {
+        @Override public AHashSet<Map.Entry<K,V>> filter (Predicate<Map.Entry<K,V>> f) {
             return ACollectionDefaults.super.filter(f);
         }
 
-        @Override public AHashSet<T> filterNot (Predicate<T> f) {
+        @Override public AHashSet<Map.Entry<K,V>> filterNot (Predicate<Map.Entry<K,V>> f) {
             return ACollectionDefaults.super.filterNot(f);
         }
 
-        @Override public T min () {
+        @Override public Map.Entry<K,V> min () {
             throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
         }
 
-        @Override public T max () {
+        @Override public Map.Entry<K,V> max () {
             throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
         }
 
@@ -450,107 +450,108 @@ public class AMapSupport {
         }
     }
 
-    public static class SortedEntrySet<K,V,T extends Map.Entry<K,V>> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T, ATreeSet<T>>, ASetDefaults<T, ATreeSet<T>> {
+    public static class SortedEntrySet<K,V> extends AbstractImmutableCollection<Map.Entry<K,V>> implements ASortedSet<Map.Entry<K,V>>, ACollectionDefaults<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>>, ASetDefaults<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>> {
         private final ASortedMap<K,V> map;
 
         public SortedEntrySet (ASortedMap<K, V> map) {
             this.map = map;
         }
 
-        @Override public Comparator<T> comparator() {
+        @Override public Comparator<Map.Entry<K,V>> comparator() {
             //noinspection unchecked
-            return (Comparator<T>) Map.Entry.comparingByKey((Comparator<? super K>) map.comparator());
+            return Map.Entry.comparingByKey(map.comparator());
         }
 
-        @Override public AVector<T> toVector () {
+        @Override public AVector<Map.Entry<K,V>> toVector () {
             return AVector.from(this);
         }
-        @Override public ALinkedList<T> toLinkedList () {
+        @Override public ALinkedList<Map.Entry<K,V>> toLinkedList () {
             return ALinkedList.from(this);
         }
-        @Override public AHashSet<T> toSet () {
+        @Override public AHashSet<Map.Entry<K,V>> toSet () {
             return AHashSet.from(this);
         }
-        @Override public ATreeSet<T> toSortedSet() {
+        @Override public ATreeSet<Map.Entry<K,V>> toSortedSet() {
             throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
         }
 
-        @Override public <K1> AMap<K1, ATreeSet<T>> groupBy (Function<T, K1> keyExtractor) {
-            return AMapSupport.groupBy((ACollectionOps) this, (Function) keyExtractor);
+        @Override public <K1> AMap<K1, ATreeSet<Map.Entry<K,V>>> groupBy (Function<Map.Entry<K,V>, K1> keyExtractor) {
+            //noinspection unchecked
+            return (AMap<K1, ATreeSet<Map.Entry<K, V>>>) AMapSupport.groupBy(this, keyExtractor);
         }
 
-        @Override public T min () {
+        @Override public Map.Entry<K,V> min () {
             throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
         }
-        @Override public T max () {
+        @Override public Map.Entry<K,V> max () {
             throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
         }
 
-        @Override public ATreeSet<T> added (T o) {
+        @Override public ATreeSet<Map.Entry<K,V>> added (Map.Entry<K,V> o) {
             return ATreeSet.from(this, comparator()).added(o);
         }
 
-        @Override public ATreeSet<T> removed (T o) {
+        @Override public ATreeSet<Map.Entry<K,V>> removed (Map.Entry<K,V> o) {
             return ATreeSet.from(this, comparator()).removed(o);
         }
 
-        @Override public ATreeSet<T> union (Iterable<T> that) {
+        @Override public ATreeSet<Map.Entry<K,V>> union (Iterable<Map.Entry<K,V>> that) {
             return ATreeSet.builder(comparator())
                     .addAll(this)
                     .addAll(that)
                     .build();
         }
 
-        @Override public ATreeSet<T> intersect (Set<T> that) {
+        @Override public ATreeSet<Map.Entry<K,V>> intersect (Set<Map.Entry<K,V>> that) {
             return ATreeSet.fromIterator(iterator().filter(that::contains), comparator());
         }
 
-        @Override public ATreeSet<T> diff (Set<T> that) {
+        @Override public ATreeSet<Map.Entry<K,V>> diff (Set<Map.Entry<K,V>> that) {
             return ATreeSet.fromIterator(iterator().filterNot(that::contains), comparator());
         }
 
-        @Override public int countInRange (AOption<T> from, AOption<T> to) {
+        @Override public int countInRange (AOption<Map.Entry<K,V>> from, AOption<Map.Entry<K,V>> to) {
             return map.countInRange(from.map(Map.Entry::getKey), to.map(Map.Entry::getKey));
         }
 
-        @Override public ASortedSet<T> range (AOption<T> from, AOption<T> until) {
+        @Override public ASortedSet<Map.Entry<K,V>> range (AOption<Map.Entry<K,V>> from, AOption<Map.Entry<K,V>> until) {
             //noinspection unchecked
-            return (ASortedSet<T>) map.range(from.map(Map.Entry::getKey), until.map(Map.Entry::getKey)).entrySet();
+            return (ASortedSet<Map.Entry<K,V>>) map.range(from.map(Map.Entry::getKey), until.map(Map.Entry::getKey)).entrySet();
         }
 
-        @Override public ASortedSet<T> drop (int n) {
+        @Override public ASortedSet<Map.Entry<K,V>> drop (int n) {
             //noinspection unchecked
-            return (ASortedSet<T>) map.drop(n).entrySet();
+            return (ASortedSet<Map.Entry<K,V>>) map.drop(n).entrySet();
         }
 
-        @Override public ASortedSet<T> take (int n) {
+        @Override public ASortedSet<Map.Entry<K,V>> take (int n) {
             //noinspection unchecked
-            return (ASortedSet<T>) map.take(n).entrySet();
+            return (ASortedSet<Map.Entry<K,V>>) map.take(n).entrySet();
         }
 
-        @Override public ASortedSet<T> slice (int from, int until) {
+        @Override public ASortedSet<Map.Entry<K,V>> slice (int from, int until) {
             //noinspection unchecked
-            return (ASortedSet<T>) map.slice(from, until).entrySet();
+            return (ASortedSet<Map.Entry<K,V>>) map.slice(from, until).entrySet();
         }
 
-        @Override public AOption<T> smallest () {
+        @Override public AOption<Map.Entry<K,V>> smallest () {
             //noinspection unchecked
-            return (AOption<T>) map.smallest();
+            return (AOption<Map.Entry<K,V>>) map.smallest();
         }
 
-        @Override public AOption<T> greatest () {
+        @Override public AOption<Map.Entry<K,V>> greatest () {
             //noinspection unchecked
-            return (AOption<T>) map.greatest();
+            return (AOption<Map.Entry<K,V>>) map.greatest();
         }
 
-        @Override public AIterator<T> iterator (AOption<T> start) {
+        @Override public AIterator<Map.Entry<K,V>> iterator (AOption<Map.Entry<K,V>> start) {
             //noinspection unchecked
-            return (AIterator<T>) map.iterator(start.map(Map.Entry::getKey));
+            return (AIterator<Map.Entry<K,V>>) map.iterator(start.map(Map.Entry::getKey));
         }
 
-        @Override public AIterator<T> iterator () {
+        @Override public AIterator<Map.Entry<K,V>> iterator () {
             //noinspection unchecked
-            return (AIterator<T>) map.iterator();
+            return (AIterator<Map.Entry<K,V>>) map.iterator();
         }
 
         @Override public <U> ACollectionBuilder<U, ATreeSet<U>> newBuilder () {
@@ -567,26 +568,26 @@ public class AMapSupport {
             return map.isEmpty();
         }
 
-        @Override public <U> ATreeSet<U> map (Function<T, U> f) {
+        @Override public <U> ATreeSet<U> map (Function<Map.Entry<K,V>, U> f) {
             return ACollectionSupport.map(newBuilder(), this, f);
         }
 
-        @Override public <U> ATreeSet<U> flatMap (Function<T, Iterable<U>> f) {
+        @Override public <U> ATreeSet<U> flatMap (Function<Map.Entry<K,V>, Iterable<U>> f) {
             return ACollectionSupport.flatMap(newBuilder(), this, f);
         }
 
-        @Override public <U> ACollection<U> collect (Predicate<T> filter, Function<T, U> f) {
+        @Override public <U> ACollection<U> collect (Predicate<Map.Entry<K,V>> filter, Function<Map.Entry<K,V>, U> f) {
             return ACollectionSupport.collect(newBuilder(), this, filter, f);
         }
 
-        @Override public ATreeSet<T> filter (Predicate<T> f) {
+        @Override public ATreeSet<Map.Entry<K,V>> filter (Predicate<Map.Entry<K,V>> f) {
             //noinspection unchecked
-            final ACollectionBuilder<T, ATreeSet<T>> builder = (ACollectionBuilder) ATreeSet.builder(new EntryComparator<>(map.comparator()));
-            for (T o: this) if (f.test(o)) builder.add(o);
+            final ACollectionBuilder<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>> builder = (ACollectionBuilder) ATreeSet.builder(new EntryComparator<>(map.comparator()));
+            for (Map.Entry<K,V> o: this) if (f.test(o)) builder.add(o);
             //noinspection unchecked
             return builder.build();
         }
-        @Override public ATreeSet<T> filterNot (Predicate<T> f) {
+        @Override public ATreeSet<Map.Entry<K,V>> filterNot (Predicate<Map.Entry<K,V>> f) {
             return filter(f.negate());
         }
 
@@ -603,11 +604,11 @@ public class AMapSupport {
             return ACollectionDefaults.super.containsAll(c);
         }
 
-        @Override public AIterator<ATreeSet<T>> subsets () {
+        @Override public AIterator<ATreeSet<Map.Entry<K,V>>> subsets () {
             return ASetDefaults.super.subsets();
         }
 
-        @Override public AIterator<ATreeSet<T>> subsets (int len) {
+        @Override public AIterator<ATreeSet<Map.Entry<K,V>>> subsets (int len) {
             return ASetDefaults.super.subsets(len);
         }
 
