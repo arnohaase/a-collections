@@ -14,7 +14,7 @@ public interface AMapTests extends AEntryCollectionOpsTests {
     @Test default void testMapValues() {
         doTest(v -> {
             assertTrue (v.mkMap().mapValues(x -> x+1).isEmpty());
-            assertEquals (AHashMap.empty().updated(1, 2).updated(2, 4).updated(3, 6), v.mkMap(1, 2, 3).mapValues(x -> x-1));
+            assertEquals (AHashMap.empty().plus(1, 2).plus(2, 4).plus(3, 6), v.mkMap(1, 2, 3).mapValues(x -> x-1));
         });
     }
 
@@ -76,41 +76,41 @@ public interface AMapTests extends AEntryCollectionOpsTests {
         doTest(v -> {
             AMap<Integer,Integer> m = v.mkMap();
 
-            m = m.updated(1, 3);
+            m = m.plus(1, 3);
             assertEquals(v.mkMap(1), m);
-            m = m.updated(9, 19);
+            m = m.plus(9, 19);
             assertEquals(v.mkMap(1,9), m);
-            m = m.updated(2, 5);
+            m = m.plus(2, 5);
             assertEquals(v.mkMap(2, 9, 1), m);
 
-            m = m.updated(2, 99);
+            m = m.plus(2, 99);
             assertEquals(99, m.get(2).intValue());
             assertEquals(3, m.size());
         });
     }
     @Test default void testRemoved() {
         doTest(v -> {
-            assertTrue(v.mkMap().removed(1).isEmpty());
+            assertTrue(v.mkMap().minus(1).isEmpty());
 
-            assertTrue(v.mkMap(1).removed(1).isEmpty());
-            assertEquals(v.mkMap(1), v.mkMap(1).removed(2));
+            assertTrue(v.mkMap(1).minus(1).isEmpty());
+            assertEquals(v.mkMap(1), v.mkMap(1).minus(2));
 
-            assertEquals(v.mkMap(1, 3), v.mkMap(1, 2, 3).removed(2));
+            assertEquals(v.mkMap(1, 3), v.mkMap(1, 2, 3).minus(2));
         });
     }
 
     @Test default void testWithAll() {
         doTest(v -> {
-            assertTrue(v.mkMap().withAll(v.mkMap()).isEmpty());
-            assertEquals(v.mkMap(1), v.mkMap().withAll(v.mkMap(1)));
-            assertEquals(v.mkMap(1), v.mkMap(1).withAll(v.mkMap()));
-            assertEquals(v.mkMap(1), v.mkMap(1).withAll(v.mkMap(1)));
-            assertEquals(v.mkMap(1, 2), v.mkMap(1).withAll(v.mkMap(2)));
+            assertTrue(v.mkMap().plusAll(v.mkMap()).isEmpty());
+            assertEquals(v.mkMap(1), v.mkMap().plusAll(v.mkMap(1)));
+            assertEquals(v.mkMap(1), v.mkMap(1).plusAll(v.mkMap()));
+            assertEquals(v.mkMap(1), v.mkMap(1).plusAll(v.mkMap(1)));
+            assertEquals(v.mkMap(1, 2), v.mkMap(1).plusAll(v.mkMap(2)));
 
             // in case of conflict, the second map wins
-            final AMap<Integer, Integer> m1 = v.mkMap().updated(1, 1);
-            final AMap<Integer, Integer> m2 = v.mkMap().updated(1, 2);
-            assertEquals(2, m1.withAll(m2).get(1).intValue());
+            final AMap<Integer, Integer> m1 = v.mkMap().plus(1, 1);
+            final AMap<Integer, Integer> m2 = v.mkMap().plus(1, 2);
+            assertEquals(2, m1.plusAll(m2).get(1).intValue());
         });
     }
 

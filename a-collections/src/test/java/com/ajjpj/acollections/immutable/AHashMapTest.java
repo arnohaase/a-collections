@@ -19,9 +19,9 @@ public class AHashMapTest implements AMapTests {
         // this test is here rather than in ACollectionOpsTests because those tests work on collections of Integer, and the functionality
         //  is generic enough to be sufficiently tested by just using AVector
         assertEquals(AHashMap.empty(), AVector.empty().toMap());
-        assertEquals(AHashMap.empty().updated(1, 2), AVector.of(new AbstractMap.SimpleImmutableEntry<>(1, 2)).toMap());
+        assertEquals(AHashMap.empty().plus(1, 2), AVector.of(new AbstractMap.SimpleImmutableEntry<>(1, 2)).toMap());
         assertEquals(
-                AHashMap.empty().updated(1, 2).updated(3, 4).updated(5, 6),
+                AHashMap.empty().plus(1, 2).plus(3, 4).plus(5, 6),
                 AVector.of(new AbstractMap.SimpleImmutableEntry<>(1, 2), new AbstractMap.SimpleImmutableEntry<>(3, 4), new AbstractMap.SimpleImmutableEntry<>(5, 6)).toMap());
     }
 
@@ -53,9 +53,9 @@ public class AHashMapTest implements AMapTests {
             final boolean add = rand.nextBoolean();
 
             if(add)
-                result = result.updated(key, key);
+                result = result.plus(key, key);
             else
-                result = result.removed(key);
+                result = result.minus(key);
         }
         return result;
     }
@@ -81,10 +81,10 @@ public class AHashMapTest implements AMapTests {
     @Test public void testCollision() {
         AHashMap<IntWithCollision, Integer> aMap = AHashMap.empty();
         for (int i=0; i<10; i++) {
-            aMap = aMap.updated(new IntWithCollision(i), 2*i);
+            aMap = aMap.plus(new IntWithCollision(i), 2*i);
         }
         for (int i=0; i<10; i++) {
-            aMap = aMap.updated(new IntWithCollision(i), i);
+            aMap = aMap.plus(new IntWithCollision(i), i);
         }
         assertEquals (10, aMap.size());
         for (int i=0; i<10; i++) {

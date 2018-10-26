@@ -65,10 +65,10 @@ public class AHashMapCollisionBenchmark {
         AHashMap<IntWithCollision,Integer> m = AHashMap.empty();
 
         for (int i=0; i<10; i++) {
-            m = m.updated(new IntWithCollision(i), 2*i);
+            m = m.plus(new IntWithCollision(i), 2*i);
         }
         for (int i=0; i<10; i++) {
-            m = m.updated(new IntWithCollision(i), i);
+            m = m.plus(new IntWithCollision(i), i);
         }
         for (int i=0; i<10; i++) {
             m.get(new IntWithCollision(i));

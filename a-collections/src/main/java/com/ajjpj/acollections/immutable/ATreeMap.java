@@ -60,10 +60,10 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
             return null;
         }
     }
-    @Override public ATreeMap<K,V> updated(K key, V value) {
+    @Override public ATreeMap<K,V> plus (K key, V value) {
         return new ATreeMap<>(RedBlackTree.update(root, key, value, true, comparator), comparator);
     }
-    @Override public ATreeMap<K,V> removed(K key) {
+    @Override public ATreeMap<K,V> minus (K key) {
         if (!RedBlackTree.contains(root, key, comparator)) return this;
         return new ATreeMap<>(RedBlackTree.delete(root, key, comparator), comparator);
     }
@@ -239,12 +239,12 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
         }
 
         public ACollectionBuilder<Entry<K, V>, ATreeMap<K, V>> add (K key, V value) {
-            result = result.updated(key, value);
+            result = result.plus(key, value);
             return this;
         }
 
         @Override public ACollectionBuilder<Entry<K, V>, ATreeMap<K, V>> add (Entry<K, V> el) {
-            result = result.updated(el.getKey(), el.getValue());
+            result = result.plus(el.getKey(), el.getValue());
             return this;
         }
 

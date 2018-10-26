@@ -63,9 +63,9 @@ public class AHashMapBenchmark {
             final boolean add = rand.nextBoolean();
 
             if(add)
-                m=m.updated(key, key);
+                m=m.plus(key, key);
             else
-                m=m.removed(key);
+                m=m.minus(key);
         }
         bh.consume(m);
     }
@@ -104,7 +104,7 @@ public class AHashMapBenchmark {
         AHashMap<Integer,Integer> m = AHashMap.empty();
 
         for(int i=0; i<size; i++) {
-            m=m.updated(i, i);
+            m=m.plus(i, i);
         }
         int sum=0;
         for (Map.Entry<Integer, Integer> el: m) {

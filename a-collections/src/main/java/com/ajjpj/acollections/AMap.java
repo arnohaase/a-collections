@@ -12,13 +12,13 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
     V get(Object key);
     AOption<V> getOptional(K key);
 
-    AMap<K,V> updated(K key, V value);
-    AMap<K,V> removed(K key);
+    AMap<K,V> plus(K key, V value);
+    AMap<K,V> minus(K key);
 
-    default <K1 extends K, V1 extends V> AMap<K,V> withAll (Map<K1, V1> other) {
+    default <K1 extends K, V1 extends V> AMap<K,V> plusAll (Map<K1, V1> other) {
         AMap<K,V> result = this;
         for (Map.Entry<K1,V1> e: other.entrySet()) {
-            result = result.updated(e.getKey(), e.getValue());
+            result = result.plus(e.getKey(), e.getValue());
         }
         return result;
     }

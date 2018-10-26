@@ -82,9 +82,9 @@ public class ATreeMapBenchmark {
             final boolean add = rand.nextBoolean();
 
             if(add)
-                m=m.updated(key, key);
+                m=m.plus(key, key);
             else
-                m=m.removed(key);
+                m=m.minus(key);
         }
         bh.consume(m);
     }
@@ -152,7 +152,7 @@ public class ATreeMapBenchmark {
         ATreeMap<Integer,Integer> m = ATreeMap.empty(Comparator.<Integer>naturalOrder());
 
         for(int i=0; i<size; i++) {
-            m=m.updated(i, i);
+            m=m.plus(i, i);
         }
         int sum=0;
         for (Map.Entry<Integer, Integer> el: m) {

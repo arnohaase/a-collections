@@ -16,7 +16,7 @@ public class KeySetTest implements ASetTests {
         }
 
         @Override public ACollectionBuilder<Integer, ASet<Integer>> add (Integer el) {
-            map = map.updated(el, el);
+            map = map.plus(el, el);
             return this;
         }
 

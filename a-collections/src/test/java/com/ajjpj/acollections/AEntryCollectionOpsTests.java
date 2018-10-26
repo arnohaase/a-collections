@@ -338,7 +338,7 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     @Test @Override default void testGroupBy () {
         doTest(v -> {
             assertTrue(v.mkColl().groupBy(this::isOdd).isEmpty());
-            assertEquals(AHashMap.empty().updated(true, v.mkColl(1, 3)).updated(false, v.mkColl(2)),
+            assertEquals(AHashMap.empty().plus(true, v.mkColl(1, 3)).plus(false, v.mkColl(2)),
                     v.mkColl(1, 2, 3).groupBy(this::isOdd));
         });
     }

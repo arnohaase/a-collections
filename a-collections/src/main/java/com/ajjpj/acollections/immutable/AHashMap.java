@@ -31,10 +31,10 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         this.compactHashMap = compactHashMap;
     }
 
-    public AHashMap<K, V> updated(K key, V value) {
+    public AHashMap<K, V> plus (K key, V value) {
         return newInstance(compactHashMap.updated0(newEntry(key, value), 0));
     }
-    public AHashMap<K, V> removed(K key) {
+    public AHashMap<K, V> minus (K key) {
         return newInstance(compactHashMap.removed0(newEntry(key, null), 0));
     }
 
@@ -203,12 +203,12 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         }
 
         public ACollectionBuilder<Entry<K, V>, AHashMap<K, V>> add (K key, V value) {
-            result = result.updated(key, value);
+            result = result.plus(key, value);
             return this;
         }
 
         @Override public ACollectionBuilder<Entry<K, V>, AHashMap<K, V>> add (Entry<K, V> el) {
-            result = result.updated(el.getKey(), el.getValue());
+            result = result.plus(el.getKey(), el.getValue());
             return this;
         }
 

@@ -35,9 +35,9 @@ public class ATreeMap2Test {
             final boolean add = rand.nextBoolean();
 
             if(add)
-                result = result.updated(key, key);
+                result = result.plus(key, key);
             else
-                result = result.removed(key);
+                result = result.minus(key);
         }
         return result;
     }

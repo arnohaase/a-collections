@@ -15,7 +15,7 @@ public class ValueCollectionTest implements ACollectionTests {
         }
 
         @Override public ACollectionBuilder<Integer, ACollection<Integer>> add (Integer el) {
-            map = map.updated(el, el);
+            map = map.plus(el, el);
             return this;
         }
 
