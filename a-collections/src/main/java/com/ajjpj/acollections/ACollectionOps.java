@@ -81,7 +81,7 @@ public interface ACollectionOps<T> {
     }
     <U> U foldLeft(U zero, BiFunction<U,T,U> f);
 
-    <K> AMap<K,? extends ACollectionOps<T>> groupBy(Function<T,K> keyExtractor);
+    <K1> AMap<K1,? extends ACollectionOps<T>> groupBy(Function<T,K1> keyExtractor);
 
     T min();
     T min(Comparator<T> comparator);

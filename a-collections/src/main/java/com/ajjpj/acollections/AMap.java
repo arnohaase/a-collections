@@ -4,6 +4,7 @@ import com.ajjpj.acollections.util.AOption;
 
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 
 public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Iterable<Map.Entry<K,V>> {
@@ -23,7 +24,13 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
         return result;
     }
 
+    @Override AMap<K, V> filter (Predicate<Entry<K, V>> f);
+    @Override AMap<K, V> filterNot (Predicate<Entry<K, V>> f);
+
     <U> AMap<K,U> mapValues(Function<V,U> f);
+
+    AMap<K,V> withDefaultValue(V defaultValue);
+    AMap<K,V> withDerivedDefaultValue(Function<K,V> defaultProvider);
 
     ASet<K> keySet();
     ACollection<V> values();

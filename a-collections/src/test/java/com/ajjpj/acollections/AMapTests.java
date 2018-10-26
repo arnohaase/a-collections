@@ -114,6 +114,132 @@ public interface AMapTests extends AEntryCollectionOpsTests {
         });
     }
 
+    @Test default void testWithDefaultValue() {
+        doTest(v -> {
+            final AMap<Integer,Integer> m = v.mkMap().withDefaultValue(1);
+            assertEquals(1, m.get(9876).intValue());
+            assertTrue(m.getOptional(9876).isEmpty());
+            assertFalse(m.containsKey(912));
+            assertTrue(m.isEmpty());
+            assertEquals(0, m.size());
+        });
+    }
+    @Test default void testPlusMinusMaintainWithDefaultValue() {
+        doTest(v -> {
+            AMap<Integer,Integer> m = v.mkMap(1, 2, 3).withDefaultValue(99);
+            assertEquals(3, m.get(1).intValue());
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(7, m.get(3).intValue());
+            assertEquals(99, m.get(4).intValue());
+
+            m = m
+                    .minus(1)
+                    .minus(2)
+                    .plus(4, 19);
+
+            assertEquals(99, m.get(1).intValue());
+            assertEquals(99, m.get(2).intValue());
+            assertEquals(19, m.get(4).intValue());
+
+            assertEquals(2, m.size());
+            assertTrue(m.getOptional(1).isEmpty());
+            assertTrue(m.getOptional(4).contains(19));
+            assertEquals(99, m.get(5).intValue());
+        });
+    }
+    @Test default void testPlusAllMaintainsWithDefaultValue() {
+        doTest(v -> {
+            AMap<Integer,Integer> m = v.mkMap(1, 2, 3).withDefaultValue(99);
+
+            m = m.plusAll(AHashMap.<Integer,Integer>empty().plus(1, 2).plus(4, 18));
+            assertEquals(4, m.size());
+
+            assertEquals(2, m.get(1).intValue());
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(18, m.get(4).intValue());
+
+            assertEquals(99, m.get(5).intValue());
+        });
+    }
+    @Test default void testFilterMaintainsWithDefaultValue() {
+        doTest(v -> {
+            AMap<Integer,Integer> m = v.mkMap(1, 2, 3).withDefaultValue(99);
+
+            m = m
+                    .filter(this::isOdd)
+                    .filterNot(this::isEven);
+            assertEquals(2, m.size());
+
+            assertEquals(3, m.get(1).intValue());
+            assertEquals(7, m.get(3).intValue());
+            assertEquals(99, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+
+    @Test default void testWithDerivedDefaultValue() {
+        doTest(v -> {
+            final AMap<Integer,Integer> m = v.mkMap().withDerivedDefaultValue(x -> 1);
+            assertEquals(1, m.get(9876).intValue());
+            assertTrue(m.getOptional(9876).isEmpty());
+            assertFalse(m.containsKey(912));
+            assertTrue(m.isEmpty());
+            assertEquals(0, m.size());
+        });
+    }
+    @Test default void testPlusMinusMaintainWithDerivedDefaultValue() {
+        doTest(v -> {
+            AMap<Integer,Integer> m = v.mkMap(1, 2, 3).withDerivedDefaultValue(x -> 99);
+            assertEquals(3, m.get(1).intValue());
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(7, m.get(3).intValue());
+            assertEquals(99, m.get(4).intValue());
+
+            m = m
+                    .minus(1)
+                    .minus(2)
+                    .plus(4, 19);
+
+            assertEquals(99, m.get(1).intValue());
+            assertEquals(99, m.get(2).intValue());
+            assertEquals(19, m.get(4).intValue());
+
+            assertEquals(2, m.size());
+            assertTrue(m.getOptional(1).isEmpty());
+            assertTrue(m.getOptional(4).contains(19));
+            assertEquals(99, m.get(5).intValue());
+        });
+    }
+    @Test default void testPlusAllMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            AMap<Integer,Integer> m = v.mkMap(1, 2, 3).withDerivedDefaultValue(x -> 99);
+
+            m = m.plusAll(AHashMap.<Integer,Integer>empty().plus(1, 2).plus(4, 18));
+            assertEquals(4, m.size());
+
+            assertEquals(2, m.get(1).intValue());
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(18, m.get(4).intValue());
+
+            assertEquals(99, m.get(5).intValue());
+        });
+    }
+    @Test default void testFilterMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            AMap<Integer,Integer> m = v.mkMap(1, 2, 3).withDerivedDefaultValue(x -> 99);
+
+            m = m
+                    .filter(this::isOdd)
+                    .filterNot(this::isEven);
+            assertEquals(2, m.size());
+
+            assertEquals(3, m.get(1).intValue());
+            assertEquals(7, m.get(3).intValue());
+            assertEquals(99, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+
     @Test default void testKeySet() {
         doTest(v -> {
             assertTrue(v.mkMap().keySet().isEmpty());

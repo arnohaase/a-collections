@@ -127,6 +127,10 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
         return ATreeMap.<K,V>builder(comparator).addAll(iterator().filter(f)).build();
     }
 
+    @Override public ATreeMap<K, V> filterNot (Predicate<Entry<K, V>> f) {
+        return filter(f.negate());
+    }
+
     @Override public <K1> AMap<K1, ATreeMap<K, V>> groupBy (Function<Entry<K, V>, K1> keyExtractor) {
         //noinspection unchecked
         return (AMap<K1, ATreeMap<K, V>>) AMapSupport.groupBy(this, keyExtractor);

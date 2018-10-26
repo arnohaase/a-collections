@@ -5,8 +5,7 @@ import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 
 public class AMapSupport {
@@ -647,6 +646,44 @@ public class AMapSupport {
 
         @Override public int hashCode () {
             return Objects.hash(keyComparator);
+        }
+    }
+
+    public static class MapWithDefaultValue<K,V> extends AbstractDelegatingMap<K,V> {
+        private final V defaultValue;
+
+        public MapWithDefaultValue (AMap<K, V> inner, V defaultValue) {
+            super(inner);
+            this.defaultValue = defaultValue;
+        }
+
+        @Override protected AMap<K,V> wrap (AMap<K,V> inner) {
+            return new MapWithDefaultValue<>(inner, defaultValue);
+        }
+
+        //TODO javadoc: default applies to get() only, not contains(), getOptional(), ...
+        @Override public V get (Object key) {
+            //noinspection unchecked
+            return inner.getOptional((K) key).orElse(defaultValue);
+        }
+    }
+
+    public static class MapWithDerivedDefaultValue<K,V> extends AbstractDelegatingMap<K,V> {
+        private final Function<K,V> defaultProvider;
+
+        public MapWithDerivedDefaultValue (AMap<K, V> inner, Function<K,V> defaultProvider) {
+            super(inner);
+            this.defaultProvider = defaultProvider;
+        }
+
+        @Override protected AMap<K,V> wrap (AMap<K,V> inner) {
+            return new MapWithDerivedDefaultValue<>(inner, defaultProvider);
+        }
+
+        //TODO javadoc: default applies to get() only, not contains(), getOptional(), ...
+        @Override public V get (Object key) {
+            //noinspection unchecked
+            return inner.getOptional((K) key).orElseGet(() -> defaultProvider.apply((K) key));
         }
     }
 }
