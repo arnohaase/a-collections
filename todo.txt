@@ -6,7 +6,10 @@ todo
   * package.java
 
 * AbstractImmutableSet
+
 * add mutable JU code to benchmarks
+* explicitly delegate optional j.u.Coll methods to inner
+
 * unit tests
   * entry iterators
 

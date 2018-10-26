@@ -3,6 +3,7 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.immutable.ARange;
 import com.ajjpj.acollections.util.AOption;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -37,6 +38,10 @@ public interface AList<T> extends ACollection<T>, List<T> {
 
     AList<T> reverse();
     AIterator<T> reverseIterator();
+
+    AList<T> sorted(Comparator<? super T> comparator);
+    AList<T> sorted();
+    <X extends Comparable<X>> AList<T> sortedBy(Function<T,X> f);
 
     boolean contains(Object o);
 

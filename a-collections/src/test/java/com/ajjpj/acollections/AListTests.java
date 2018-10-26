@@ -258,6 +258,29 @@ public interface AListTests extends ACollectionTests {
         });
     }
 
+    @Test default void testSorted() {
+        doTest(v -> {
+            assertTrue (v.mkList().sorted().isEmpty());
+            assertTrue (v.mkList().sorted(Comparator.naturalOrder()).isEmpty());
+
+            assertEquals(AVector.of(1), v.mkList(1).sorted());
+            assertEquals(AVector.of(1), v.mkList(1).sorted(Comparator.naturalOrder()));
+
+            assertEquals(AVector.of(1, 2, 3), v.mkList(3, 2, 1).sorted());
+            assertEquals(AVector.of(1, 2, 3), v.mkList(3, 2, 1).sorted(Comparator.naturalOrder()));
+
+            assertEquals(AVector.of(3, 2, 1), v.mkList(1, 2, 3).sorted(Comparator.<Integer>naturalOrder().reversed()));
+        });
+    }
+    @Test default void testSortedBy() {
+        doTest(v -> {
+            assertTrue(v.mkList().sortedBy(n -> -n).isEmpty());
+            assertEquals(AVector.of(1), v.mkList(1).sortedBy(n -> -n));
+
+            assertEquals(AVector.of(3, 2, 1), v.mkList(1, 2, 3).sortedBy(n -> -n));
+        });
+    }
+
     @Test default void testStartsWith() {
         doTest(v -> {
             assertTrue(v.mkList().startsWith(AVector.empty()));

@@ -39,7 +39,7 @@ public class ACollectionSupport {
     }
 
     public static String toString(Class<?> baseClass, ACollectionOps<?> coll) {
-        return coll.mkString(baseClass.getSimpleName() + "[", ",", "]");
+        return coll.mkString(baseClass.getSimpleName() + "[", ", ", "]");
     }
 
     public static <T, U, C extends ACollection<U>> C map(ACollectionBuilder<U, C> builder, Iterable<T> coll, Function<T,U> f) {

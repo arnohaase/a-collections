@@ -86,6 +86,22 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
     }
     AIterator<T> reverseIterator();
 
+    @Override default C sorted (Comparator<? super T> comparator) {
+        //noinspection unchecked
+        final T[] data = (T[]) toArray();
+        Arrays.sort(data, comparator);
+        //noinspection unchecked
+        return (C) this.<T>newBuilder().addAll(data).build();
+
+    }
+    @Override default C sorted () {
+        //noinspection unchecked
+        return (C) sorted((Comparator) Comparator.naturalOrder());
+    }
+    @Override default <X extends Comparable<X>> AList<T> sortedBy (Function<T, X> keyExtractor) {
+        return sorted(Comparator.comparing(keyExtractor));
+    }
+
     default boolean contains(Object o) {
         return exists(el -> Objects.equals(el, o));
     }
