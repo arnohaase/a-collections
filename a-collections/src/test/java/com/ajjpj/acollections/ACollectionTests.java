@@ -3,6 +3,7 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
+import com.ajjpj.acollections.util.AUnchecker;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -472,7 +473,9 @@ public interface ACollectionTests extends ACollectionOpsTests {
     //---------------------------- internal -------------------------------
 
     default void doTest(Consumer<Variant> test) {
-        variants().forEach(test);
+        AUnchecker.executeUnchecked(() -> {
+            variants().forEach(test);
+        });
     }
 
     class Variant {

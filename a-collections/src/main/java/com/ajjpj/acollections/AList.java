@@ -3,10 +3,8 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.immutable.ARange;
 import com.ajjpj.acollections.util.AOption;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.security.SecureRandom;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -42,6 +40,9 @@ public interface AList<T> extends ACollection<T>, List<T> {
     AList<T> sorted(Comparator<? super T> comparator);
     AList<T> sorted();
     <X extends Comparable<X>> AList<T> sortedBy(Function<T,X> f);
+
+    AList<T> shuffled();
+    AList<T> shuffled(Random r);
 
     boolean contains(Object o);
 

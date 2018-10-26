@@ -1,5 +1,6 @@
 package com.ajjpj.acollections;
 
+import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.AVector;
 import org.junit.jupiter.api.Test;
 
@@ -272,12 +273,25 @@ public interface AListTests extends ACollectionTests {
             assertEquals(AVector.of(3, 2, 1), v.mkList(1, 2, 3).sorted(Comparator.<Integer>naturalOrder().reversed()));
         });
     }
-    @Test default void testSortedBy() {
+    @Test default void testSortedBy() {          //TODO mutable
         doTest(v -> {
             assertTrue(v.mkList().sortedBy(n -> -n).isEmpty());
             assertEquals(AVector.of(1), v.mkList(1).sortedBy(n -> -n));
 
             assertEquals(AVector.of(3, 2, 1), v.mkList(1, 2, 3).sortedBy(n -> -n));
+        });
+    }
+
+    @Test default void testShuffled() { //TODO mutable
+        doTest(v -> {
+            assertTrue(v.mkList().shuffled().isEmpty());
+            assertTrue(v.mkList().shuffled(new Random()).isEmpty());
+
+            assertEquals(AVector.of(1), v.mkList(1).shuffled());
+            assertEquals(AVector.of(1), v.mkList(1).shuffled(new Random()));
+
+            assertEquals(AHashSet.of(1, 2, 3), v.mkList(1, 2, 3).shuffled().toSet());
+            assertEquals(AHashSet.of(1, 2, 3), v.mkList(1, 2, 3).shuffled(new Random()).toSet());
         });
     }
 

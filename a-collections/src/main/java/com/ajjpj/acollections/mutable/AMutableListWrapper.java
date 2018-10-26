@@ -4,8 +4,6 @@ import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.AbstractAIterator;
-import com.ajjpj.acollections.immutable.AVector;
-import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
 import com.ajjpj.acollections.internal.AListIteratorWrapper;
@@ -14,7 +12,6 @@ import com.ajjpj.acollections.util.AOption;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 
 /**
@@ -146,6 +143,16 @@ public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrap
                 return it.previous();
             }
         };
+    }
+
+    @Override public AMutableListWrapper<T> sorted (Comparator<? super T> comparator) {
+        inner.sort(comparator);
+        return this;
+    }
+
+    @Override public AMutableListWrapper<T> shuffled (Random r) {
+        Collections.shuffle(inner, r);
+        return this;
     }
 
     @Override public <U> AList<U> collect (Predicate<T> filter, Function<T, U> f) {

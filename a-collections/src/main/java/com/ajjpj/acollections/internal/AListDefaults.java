@@ -6,7 +6,9 @@ import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.AMap;
 import com.ajjpj.acollections.util.AOption;
 
+import java.security.SecureRandom;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -100,6 +102,16 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
     }
     @Override default <X extends Comparable<X>> AList<T> sortedBy (Function<T, X> keyExtractor) {
         return sorted(Comparator.comparing(keyExtractor));
+    }
+
+    @Override default C shuffled () {
+        return shuffled(ThreadLocalRandom.current());
+    }
+    @Override default C shuffled (Random r) {
+        final List<T> l = new ArrayList<T>(this);
+        Collections.shuffle(l, r);
+        //noinspection unchecked
+        return (C) newBuilder().addAll(l).build();
     }
 
     default boolean contains(Object o) {
