@@ -28,6 +28,7 @@ public class ATreeMap3<K,V> implements Iterable<Map.Entry<K,V>> {
         return new ATreeMap3<>(com.ajjpj.acollections.immutable.rbs.RedBlackTree.update(root, key, value, true, comparator), comparator);
     }
     public ATreeMap3<K,V> removed(K key) {
+        if (!com.ajjpj.acollections.immutable.rbs.RedBlackTree.contains(root, key, comparator)) return this;
         return new ATreeMap3<>(com.ajjpj.acollections.immutable.rbs.RedBlackTree.delete(root, key, comparator), comparator);
     }
     public Iterator<Map.Entry<K,V>> iterator() {

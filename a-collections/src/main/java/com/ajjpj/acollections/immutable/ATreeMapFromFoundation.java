@@ -57,6 +57,7 @@ public class ATreeMapFromFoundation<K,V> implements Iterable<Map.Entry<K,V>> {
         return new ATreeMapFromFoundation<>(impl.updated(new Entry<>(key, value, comparator)), comparator);
     }
     public ATreeMapFromFoundation<K,V> removed(K key) {
+        if (impl.get(new Entry<>(key, null, comparator)) == null) return this;
         return new ATreeMapFromFoundation<>(impl.removed(new Entry<>(key, null, comparator)), comparator);
     }
     public Iterator<Map.Entry<K,V>> iterator() {

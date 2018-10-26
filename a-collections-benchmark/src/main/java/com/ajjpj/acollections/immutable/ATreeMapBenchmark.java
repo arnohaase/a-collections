@@ -39,7 +39,7 @@ public class ATreeMapBenchmark {
         bh.consume(m);
     }
 
-//    @Benchmark
+    @Benchmark
     public void testModifyDexx(Blackhole bh) {
         final Random rand = new Random(12345);
         com.github.andrewoma.dexx.collection.TreeMap<Integer,Integer> m = new com.github.andrewoma.dexx.collection.TreeMap<>();
@@ -55,8 +55,8 @@ public class ATreeMapBenchmark {
         }
         bh.consume(m);
     }
-//    @Benchmark
-    public void testModifyATreeMap(Blackhole bh) {
+    @Benchmark
+    public void testModifyATreeMapFromFoundation(Blackhole bh) {
         final Random rand = new Random(12345);
         ATreeMapFromFoundation<Integer,Integer> m = ATreeMapFromFoundation.empty(Comparator.<Integer>naturalOrder());
 
@@ -73,7 +73,7 @@ public class ATreeMapBenchmark {
     }
 
     @Benchmark
-    public void testModifyATreeMap2(Blackhole bh) {
+    public void testModifyATreeMap(Blackhole bh) {
         final Random rand = new Random(12345);
         ATreeMap<Integer,Integer> m = ATreeMap.empty(Comparator.<Integer>naturalOrder());
 

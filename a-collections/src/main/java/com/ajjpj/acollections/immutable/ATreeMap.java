@@ -64,6 +64,7 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
         return new ATreeMap<>(RedBlackTree.update(root, key, value, true, comparator), comparator);
     }
     @Override public ATreeMap<K,V> removed(K key) {
+        if (!RedBlackTree.contains(root, key, comparator)) return this;
         return new ATreeMap<>(RedBlackTree.delete(root, key, comparator), comparator);
     }
     @Override public AIterator<Entry<K,V>> iterator() {
