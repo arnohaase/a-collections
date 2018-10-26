@@ -27,6 +27,7 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
     @Override AMap<K, V> filter (Predicate<Entry<K, V>> f);
     @Override AMap<K, V> filterNot (Predicate<Entry<K, V>> f);
 
+    AMap<K,V> filterKeys(Predicate<K> f);
     <U> AMap<K,U> mapValues(Function<V,U> f);
 
     AMap<K,V> withDefaultValue(V defaultValue);

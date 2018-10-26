@@ -11,6 +11,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public interface AMapTests extends AEntryCollectionOpsTests {
+    @Test default void testFilterKeys() {
+        doTest(v -> {
+            assertTrue(v.mkMap().filterKeys(x -> true).isEmpty());
+            assertTrue(v.mkMap().filterKeys(x -> false).isEmpty());
+
+            assertEquals(v.mkMap(1, 3), v.mkMap(1, 2, 3).filterKeys(x -> x%2==1));
+            assertEquals(v.mkMap(2), v.mkMap(1, 2, 3).filterKeys(x -> x%2==0));
+        });
+    }
+
     @Test default void testMapValues() {
         doTest(v -> {
             assertTrue (v.mkMap().mapValues(x -> x+1).isEmpty());
@@ -176,6 +186,18 @@ public interface AMapTests extends AEntryCollectionOpsTests {
             assertEquals(99, m.get(40).intValue());
         });
     }
+    @Test default void testFilterKeysMaintainsWithDefaultValue() {
+        doTest(v -> {
+            AMap<Integer,Integer> m = v.mkMap(1, 2, 3).withDefaultValue(99);
+            m = m.filterKeys(x -> x%2 == 1);
+            assertEquals(2, m.size());
+
+            assertEquals(3, m.get(1).intValue());
+            assertEquals(7, m.get(3).intValue());
+            assertEquals(99, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
 
     @Test default void testWithDerivedDefaultValue() {
         doTest(v -> {
@@ -231,6 +253,18 @@ public interface AMapTests extends AEntryCollectionOpsTests {
             m = m
                     .filter(this::isOdd)
                     .filterNot(this::isEven);
+            assertEquals(2, m.size());
+
+            assertEquals(3, m.get(1).intValue());
+            assertEquals(7, m.get(3).intValue());
+            assertEquals(99, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testFilterKeysMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            AMap<Integer,Integer> m = v.mkMap(1, 2, 3).withDerivedDefaultValue(x -> 99);
+            m = m.filterKeys(x -> x%2 == 1);
             assertEquals(2, m.size());
 
             assertEquals(3, m.get(1).intValue());

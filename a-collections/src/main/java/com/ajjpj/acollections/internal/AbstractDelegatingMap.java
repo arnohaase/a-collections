@@ -54,6 +54,10 @@ abstract class AbstractDelegatingMap<K,V> implements AMap<K,V> {
         return wrap(inner.plusAll(other));
     }
 
+    @Override public AMap<K, V> filterKeys (Predicate<K> f) {
+        return wrap(inner.filterKeys(f));
+    }
+
     //TODO javadoc: you lose the wrapping here
     @Override
     public <U> AMap<K, U> mapValues (Function<V, U> f) {
