@@ -5,12 +5,11 @@ import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.ASetDefaults;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 
 public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AMutableSetWrapper<T>>, ASetDefaults<T, AMutableSetWrapper<T>> {
@@ -144,6 +143,22 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
 
     @Override public void clear () {
         inner.clear();
+    }
+
+    @Override public Spliterator<T> spliterator () {
+        return inner.spliterator();
+    }
+    @Override public boolean removeIf (Predicate<? super T> filter) {
+        return inner.removeIf(filter);
+    }
+    @Override public Stream<T> stream () {
+        return inner.stream();
+    }
+    @Override public Stream<T> parallelStream () {
+        return inner.parallelStream();
+    }
+    @Override public void forEach (Consumer<? super T> action) {
+        inner.forEach(action);
     }
 
     @Override public String toString () {

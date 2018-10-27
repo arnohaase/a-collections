@@ -10,8 +10,11 @@ import com.ajjpj.acollections.internal.AListIteratorWrapper;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 
 /**
@@ -248,6 +251,28 @@ public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrap
 
     @Override public void clear () {
         inner.clear();
+    }
+
+    @Override public void replaceAll (UnaryOperator<T> operator) {
+        inner.replaceAll(operator);
+    }
+    @Override public void sort (Comparator<? super T> c) {
+        inner.sort(c);
+    }
+    @Override public Spliterator<T> spliterator () {
+        return inner.spliterator();
+    }
+    @Override public boolean removeIf (Predicate<? super T> filter) {
+        return inner.removeIf(filter);
+    }
+    @Override public Stream<T> stream () {
+        return inner.stream();
+    }
+    @Override public Stream<T> parallelStream () {
+        return inner.parallelStream();
+    }
+    @Override public void forEach (Consumer<? super T> action) {
+        inner.forEach(action);
     }
 
     @Override public String toString () {
