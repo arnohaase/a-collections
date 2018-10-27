@@ -134,6 +134,10 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         return ACollectionSupport.collect(AVector.builder(), this, filter, f);
     }
 
+    @Override public <V1> AHashMap<K, V1> mapValues (Function<V, V1> f) {
+        return (AHashMap<K,V1>) AMapDefaults.super.mapValues(f);
+    }
+
     @Override public <K1> AMap<K1, AHashMap<K, V>> groupBy (Function<Entry<K, V>, K1> keyExtractor) {
         //noinspection unchecked
         return (AMap<K1, AHashMap<K, V>>) AMapSupport.groupBy(this, keyExtractor);
@@ -146,11 +150,8 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
     }
 
-    @Override public boolean contains (Object o) { //TODO extract to AbstractImmutableMap
-        if (! (o instanceof Map.Entry)) return false;
-        //noinspection unchecked
-        final Map.Entry<K,V> e = (Entry<K, V>) o;
-        return getOptional(e.getKey()).contains(e.getValue());
+    @Override public boolean contains (Object o) {
+        return AMapSupport.containsEntry(this, o);
     }
 
     @Override public boolean containsValue (Object value) {
@@ -178,7 +179,7 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
     }
 
     @Override public ACollection<V> values () {
-        return new AMapSupport.ValueCollection<>(this);
+        return new AMapSupport.ValuesCollection<>(this);
     }
 
     @Override public ASet<Entry<K, V>> entrySet () {

@@ -24,6 +24,12 @@ public class AMapSupport {
         return result.build();
     }
 
+    public static <K,V> boolean containsEntry(AMap<K,V> m, Object o) {
+        if (! (o instanceof Map.Entry)) return false;
+        //noinspection unchecked
+        final Map.Entry<K,V> e = (Map.Entry<K,V>) o;
+        return m.getOptional(e.getKey()).contains(e.getValue());
+    }
 
     public static String toString (Class<?> baseClass, AMap<?,?> m) {
         final StringBuilder sb = new StringBuilder(baseClass.getSimpleName()).append("{");
@@ -138,10 +144,10 @@ public class AMapSupport {
         }
     }
 
-    public static class ValueCollection<T> extends AbstractImmutableCollection<T> implements ACollection<T>, ACollectionDefaults<T, AVector<T>> {
+    public static class ValuesCollection<T> extends AbstractImmutableCollection<T> implements ACollection<T>, ACollectionDefaults<T, AVector<T>> {
         private final AMap<?,T> map;
 
-        public ValueCollection (AMap<?, T> map) {
+        public ValuesCollection (AMap<?, T> map) {
             this.map = map;
         }
 
@@ -206,7 +212,7 @@ public class AMapSupport {
 
 
         @Override public String toString () {
-            return ACollectionSupport.toString(ValueCollection.class, this);
+            return ACollectionSupport.toString(ValuesCollection.class, this);
         }
     }
 

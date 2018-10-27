@@ -112,16 +112,16 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
         return iterator().fold(zero, f);
     }
 
-    @Override default <K> AMap<K, C> groupBy (Function<T, K> keyExtractor) {
-        Map<K,ACollectionBuilder<T,C>> builders = new HashMap<>();
+    @Override default <K1> AMap<K1, C> groupBy (Function<T, K1> keyExtractor) {
+        Map<K1,ACollectionBuilder<T,C>> builders = new HashMap<>();
         for(T o: this) {
             //noinspection unchecked
             builders.computeIfAbsent(keyExtractor.apply(o), x -> (ACollectionBuilder) newBuilder())
                     .add(o);
         }
 
-        AHashMap.Builder<K,C> result = AHashMap.builder();
-        for (Map.Entry<K, ACollectionBuilder<T, C>> e: builders.entrySet())
+        AHashMap.Builder<K1,C> result = AHashMap.builder();
+        for (Map.Entry<K1, ACollectionBuilder<T, C>> e: builders.entrySet())
             result.add(e.getKey(), e.getValue().build());
         return result.build();
     }

@@ -84,14 +84,10 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
     }
 
     @Override public boolean contains (Object o) {
-        if (! (o instanceof Map.Entry)) return false;
-        //noinspection unchecked
-        final Map.Entry<K,V> e = (Entry<K,V>) o;
-        return getOptional(e.getKey()).contains(e.getValue());
+        return AMapSupport.containsEntry(this, o);
     }
 
     @Override public boolean containsKey (Object key) {
-
         try {
             //noinspection unchecked
             return RedBlackTree.get(root, (K) key, comparator).nonEmpty(); //TODO skip 'get', use 'lookup' directly
@@ -114,13 +110,15 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
     @Override public <U> ACollection<U> map (Function<Entry<K, V>, U> f) {
         return ACollectionSupport.map(AVector.builder(), this, f);
     }
-
     @Override public <U> ACollection<U> flatMap (Function<Entry<K, V>, Iterable<U>> f) {
         return ACollectionSupport.flatMap(AVector.builder(), this, f);
     }
-
     @Override public <U> ACollection<U> collect (Predicate<Entry<K, V>> filter, Function<Entry<K, V>, U> f) {
         return ACollectionSupport.collect(AVector.builder(), this, filter, f);
+    }
+
+    @Override public <V1> ATreeMap<K, V1> mapValues (Function<V, V1> f) {
+        return (ATreeMap<K,V1>) AMapDefaults.super.mapValues(f);
     }
 
     @Override public ATreeMap<K, V> filter (Predicate<Entry<K, V>> f) {
@@ -161,7 +159,7 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
     }
 
     @Override public ACollection<V> values () {
-        return new AMapSupport.ValueCollection<>(this);
+        return new AMapSupport.ValuesCollection<>(this);
     }
 
     @Override public ASortedSet<Entry<K, V>> entrySet () { //TODO ASortedSet

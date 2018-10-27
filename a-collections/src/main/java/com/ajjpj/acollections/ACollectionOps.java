@@ -54,7 +54,7 @@ public interface ACollectionOps<T> {
 
     AMutableListWrapper<T> toMutableList();
     AMutableSetWrapper<T> toMutableSet();
-    //TODO toMap
+    //TODO toMutableMap
 
     <U> ACollection<U> map(Function<T,U> f);
     <U> ACollection<U> flatMap(Function<T, Iterable<U>> f);
