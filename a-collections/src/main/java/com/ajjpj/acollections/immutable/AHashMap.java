@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Map.Entry<K,V>, AHashMap<K,V>>, AMapDefaults<K,V,AHashMap<K,V>> {
+public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements ACollectionDefaults<Map.Entry<K,V>, AHashMap<K,V>>, AMapDefaults<K,V,AHashMap<K,V>> {
     private final CompactHashMap<MapEntryWithEquality> compactHashMap;
 
     @SuppressWarnings("unchecked")
@@ -68,9 +68,6 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
     @Override public AHashSet<Entry<K, V>> toSet () {
         return AHashSet.from(this); // discard equality
     }
-    @Override public ATreeSet<Entry<K, V>> toSortedSet () {
-        throw new UnsupportedOperationException("pass in a Comparator<Map.Entry> - Map.Entry has no natural order");
-    }
 
     @Override public boolean isEmpty() {
         return compactHashMap.isEmpty();
@@ -117,9 +114,6 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         return filter(f.negate());
     }
 
-    @Override public <U> ACollectionBuilder<U, ? extends ACollection<U>> newBuilder () {
-        throw new UnsupportedOperationException("Implementing this well goes beyond the boundaries of Java's type system. Use static AHashMap.builder() instead.");
-    }
     @Override public <K1, V1> ACollectionBuilder<Entry<K1, V1>, AHashMap<K1, V1>> newEntryBuilder () {
         return builder();
     }
@@ -143,35 +137,12 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
         return (AMap<K1, AHashMap<K, V>>) AMapSupport.groupBy(this, keyExtractor);
     }
 
-    @Override public Entry<K, V> min () {
-        throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
-    }
-    @Override public Entry<K, V> max () {
-        throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
-    }
-
     @Override public boolean contains (Object o) {
         return AMapSupport.containsEntry(this, o);
     }
 
     @Override public boolean containsValue (Object value) {
         return exists(kv -> Objects.equals(kv.getValue(), value));
-    }
-
-    @Override public V put (K key, V value) {
-        throw new UnsupportedOperationException("use 'updated' for persistent collection");
-    }
-
-    @Override public V remove (Object key) {
-        throw new UnsupportedOperationException("use 'removed' for persistent collection");
-    }
-
-    @Override public void putAll (Map<? extends K, ? extends V> m) {
-        throw new UnsupportedOperationException("unsupported for persistent collection");
-    }
-
-    @Override public void clear () {
-        throw new UnsupportedOperationException("unsupported for persistent collection");
     }
 
     @Override public ASet<K> keySet () {
@@ -184,16 +155,6 @@ public abstract class AHashMap<K,V> implements AMap<K,V>, ACollectionDefaults<Ma
 
     @Override public ASet<Entry<K, V>> entrySet () {
         return new AMapSupport.EntrySet<>(this);
-    }
-
-    @Override public boolean equals(Object o) {
-        return AMapSupport.equals(this, o);
-    }
-
-    //TODO hashCode
-
-    @Override public String toString () {
-        return AMapSupport.toString(AHashMap.class, this);
     }
 
     abstract static class AbstractBuilder<K,V> implements ACollectionBuilder<Map.Entry<K,V>, AHashMap<K,V>> {

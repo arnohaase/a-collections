@@ -205,15 +205,7 @@ public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWr
     }
 
     @Override public boolean equals(Object o) {
-        if (o instanceof Map) {
-            return inner.equals(o);
-        }
-
-        if (! (o instanceof Collection)) return false;
-        final Collection<?> that = (Collection<?>) o;
-        if (this.size() != that.size()) return false;
-        for (Object el: that) if (! this.contains(el)) return false;
-        return true;
+        return inner.equals(o);
     }
     @Override public int hashCode () {
         return inner.hashCode();

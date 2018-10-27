@@ -7,12 +7,15 @@ import com.ajjpj.acollections.internal.AMapDefaults;
 import com.ajjpj.acollections.internal.AMapSupport;
 import com.ajjpj.acollections.util.AOption;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.Entry<K,V>, ATreeMap<K,V>>, AMapDefaults<K,V,ATreeMap<K,V>> {
+public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.Entry<K,V>, ATreeMap<K,V>>, AMapDefaults<K,V,ATreeMap<K,V>> {
     private final RedBlackTree.Tree<K,V> root;
     private final Comparator<K> comparator;
 
@@ -45,10 +48,6 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
         return new Builder<>(comparator);
     }
 
-    @Override public ATreeSet<Entry<K, V>> toSortedSet (Comparator<Entry<K, V>> comparator) {
-        throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
-    }
-
     @Override public V get(Object key) {
 
         try {
@@ -73,14 +72,6 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
 
     @Override public int size() {
         return RedBlackTree.count(root);
-    }
-
-    @Override public Entry<K, V> min () {
-        throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
-    }
-
-    @Override public Entry<K, V> max () {
-        throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
     }
 
     @Override public boolean contains (Object o) {
@@ -136,22 +127,6 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
 
     @Override public boolean isEmpty () {
         return root == null;
-    }
-
-    @Override  public V put (K key, V value) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override public V remove (Object key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override public void putAll (Map<? extends K, ? extends V> m) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override public void clear () {
-        throw new UnsupportedOperationException();
     }
 
     @Override public ASortedSet<K> keySet () {
@@ -217,20 +192,9 @@ public class ATreeMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.E
         return RedBlackTree.valuesIterator(root, start, comparator);
     }
 
-    @Override public <U> ACollectionBuilder<U, ? extends ACollectionOps<U>> newBuilder () {
-        throw new UnsupportedOperationException("Implementing this well goes beyond the boundaries of Java's type system. Use static ATreeMap.builder() instead.");
-    }
     @Override public <K1, V1> ACollectionBuilder<Entry<K1, V1>, ATreeMap<K1, V1>> newEntryBuilder () {
         //noinspection unchecked
         return new Builder(Comparator.naturalOrder());
-    }
-
-    @Override public boolean equals (Object obj) {
-        return AMapSupport.equals(this, obj);
-    }
-
-    @Override public String toString () {
-        return AMapSupport.toString(ATreeMap.class, this);
     }
 
     public static class Builder<K,V> implements ACollectionBuilder<Map.Entry<K,V>, ATreeMap<K,V>> {

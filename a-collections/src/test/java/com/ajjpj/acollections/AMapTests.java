@@ -2,15 +2,99 @@ package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.immutable.AHashMap;
 import com.ajjpj.acollections.immutable.AHashSet;
+import com.ajjpj.acollections.immutable.ATreeMap;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
+import java.util.*;
 
 import static com.ajjpj.acollections.AEntryCollectionOpsTests.entryOf;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 public interface AMapTests extends AEntryCollectionOpsTests {
+    @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsBetweenInconvertibleTypes"})
+    @Test default void testEquals() {
+        final ATreeMap<Integer,Integer> emptyTree = ATreeMap.<Integer,Integer>empty(Comparator.naturalOrder());
+        final ATreeMap<Integer,Integer> tree1 = emptyTree.plus(entryOf(1));
+        final ATreeMap<Integer,Integer> tree123 = tree1.plus(entryOf(2)).plus(entryOf(3));
+
+        final AHashMap<Integer,Integer> emptyHash = AHashMap.empty();
+        final AHashMap<Integer,Integer> hash1 = emptyHash.plus(entryOf(1));
+        final AHashMap<Integer,Integer> hash123 = hash1.plus(entryOf(2)).plus(entryOf(3));
+
+        doTest(v -> {
+            assertTrue(v.mkMap().equals(AHashMap.empty()));
+            assertTrue(v.mkMap().equals(emptyTree));
+            assertTrue(v.mkMap().equals(new HashMap<>()));
+            assertTrue(v.mkMap().equals(new TreeMap<>()));
+            assertFalse(v.mkMap().equals(AHashMap.empty().plus(0, 0)));
+            assertFalse(v.mkMap().equals(emptyTree.plus(0, 0)));
+            assertFalse(v.mkMap().equals(new HashMap<>(AHashMap.empty().plus(1, 2))));
+            assertFalse(v.mkMap().equals(new TreeMap<>(AHashMap.empty().plus(2, 3))));
+
+            assertTrue(AHashMap.empty().equals(v.mkMap()));
+            assertTrue(emptyTree.equals(v.mkMap()));
+            assertTrue(new HashMap<>().equals(v.mkMap()));
+            assertTrue(new TreeMap<>().equals(v.mkMap()));
+            assertFalse(AHashMap.empty().plus(0, 0).equals(v.mkMap()));
+            assertFalse(emptyTree.plus(0, 0).equals(v.mkMap()));
+            assertFalse(new HashMap<>(AHashMap.empty().plus(1, 2)).equals(v.mkMap()));
+            assertFalse(new TreeMap<>(AHashMap.empty().plus(2, 3)).equals(v.mkMap()));
+
+            assertTrue(v.mkMap(1).equals(hash1));
+            assertTrue(v.mkMap(1).equals(tree1));
+            assertTrue(v.mkMap(1).equals(new HashMap<>(hash1)));
+            assertTrue(v.mkMap(1).equals(new TreeMap<>(hash1)));
+            assertFalse(v.mkMap(1).equals(AHashMap.empty().plus(1, 0)));
+            assertFalse(v.mkMap(1).equals(emptyTree.plus(1, 1)));
+            assertFalse(v.mkMap(1).equals(new HashMap<>(AHashMap.empty().plus(1, 2))));
+            assertFalse(v.mkMap(1).equals(new TreeMap<>(AHashMap.empty().plus(1, 4))));
+
+            assertFalse(v.mkMap(1).equals(emptyHash.plus(entryOf(1)).plus(entryOf(2))));
+            assertFalse(v.mkMap(1).equals(emptyTree.plus(entryOf(1)).plus(entryOf(2))));
+            assertFalse(v.mkMap(1).equals(new HashMap<>(emptyHash.plus(entryOf(1)).plus(entryOf(2)))));
+            assertFalse(v.mkMap(1).equals(new TreeMap<>(emptyHash.plus(entryOf(1)).plus(entryOf(2)))));
+
+            assertTrue(hash1.equals(v.mkMap(1)));
+            assertTrue(tree1.equals(v.mkMap(1)));
+            assertTrue(new HashMap<>(hash1).equals(v.mkMap(1)));
+            assertTrue(new TreeMap<>(hash1).equals(v.mkMap(1)));
+            assertFalse(AHashMap.empty().plus(1, 0).equals(v.mkMap(1)));
+            assertFalse(emptyTree.plus(1, 0).equals(v.mkMap(1)));
+            assertFalse(new HashMap<>(AHashMap.empty().plus(1, 0)).equals(v.mkMap(1)));
+            assertFalse(new TreeMap<>(AHashMap.empty().plus(1, 0)).equals(v.mkMap(1)));
+
+            assertTrue(v.mkMap(1, 2, 3).equals(hash123));
+            assertTrue(v.mkMap(1, 2, 3).equals(tree123));
+            assertTrue(v.mkMap(1, 2, 3).equals(new HashMap<>(hash123)));
+            assertTrue(v.mkMap(1, 2, 3).equals(new TreeMap<>(hash123)));
+            assertTrue(hash123.equals (v.mkMap(1, 2, 3)));
+            assertTrue(tree123.equals (v.mkMap(1, 2, 3)));
+            assertTrue(new HashMap<>(hash123).equals (v.mkMap(1, 2, 3)));
+            assertTrue(new TreeMap<>(hash123).equals (v.mkMap(1, 2, 3)));
+
+            assertFalse(v.mkMap(1, 2, 3).equals(hash123.plus(4, 5)));
+            assertFalse(v.mkMap(1, 2, 3).equals(hash123.minus(1)));
+        });
+    }
+    @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsBetweenInconvertibleTypes"})
+    @Test default void testEqualsOnlyMaps() {
+        doTest(v -> {
+            assertFalse(v.mkMap().equals(new HashSet<>()));
+            assertFalse(v.mkMap().equals(AHashSet.empty()));
+
+            assertFalse(v.mkMap(1).equals(AHashSet.of(entryOf(1))));
+            assertFalse(AHashSet.of(entryOf(1)).equals(v.mkMap(1)));
+        });
+    }
+    @Test default void testHashcode() {
+        doTest(v -> {
+            assertEquals(new HashMap<>().hashCode(), v.mkMap().hashCode());
+            assertEquals(new HashMap<>(v.mkMap(1)).hashCode(), v.mkMap(1).hashCode());
+            assertEquals(new HashMap<>(v.mkMap(1, 2, 3)).hashCode(), v.mkMap(1, 2, 3).hashCode());
+        });
+    }
+
     @Test default void testFilterKeys() {
         doTest(v -> {
             assertTrue(v.mkMap().filterKeys(x -> true).isEmpty());

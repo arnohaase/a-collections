@@ -14,6 +14,7 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
     AOption<V> getOptional(K key);
 
     AMap<K,V> plus(K key, V value);
+    AMap<K,V> plus(Map.Entry<K,V> entry);
     AMap<K,V> minus(K key);
 
     default <K1 extends K, V1 extends V> AMap<K,V> plusAll (Map<K1, V1> other) {

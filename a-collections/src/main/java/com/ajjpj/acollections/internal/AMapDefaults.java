@@ -8,6 +8,11 @@ import java.util.function.Predicate;
 
 
 public interface AMapDefaults<K,V,C extends AMap<K,V>> extends AMap<K,V> {
+    @Override default C plus (Entry<K, V> entry) {
+        //noinspection unchecked
+        return (C) plus(entry.getKey(), entry.getValue());
+    }
+
     default <V1> AMap<K, V1> mapValues(Function<V, V1> f) {
         final AMap<K,V1> zero = (AMap<K, V1>) this.<K,V1>newEntryBuilder().build();
         return foldLeft(zero, (acc, el) -> acc.plus(el.getKey(), f.apply(el.getValue())));

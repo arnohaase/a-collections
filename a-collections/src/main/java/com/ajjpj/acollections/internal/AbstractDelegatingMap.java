@@ -45,6 +45,11 @@ abstract class AbstractDelegatingMap<K,V> implements AMap<K,V> {
     }
 
     @Override
+    public AMap<K, V> plus (Entry<K, V> entry) {
+        return wrap(inner.plus(entry));
+    }
+
+    @Override
     public AMap<K, V> minus (K key) {
         return wrap(inner.minus(key));
     }

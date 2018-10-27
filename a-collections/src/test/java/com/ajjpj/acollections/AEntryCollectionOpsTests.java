@@ -159,7 +159,7 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     }
     @Test @Override default void testCollect () {
         doTest(v -> {
-            assertEquals(v.mkColl(), v.mkColl().collect(this::isOdd, this::doubledEntry));
+            assertEquals(AHashSet.empty(), v.mkColl().collect(this::isOdd, this::doubledEntry).toSet());
             assertEquals(AHashSet.of(entryOf(2)), v.mkColl(1).collect(this::isOdd, this::doubledEntry).toSet());
             assertEquals(AHashSet.of(2, 6), v.mkColl(1, 2, 3).collect(this::isOdd, this::doubled).toSet());
         });
