@@ -6,15 +6,17 @@ import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.AbstractAIterator;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
+import com.ajjpj.acollections.internal.AListSupport;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.RandomAccess;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public class ARange extends AbstractImmutableCollection<Integer> implements AList<Integer>, AListDefaults<Integer, AList<Integer>> {
+public class ARange extends AbstractImmutableCollection<Integer> implements AList<Integer>, AListDefaults<Integer, AList<Integer>>, RandomAccess {
     private final int from, to, step;
 
     public static ARange empty() {
@@ -33,6 +35,11 @@ public class ARange extends AbstractImmutableCollection<Integer> implements ALis
         this.step = step;
 
         if (step == 0) throw new IllegalArgumentException("step must not be 0");
+    }
+
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+    @Override public boolean equals (Object o) {
+        return AListSupport.equals(this, o);
     }
 
     @Override public <U> ACollectionBuilder<U, AVector<U>> newBuilder () {

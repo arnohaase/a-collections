@@ -271,19 +271,9 @@ public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMuta
         return ACollectionSupport.toString(AMutableArrayWrapper.class, this);
     }
 
-    @Override
-    public boolean equals (Object o) {
-        //TODO extract to AListSupport
-        if (o == this) return true;
-        if (! (o instanceof Iterable)) return false;
-        if (o instanceof Collection && ((Collection) o).size() != size()) return false;
-
-        final Iterator it1 = this.iterator();
-        final Iterator it2 = ((Iterable) o).iterator();
-        while (it1.hasNext() && it2.hasNext()) {
-            if (!Objects.equals(it1.next(), it2.next())) return false;
-        }
-        return !it1.hasNext() && !it2.hasNext();
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+    @Override public boolean equals (Object o) {
+        return Arrays.asList(inner).equals(o);
     }
 
     @Override public int hashCode () {

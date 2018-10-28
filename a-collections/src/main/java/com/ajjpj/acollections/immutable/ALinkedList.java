@@ -6,6 +6,7 @@ import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.AbstractAIterator;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
+import com.ajjpj.acollections.internal.AListSupport;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -46,6 +47,11 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
     public static <T> ALinkedList<T> nil() {
         return Nil.INSTANCE;
+    }
+
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+    @Override public boolean equals (Object o) {
+        return AListSupport.equals(this, o);
     }
 
     @Override public <U> Builder<U> newBuilder () {

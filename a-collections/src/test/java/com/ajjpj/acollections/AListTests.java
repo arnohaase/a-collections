@@ -1,6 +1,7 @@
 package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.immutable.AHashSet;
+import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
 import org.junit.jupiter.api.Test;
 
@@ -11,6 +12,40 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public interface AListTests extends ACollectionTests {
+    @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "SimplifiableJUnitAssertion", "EqualsBetweenInconvertibleTypes"})
+    @Test default void testEquals() {
+        doTest(v -> {
+            assertTrue(v.mkList().equals(Arrays.asList()));
+            assertTrue(Arrays.asList().equals(v.mkList()));
+            assertFalse(v.mkList().equals(new HashSet<>()));
+            assertFalse(new HashSet<>().equals(v.mkList()));
+            assertFalse(v.mkList().equals(Arrays.asList(1)));
+
+            assertTrue(v.mkList(1).equals(Arrays.asList(1)));
+            assertTrue(Arrays.asList(1).equals(v.mkList(1)));
+            assertFalse(v.mkList(1).equals(Arrays.asList(2)));
+            assertFalse(Arrays.asList(2).equals(v.mkList(1)));
+            assertFalse(v.mkList(1).equals(Arrays.asList(1, 2)));
+            assertFalse(Arrays.asList(1, 2).equals(v.mkList(1)));
+            assertFalse(v.mkList(1).equals(AHashSet.of(1)));
+
+            assertTrue(v.mkList(1, 2, 3).equals(Arrays.asList(1, 2, 3)));
+            assertTrue(Arrays.asList(1, 2, 3).equals(v.mkList(1, 2, 3)));
+            assertFalse(v.mkList(1, 2, 3).equals(Arrays.asList(1, 2, 4)));
+            assertFalse(v.mkList(1, 2, 3).equals(Arrays.asList(1, 2, 3, 4)));
+            assertFalse(v.mkList(1, 2, 3).equals(Arrays.asList(1, 2)));
+            assertFalse(v.mkList(1, 2, 3).equals(ATreeSet.of(1, 2, 3)));
+        });
+    }
+    @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
+    @Test default void testHashCode() {
+        doTest(v -> {
+            assertEquals(Arrays.asList(), v.mkList());
+            assertEquals(Arrays.asList(1), v.mkList(1));
+            assertEquals(Arrays.asList(1, 2, 3), v.mkList(1, 2, 3));
+        });
+    }
+
     @Test default void testPrepend() {
         doTest(v -> {
             assertEquals(AVector.of(1), v.mkList().prepend(1));

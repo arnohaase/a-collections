@@ -1,6 +1,7 @@
 package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.immutable.*;
+import com.ajjpj.acollections.internal.AMapSupport;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
 import com.ajjpj.acollections.util.AUnchecker;
@@ -179,14 +180,21 @@ public interface ACollectionTests extends ACollectionOpsTests {
         doTest(v -> {
             assertEquals(ALinkedList.empty(), v.mkColl().toLinkedList());
             assertEquals(ALinkedList.of(1), v.mkColl(1).toLinkedList());
-            assertEquals(v.mkColl(1, 2, 3, 4).toLinkedList(), v.mkColl(1, 2, 3, 4));
+            if (v.iterationOrder123() != null)
+                //noinspection AssertEqualsBetweenInconvertibleTypes
+                assertEquals(v.iterationOrder123(), v.mkColl(1, 2, 3).toLinkedList());
+            else
+                assertEquals(AHashSet.of(1, 2, 3), v.mkColl(1, 2, 3).toLinkedList().toSet());
         });
     }
     @Test @Override default void testToVector() {
         doTest(v -> {
-            assertEquals(AVector.empty(), v.mkColl());
+            assertTrue(v.mkColl().isEmpty());
             assertEquals(AVector.of(1), v.mkColl(1).toVector());
-            assertEquals(v.mkColl(1, 2, 3, 4).toVector(), v.mkColl(1, 2, 3, 4));
+            if (v.iterationOrder123() != null)
+                assertEquals(v.iterationOrder123(), v.mkColl(1, 2, 3).toVector());
+            else
+                assertEquals(AHashSet.of(1, 2, 3), v.mkColl(1, 2, 3).toVector().toSet());
         });
     }
 
@@ -209,7 +217,11 @@ public interface ACollectionTests extends ACollectionOpsTests {
         doTest(v -> {
             assertEquals(AMutableListWrapper.empty(), v.mkColl().toMutableList());
             assertEquals(AMutableListWrapper.of(1), v.mkColl(1).toMutableList());
-            assertEquals(v.mkColl(1, 2, 3, 4).toMutableList().toVector(), v.mkColl(1, 2, 3, 4));
+            if (v.iterationOrder123() != null)
+                //noinspection AssertEqualsBetweenInconvertibleTypes
+                assertEquals(v.iterationOrder123(), v.mkColl(1, 2, 3).toMutableList());
+            else
+                assertEquals(AHashSet.of(1, 2, 3), v.mkColl(1, 2, 3).toMutableList().toSet());
         });
     }
     @Test @Override default void testToMutableSet() {
@@ -435,7 +447,17 @@ public interface ACollectionTests extends ACollectionOpsTests {
     @Test @Override default void testGroupBy() {
         doTest(v -> {
             assertTrue(v.mkColl().groupBy(this::isOdd).isEmpty());
-            assertEquals(AHashMap.empty().plus(true, v.mkColl(1, 3)).plus(false, v.mkColl(2)), v.mkColl(1, 2, 3).groupBy(this::isOdd));
+
+            final AMap<Boolean,? extends ACollection<Integer>> grouped = v.mkColl(1, 2, 3).groupBy(this::isOdd);
+            if (v.mkColl() instanceof AMapSupport.ValuesCollection) {
+                // other collections produce entries of their own type, AValueCollection produces AVector (which can never be 'equal' to AValueCollection)
+                assertEquals(AHashSet.of(1, 3), grouped.get(true).toSet());
+                assertEquals(AHashSet.of(2), grouped.get(false).toSet());
+            }
+            else {
+                assertEquals(v.mkColl(1, 3), grouped.get(true));
+                assertEquals(v.mkColl(2), grouped.get(false));
+            }
         });
     }
 

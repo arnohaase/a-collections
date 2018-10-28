@@ -3,13 +3,14 @@ package com.ajjpj.acollections.immutable;
 import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
+import com.ajjpj.acollections.internal.AListSupport;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public class AVector<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, AVector<T>> {
+public class AVector<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, AVector<T>>, RandomAccess {
     private static final int Log2ConcatFaster = 5;
     private static final int TinyAppendFaster = 2;
 
@@ -85,6 +86,11 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
         this.startIndex = startIndex;
         this.endIndex = endIndex;
         this.focus = focus;
+    }
+
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+    @Override public boolean equals (Object o) {
+        return AListSupport.equals(this, o);
     }
 
     @Override public <U> ACollectionBuilder<U, AVector<U>> newBuilder() {

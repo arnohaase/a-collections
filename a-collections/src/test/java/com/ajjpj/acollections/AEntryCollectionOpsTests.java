@@ -102,14 +102,21 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
         doTest(v -> {
             assertEquals(ALinkedList.empty(), v.mkColl().toLinkedList());
             assertEquals(ALinkedList.of(entryOf(1)), v.mkColl(1).toLinkedList());
-            assertEquals(v.mkColl(1, 2, 3, 4).toLinkedList(), v.mkColl(1, 2, 3, 4));
+            if (v.iterationOrder123() != null)
+                //noinspection AssertEqualsBetweenInconvertibleTypes
+                assertEquals(v.iterationOrder123(), v.mkColl(1, 2, 3).toLinkedList());
+            else
+                assertEquals(AHashSet.of(entryOf(1), entryOf(2), entryOf(3)), v.mkColl(1, 2, 3).toLinkedList().toSet());
         });
     }
     @Test @Override default void testToVector () {
         doTest(v -> {
             assertEquals(AVector.empty(), v.mkColl().toVector());
             assertEquals(AVector.of(entryOf(1)), v.mkColl(1).toVector());
-            assertEquals(v.mkColl(1, 2, 3, 4).toVector(), v.mkColl(1, 2, 3, 4));
+            if (v.iterationOrder123() != null)
+                assertEquals(v.iterationOrder123(), v.mkColl(1, 2, 3).toVector());
+            else
+                assertEquals(AHashSet.of(entryOf(1), entryOf(2), entryOf(3)), v.mkColl(1, 2, 3).toVector().toSet());
         });
     }
 
@@ -132,7 +139,11 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
         doTest(v -> {
             assertEquals(AMutableListWrapper.empty(), v.mkColl().toMutableList());
             assertEquals(AMutableListWrapper.of(entryOf(1)), v.mkColl(1).toMutableList());
-            assertEquals(v.mkColl(1, 2, 3, 4).toMutableList().toVector(), v.mkColl(1, 2, 3, 4));
+            if (v.iterationOrder123() != null)
+                //noinspection AssertEqualsBetweenInconvertibleTypes
+                assertEquals(v.iterationOrder123(), v.mkColl(1, 2, 3).toMutableList());
+            else
+                assertEquals(AHashSet.of(entryOf(1), entryOf(2), entryOf(3)), v.mkColl(1, 2, 3).toMutableList().toSet());
         });
     }
     @Test @Override default void testToMutableSet() {
@@ -152,7 +163,7 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     }
     @Test @Override default void testFlatMap () {
         doTest(v -> {
-            assertEquals(AVector.empty(), v.mkColl().flatMap(x -> AVector.of(doubled(x), doubled(x)+1)));
+            assertTrue(v.mkColl().flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).isEmpty());
             assertEquals(AHashSet.of(2, 3), v.mkColl(1).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).toSet());
             assertEquals(AHashSet.of(2, 3, 4, 5, 6, 7), v.mkColl(1, 2, 3).flatMap(x -> AVector.of(doubled(x), doubled(x)+1)).toSet());
         });
