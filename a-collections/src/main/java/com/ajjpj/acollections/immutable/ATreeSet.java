@@ -86,6 +86,9 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
     @Override public boolean equals (Object o) {
         return ASetSupport.equals(this, o);
     }
+    @Override public int hashCode() {
+        return ASetSupport.hashCode(this);
+    }
 
     @Override public String toString () {
         return ACollectionSupport.toString(ATreeSet.class, this);
@@ -94,16 +97,16 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
     @Override public AHashSet<T> toSet () {
         return AHashSet.from(this);
     }
-    @Override public ATreeSet<T> added (T o) {
+    @Override public ATreeSet<T> plus (T o) {
         return new ATreeSet<>(RedBlackTree.update(root, o, null, true, comparator), comparator);
     }
-    @Override public ATreeSet<T> removed (T o) {
+    @Override public ATreeSet<T> minus (T o) {
         return new ATreeSet<>(RedBlackTree.delete(root, o, comparator), comparator);
     }
 
     @Override public ATreeSet<T> union (Iterable<T> that) {
         ATreeSet<T> result = this;
-        for (T o: that) result = result.added(o);
+        for (T o: that) result = result.plus(o);
         return result;
     }
 
@@ -113,7 +116,7 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
 
     @Override public ATreeSet<T> diff (Set<T> that) {
         ATreeSet<T> result = this;
-        for (T o: that) result = result.removed(o);
+        for (T o: that) result = result.minus(o);
         return result;
     }
 

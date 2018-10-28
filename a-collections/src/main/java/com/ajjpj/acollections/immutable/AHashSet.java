@@ -88,6 +88,9 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
     @Override public boolean equals (Object o) {
         return ASetSupport.equals(this, o);
     }
+    @Override public int hashCode() {
+        return ASetSupport.hashCode(this);
+    }
 
     @Override public String toString () {
         return ACollectionSupport.toString(AHashSet.class, this);
@@ -97,11 +100,11 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
         return this;
     }
 
-    @Override public AHashSet<T> added (T o) {
+    @Override public AHashSet<T> plus (T o) {
         return newInstance(compactHashMap.updated0(newEntry(o), 0));
     }
 
-    @Override public AHashSet<T> removed (T o) {
+    @Override public AHashSet<T> minus (T o) {
         return newInstance(compactHashMap.removed0(newEntry(o), 0));
     }
 
@@ -112,7 +115,7 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
     @Override public AHashSet<T> union (Iterable<T> that) {
         AHashSet<T> result = this;
         for (T o: that)
-            result = result.added(o);
+            result = result.plus(o);
         return result;
     }
 
@@ -123,7 +126,7 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
     @Override public AHashSet<T> diff (Set<T> that) {
         AHashSet<T> result = this;
         for (T o: that)
-            result = result.removed(o);
+            result = result.minus(o);
         return result;
     }
 

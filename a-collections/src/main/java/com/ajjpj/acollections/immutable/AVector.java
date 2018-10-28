@@ -93,6 +93,10 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
         return AListSupport.equals(this, o);
     }
 
+    @Override public int hashCode () {
+        return AListSupport.hashCode(this);
+    }
+
     @Override public <U> ACollectionBuilder<U, AVector<U>> newBuilder() {
         return builder();
     }

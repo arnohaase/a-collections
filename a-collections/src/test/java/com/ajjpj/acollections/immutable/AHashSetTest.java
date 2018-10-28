@@ -45,9 +45,9 @@ public class AHashSetTest implements ASetTests {
             final boolean add = rand.nextBoolean();
 
             if(add)
-                result = result.added(key);
+                result = result.plus(key);
             else
-                result = result.removed(key);
+                result = result.minus(key);
         }
         return result;
     }
@@ -74,10 +74,10 @@ public class AHashSetTest implements ASetTests {
     @Test public void testCollision() {
         AHashSet<IntWithCollision> aMap = AHashSet.empty();
         for (int i=0; i<10; i++) {
-            aMap = aMap.added(new IntWithCollision(i));
+            aMap = aMap.plus(new IntWithCollision(i));
         }
         for (int i=0; i<10; i++) {
-            aMap = aMap.added(new IntWithCollision(i));
+            aMap = aMap.plus(new IntWithCollision(i));
         }
         assertEquals (10, aMap.size());
         for (int i=0; i<10; i++) {

@@ -87,7 +87,7 @@ public interface AMapTests extends AEntryCollectionOpsTests {
             assertFalse(AHashSet.of(entryOf(1)).equals(v.mkMap(1)));
         });
     }
-    @Test default void testHashcode() {
+    @Test default void testHashCode() {
         doTest(v -> {
             assertEquals(new HashMap<>().hashCode(), v.mkMap().hashCode());
             assertEquals(new HashMap<>(v.mkMap(1)).hashCode(), v.mkMap(1).hashCode());

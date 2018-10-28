@@ -85,8 +85,8 @@ public class AOptionTest implements ACollectionOpsTests {
         assertTrue(none().toSortedSet().isEmpty());
         assertEquals(ATreeSet.of("x"), some("x").toSortedSet());
 
-        assertEquals(AVector.of(1, 5, 9), some(5).toSortedSet().added(1).added(9).toVector());
-        assertEquals(AVector.of(9, 5, 1), some(5).toSortedSet(Comparator.<Integer>naturalOrder().reversed()).added(1).added(9).toVector());
+        assertEquals(AVector.of(1, 5, 9), some(5).toSortedSet().plus(1).plus(9).toVector());
+        assertEquals(AVector.of(9, 5, 1), some(5).toSortedSet(Comparator.<Integer>naturalOrder().reversed()).plus(1).plus(9).toVector());
     }
     @Override @Test public void testToMutableList () {
         assertTrue(none().toMutableList().isEmpty());

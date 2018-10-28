@@ -40,12 +40,12 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
         return this;
     }
 
-    @Override public ASet<T> added (T o) {
+    @Override public ASet<T> plus (T o) {
         inner.add(o);
         return this;
     }
 
-    @Override public AMutableSetWrapper<T> removed (T o) {
+    @Override public AMutableSetWrapper<T> minus (T o) {
         inner.remove(o);
         return this;
     }

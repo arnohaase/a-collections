@@ -53,6 +53,9 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     @Override public boolean equals (Object o) {
         return AListSupport.equals(this, o);
     }
+    @Override public int hashCode() {
+        return AListSupport.hashCode(this);
+    }
 
     @Override public <U> Builder<U> newBuilder () {
         return builder();

@@ -7,8 +7,9 @@ import java.util.function.Function;
 public interface ASet<T> extends ACollection<T>, Set<T> {
     @Override <U> ACollectionBuilder<U, ? extends ASet<U>> newBuilder ();
 
-    ASet<T> added(T o);
-    ASet<T> removed(T o);
+    ASet<T> plus (T o);
+    //TODO plusAll
+    ASet<T> minus (T o);
 
     ASet<T> union(Iterable<T> that);
     ASet<T> intersect(Set<T> that);

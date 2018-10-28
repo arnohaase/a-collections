@@ -1,9 +1,6 @@
 package com.ajjpj.acollections;
 
-import com.ajjpj.acollections.immutable.AHashMap;
-import com.ajjpj.acollections.immutable.AHashSet;
-import com.ajjpj.acollections.immutable.ALinkedList;
-import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
 import org.junit.jupiter.api.Test;
@@ -34,7 +31,35 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     default Map.Entry<Integer,Integer> doubledEntry (Map.Entry<Integer,Integer> e) { return entryOf(2*e.getKey()); }
     default Map.Entry<Integer,Integer> sum (Map.Entry<Integer,Integer> a, Map.Entry<Integer,Integer> b) { return entryOf(a.getKey()+b.getKey()); }
 
-    //TODO equals, hashCode
+    @SuppressWarnings({"SimplifiableJUnitAssertion", "EqualsBetweenInconvertibleTypes", "ArraysAsListWithZeroOrOneArgument"})
+    @Test default void testEquals() {
+        // default implementation for sets
+        doTest(v -> {
+            assertTrue(new HashSet<>().equals(v.mkColl()));
+            assertTrue(v.mkColl().equals(new HashSet<>()));
+            assertFalse(v.mkColl().equals(new HashSet<>(Arrays.asList(entryOf(1)))));
+            assertFalse(v.mkColl().equals(new ArrayList<>()));
+            assertFalse(v.mkColl().equals(AVector.empty()));
+
+            assertTrue(v.mkColl(1).equals(new HashSet<>(Arrays.asList(entryOf(1)))));
+            assertFalse(v.mkColl(1).equals(new HashSet<>(Arrays.asList(entryOf(1), entryOf(2)))));
+            assertFalse(v.mkColl(1).equals(new HashSet<>()));
+
+            assertTrue(v.mkColl(1, 2, 3).equals(new HashSet<>(Arrays.asList(entryOf(1), entryOf(2), entryOf(3)))));
+            assertFalse(v.mkColl(1, 2, 3).equals(new HashSet<>(Arrays.asList(entryOf(1), entryOf(2), entryOf(4)))));
+            assertFalse(v.mkColl(1, 2, 3).equals(new HashSet<>(Arrays.asList(entryOf(1), entryOf(2), entryOf(3), entryOf(4)))));
+            assertFalse(v.mkColl(1, 2, 3).equals(new HashSet<>(Arrays.asList(entryOf(1), entryOf(2)))));
+        });
+    }
+    @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
+    @Test default void testHashCode() {
+        // default implementation for sets
+        doTest(v -> {
+            assertEquals(new HashSet<>().hashCode(), v.mkColl().hashCode());
+            assertEquals(new HashSet<>(Arrays.asList(entryOf(1))).hashCode(), v.mkColl(1).hashCode());
+            assertEquals(new HashSet<>(Arrays.asList(entryOf(1), entryOf(2), entryOf(3))).hashCode(), v.mkColl(1, 2, 3).hashCode());
+        });
+    }
 
     @Test @Override default void testIterator () {
         doTest(v -> {

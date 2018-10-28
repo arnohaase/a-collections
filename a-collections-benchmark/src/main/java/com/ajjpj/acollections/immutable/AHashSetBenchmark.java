@@ -1,12 +1,9 @@
 package com.ajjpj.acollections.immutable;
 
-import com.github.andrewoma.dexx.collection.Pair;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
-import scala.Tuple2;
 import scala.collection.Iterator;
 
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -63,9 +60,9 @@ public class AHashSetBenchmark {
             final boolean add = rand.nextBoolean();
 
             if(add)
-                m=m.added(key);
+                m=m.plus(key);
             else
-                m=m.removed(key);
+                m=m.minus(key);
         }
         bh.consume(m);
     }
@@ -104,7 +101,7 @@ public class AHashSetBenchmark {
         AHashSet<Integer> m = AHashSet.empty();
 
         for(int i=0; i<size; i++) {
-            m=m.added(i);
+            m=m.plus(i);
         }
         int sum=0;
         for (Integer el: m) {

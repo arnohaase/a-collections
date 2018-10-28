@@ -2,43 +2,77 @@ package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ATreeSet;
+import com.ajjpj.acollections.immutable.AVector;
 import org.junit.jupiter.api.Test;
+
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
 public interface ASetTests extends ACollectionTests {
+    @SuppressWarnings({"SimplifiableJUnitAssertion", "ArraysAsListWithZeroOrOneArgument", "EqualsBetweenInconvertibleTypes"})
+    @Test default void testEquals() {
+        doTest(v -> {
+            assertTrue(new HashSet<>().equals(v.mkSet()));
+            assertTrue(v.mkSet().equals(new HashSet<>()));
+            assertFalse(v.mkSet().equals(new HashSet<>(Arrays.asList(1))));
+            assertFalse(v.mkSet().equals(new ArrayList<>()));
+            assertFalse(v.mkSet().equals(AVector.empty()));
+
+            assertTrue(v.mkSet(1).equals(new HashSet<>(Arrays.asList(1))));
+            assertFalse(v.mkSet(1).equals(new HashSet<>(Arrays.asList(1,2))));
+            assertFalse(v.mkSet(1).equals(new HashSet<>()));
+
+            assertTrue(v.mkSet(1, 2, 3).equals(new HashSet<>(Arrays.asList(1, 2, 3))));
+            assertTrue(v.mkSet(1, 2, 3).equals(new TreeSet<>(Arrays.asList(1, 2, 3))));
+            assertTrue(v.mkSet(1, 2, 3).equals(ATreeSet.empty(Comparator.<Integer>naturalOrder().reversed()).plus(1).plus(2).plus(3)));
+            assertFalse(v.mkSet(1, 2, 3).equals(new TreeSet<>(Arrays.asList(1, 2, 4))));
+            assertFalse(v.mkSet(1, 2, 3).equals(new TreeSet<>(Arrays.asList(1, 2, 3, 4))));
+            assertFalse(v.mkSet(1, 2, 3).equals(new TreeSet<>(Arrays.asList(1, 2))));
+        });
+    }
+    @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
+    @Test default void testHashCode() {
+        doTest(v -> {
+            assertEquals(new HashSet<>().hashCode(), v.mkSet().hashCode());
+            assertEquals(new HashSet<>(Arrays.asList(1)).hashCode(), v.mkSet(1).hashCode());
+            assertEquals(new HashSet<>(Arrays.asList(1, 2, 3)).hashCode(), v.mkSet(1, 2, 3).hashCode());
+        });
+    }
+
     @Test default void testAddedRemoved() {
         doTest(v -> {
             ASet<Integer> s = v.mkSet();
             ASet<Integer> sOld;
 
             sOld = s;
-            s = s.added(1);
+            s = s.plus(1);
             if (isImmutable()) assertTrue(sOld.isEmpty()); else assertSame(s, sOld);
             assertEquals(AHashSet.of(1), s);
 
             sOld = s;
-            s = s.added(2);
+            s = s.plus(2);
             if (isImmutable()) assertEquals(AHashSet.of(1), sOld); else assertSame(s, sOld);
             assertEquals(AHashSet.of(1, 2), s);
 
             sOld = s;
-            s = s.added(3);
+            s = s.plus(3);
             if (isImmutable()) assertEquals(AHashSet.of(1, 2), sOld); else assertSame(s, sOld);
             assertEquals(AHashSet.of(1, 2, 3), s);
 
             sOld = s;
-            s = s.removed(2);
+            s = s.minus(2);
             if (isImmutable()) assertEquals(AHashSet.of(1, 2, 3), sOld); else assertSame(s, sOld);
             assertEquals(AHashSet.of(1, 3), s);
 
             sOld = s;
-            s = s.removed(1);
+            s = s.minus(1);
             if (isImmutable()) assertEquals(AHashSet.of(1, 3), sOld); else assertSame(s, sOld);
             assertEquals(AHashSet.of(3), s);
             sOld = s;
 
-            s = s.removed(3);
+            s = s.minus(3);
             if (isImmutable()) assertEquals(AHashSet.of(3), sOld); else assertSame(s, sOld);
             assertEquals(AHashSet.empty(), s);
         });

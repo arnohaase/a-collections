@@ -7,19 +7,30 @@ import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.AbstractAIterator;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.Supplier;
 
 public class ASetSupport {
-    public static <T> boolean equals(ASet<T>s, Object o) {
+    public static boolean equals(ASet<?> s, Object o) {
         if (o == s) return true;
         if (! (o instanceof Set)) return false;
 
         //noinspection unchecked
-        final Set<T> that = (Set<T>) o;
+        final Set<?> that = (Set<?>) o;
         return s.size() == that.size() && s.forall(that::contains);
     }
+
+    public static int hashCode(ASet<?> s) {
+        int h = 0;
+        for (Object obj : s) {
+            if (obj != null)
+                h += obj.hashCode();
+        }
+        return h;
+    }
+
 
     public static <T, C extends ASet<T>> AIterator<C> subsets(int len, Collection<T> coll, Supplier<ACollectionBuilder<T, C>> builderFactory) {
         //noinspection unchecked

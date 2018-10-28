@@ -8,17 +8,6 @@ import java.util.*;
 
 public abstract class AbstractImmutableCollection<T> implements ACollection<T> {
 
-    @Override public int hashCode () {
-        //TODO do we want to cache?
-        // we can not safely cache the hash code, even for immutable collections, because there is no way to
-        //  be sure that the elements are immutable too :-(
-        int result = 1;
-        for (T o: this)
-            result = 31*result + (o==null ? 0 : o.hashCode());
-
-        return result;
-    }
-
     @Override public Object[] toArray () {
         return ACollectionSupport.toArray(this);
     }

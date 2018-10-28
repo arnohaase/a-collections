@@ -11,8 +11,8 @@ import java.util.Set;
 public interface ASortedSet<T> extends ASet<T> {
     Comparator<T> comparator();
 
-    ASortedSet<T> added (T o);
-    ASortedSet<T> removed (T o);
+    ASortedSet<T> plus (T o);
+    ASortedSet<T> minus (T o);
 
     ASortedSet<T> union (Iterable<T> that);
     ASortedSet<T> intersect (Set<T> that);

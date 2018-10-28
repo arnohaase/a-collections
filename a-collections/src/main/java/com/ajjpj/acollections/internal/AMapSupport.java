@@ -38,12 +38,14 @@ public class AMapSupport {
             this.map = map;
         }
 
-        @Override public AHashSet<T> added (T o) {
-            return AHashSet.from(this).added(o);
+
+
+        @Override public AHashSet<T> plus (T o) {
+            return AHashSet.from(this).plus(o);
         }
 
-        @Override public AHashSet<T> removed (T o) {
-            return AHashSet.from(this).removed(o);
+        @Override public AHashSet<T> minus (T o) {
+            return AHashSet.from(this).minus(o);
         }
 
         @Override public AHashSet<T> union (Iterable<T> that) {
@@ -107,8 +109,12 @@ public class AMapSupport {
             return ACollectionDefaults.super.containsAll(c);
         }
 
+        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
         @Override public boolean equals (Object o) {
             return ASetSupport.equals(this, o);
+        }
+        @Override public int hashCode() {
+            return ASetSupport.hashCode(this);
         }
 
         @Override public String toString () {
@@ -199,12 +205,12 @@ public class AMapSupport {
             throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
         }
 
-        @Override public AHashSet<Map.Entry<K,V>> added (Map.Entry<K,V> o) {
-            return AHashSet.from(this).added(o);
+        @Override public AHashSet<Map.Entry<K,V>> plus (Map.Entry<K,V> o) {
+            return AHashSet.from(this).plus(o);
         }
 
-        @Override public AHashSet<Map.Entry<K,V>> removed (Map.Entry<K,V> o) {
-            return AHashSet.from(this).removed(o);
+        @Override public AHashSet<Map.Entry<K,V>> minus (Map.Entry<K,V> o) {
+            return AHashSet.from(this).minus(o);
         }
 
         @Override public AHashSet<Map.Entry<K,V>> union (Iterable<Map.Entry<K,V>> that) {
@@ -284,8 +290,12 @@ public class AMapSupport {
             return ACollectionDefaults.super.containsAll(c);
         }
 
+        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
         @Override public boolean equals (Object o) {
             return ASetSupport.equals(this, o);
+        }
+        @Override public int hashCode() {
+            return ASetSupport.hashCode(this);
         }
 
         @Override public String toString () {
@@ -308,12 +318,12 @@ public class AMapSupport {
             return AHashSet.from(this);
         }
 
-        @Override public ATreeSet<T> added (T o) {
-            return ATreeSet.from(this, map.comparator()).added(o);
+        @Override public ATreeSet<T> plus (T o) {
+            return ATreeSet.from(this, map.comparator()).plus(o);
         }
 
-        @Override public ATreeSet<T> removed (T o) {
-            return ATreeSet.from(this, map.comparator()).removed(o);
+        @Override public ATreeSet<T> minus (T o) {
+            return ATreeSet.from(this, map.comparator()).minus(o);
         }
 
         @Override public ATreeSet<T> union (Iterable<T> that) {
@@ -418,8 +428,12 @@ public class AMapSupport {
             return ASetDefaults.super.subsets(len);
         }
 
+        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
         @Override public boolean equals (Object o) {
             return ASetSupport.equals(this, o);
+        }
+        @Override public int hashCode() {
+            return ASetSupport.hashCode(this);
         }
 
         @Override public String toString () {
@@ -464,12 +478,12 @@ public class AMapSupport {
             throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
         }
 
-        @Override public ATreeSet<Map.Entry<K,V>> added (Map.Entry<K,V> o) {
-            return ATreeSet.from(this, comparator()).added(o);
+        @Override public ATreeSet<Map.Entry<K,V>> plus (Map.Entry<K,V> o) {
+            return ATreeSet.from(this, comparator()).plus(o);
         }
 
-        @Override public ATreeSet<Map.Entry<K,V>> removed (Map.Entry<K,V> o) {
-            return ATreeSet.from(this, comparator()).removed(o);
+        @Override public ATreeSet<Map.Entry<K,V>> minus (Map.Entry<K,V> o) {
+            return ATreeSet.from(this, comparator()).minus(o);
         }
 
         @Override public ATreeSet<Map.Entry<K,V>> union (Iterable<Map.Entry<K,V>> that) {
@@ -589,8 +603,12 @@ public class AMapSupport {
             return ASetDefaults.super.subsets(len);
         }
 
+        @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
         @Override public boolean equals (Object o) {
             return ASetSupport.equals(this, o);
+        }
+        @Override public int hashCode() {
+            return ASetSupport.hashCode(this);
         }
 
         @Override public String toString () {

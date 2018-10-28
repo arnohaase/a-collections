@@ -22,4 +22,16 @@ public class AListSupport {
         }
         return !(e1.hasNext() || e2.hasNext());
     }
+
+    public static int hashCode (AList<?> l) {
+        //TODO do we want to cache?
+        // we can not safely cache the hash code, even for immutable collections, because there is no way to
+        //  be sure that the elements are immutable too :-(
+        int result = 1;
+        for (Object o: l)
+            result = 31*result + (o==null ? 0 : o.hashCode());
+
+        return result;
+    }
+
 }
