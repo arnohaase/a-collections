@@ -2,6 +2,10 @@ package com.ajjpj.acollections;
 
 
 public interface ACollectionOpsTests {
+    void testEquals();
+    void testHashCode();
+    void testSerDeser();
+
     void testIterator();
 
     void testToLinkedList();

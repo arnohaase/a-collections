@@ -4,13 +4,20 @@ import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AEntryCollectionOpsTests;
 import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.internal.AMapSupport;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 
 public class SortedEntrySetTests implements AEntryCollectionOpsTests {
+    @Override @Test public void testSerDeser () {
+        fail("todo");
+    }
+
     private static class Builder implements ACollectionBuilder<Map.Entry<Integer, Integer>, ASet<Map.Entry<Integer,Integer>>> {
         private final ATreeMap.Builder<Integer,Integer> builder;
         private final Comparator<Map.Entry<Integer,Integer>> entryComparator;

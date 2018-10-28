@@ -2,21 +2,34 @@ package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.AListTests;
+import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Iterator;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @SuppressWarnings("WeakerAccess")
 public class AVectorTest implements AListTests {
+
     @Override public Iterable<Variant> variants () {
         return Collections.singletonList(
                 new Variant(AVector::builder, AVector.of(1, 2, 3))
         );
+    }
+
+    @Override @Test public void testSerDeser () {
+        doTest(v -> {
+            assertSame(AVector.empty(), TestHelpers.serDeser(v.mkList()));
+
+            assertNotSame(AVector.of(1), TestHelpers.serDeser(v.mkList(1)));
+            assertEquals(AVector.of(1), TestHelpers.serDeser(v.mkList(1)));
+
+            assertNotSame(AVector.of(1, 2, 3), TestHelpers.serDeser(v.mkList(1, 2, 3)));
+            assertEquals(AVector.of(1, 2, 3), TestHelpers.serDeser(v.mkList(1, 2, 3)));
+        });
     }
 
     @Test public void testAppendSimple() {

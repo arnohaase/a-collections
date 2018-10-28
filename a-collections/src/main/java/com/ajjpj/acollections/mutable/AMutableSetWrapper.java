@@ -5,6 +5,7 @@ import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.ASetDefaults;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -12,7 +13,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 
-public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AMutableSetWrapper<T>>, ASetDefaults<T, AMutableSetWrapper<T>> {
+public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AMutableSetWrapper<T>>, ASetDefaults<T, AMutableSetWrapper<T>>, Serializable {
     private final Set<T> inner;
 
     public static<T> AMutableSetWrapper<T> wrap(Set<T> inner) {
@@ -34,6 +35,10 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
 
     public AMutableSetWrapper (Set<T> inner) {
         this.inner = inner;
+    }
+
+    public Set<T> getInner() {
+        return inner;
     }
 
     @Override public AMutableSetWrapper<T> toMutableSet () {

@@ -8,11 +8,12 @@ import com.ajjpj.acollections.internal.AMapDefaults;
 import com.ajjpj.acollections.internal.AMapSupport;
 import com.ajjpj.acollections.util.AOption;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 
 
-public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWrapper<K,V>>, ACollectionDefaults<Map.Entry<K,V>, AMutableMapWrapper<K,V>> {
+public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWrapper<K,V>>, ACollectionDefaults<Map.Entry<K,V>, AMutableMapWrapper<K,V>>, Serializable {
     private final Map<K,V> inner;
 
     //TODO static factories
@@ -27,6 +28,10 @@ public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWr
 
     AMutableMapWrapper (Map<K, V> inner) {
         this.inner = inner;
+    }
+
+    public Map<K,V> getInner() {
+        return inner;
     }
 
     @Override public ATreeSet<Entry<K, V>> toSortedSet () {

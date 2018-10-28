@@ -18,6 +18,27 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class AOptionTest implements ACollectionOpsTests {
+    @Override @Test public void testEquals () {
+        assertSame(AOption.none(), AOption.none());
+        assertNotEquals(AOption.none(), AOption.some(null));
+        assertSame(AOption.none(), AOption.of(null));
+
+        assertEquals(AOption.some(1), AOption.some(1));
+        assertNotSame(AOption.some(1), AOption.some(1));
+        assertNotSame(AOption.some(1), AOption.of(1));
+        assertNotEquals(AOption.some(1), AOption.some(2));
+    }
+
+    @Override @Test public void testHashCode () {
+        assertEquals(AOption.some(1).hashCode(), AOption.some(1).hashCode());
+        assertEquals(AOption.some(2).hashCode(), AOption.some(2).hashCode());
+        assertNotEquals(AOption.some(1).hashCode(), AOption.some(2).hashCode());
+    }
+
+    @Override @Test public void testSerDeser () {
+        fail("todo");
+    }
+
     @Test void testStaticFactory() {
         assertEquals(none(), AOption.of(null));
         assertEquals(some("a"), AOption.of("a"));

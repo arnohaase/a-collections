@@ -73,6 +73,8 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
         });
     }
 
+    void testSerDeser();
+
     //TODO iterator --> separate tests
 
     @Test @Override default void testSize () {

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class ATreeMapTest implements AMapTests {
@@ -14,6 +15,10 @@ public class ATreeMapTest implements AMapTests {
                 new Variant(() -> ATreeMap.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
                 new Variant(() -> ATreeMap.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
         );
+    }
+
+    @Override @Test public void testSerDeser () {
+        fail("todo");
     }
 
     final int size = 100_000;

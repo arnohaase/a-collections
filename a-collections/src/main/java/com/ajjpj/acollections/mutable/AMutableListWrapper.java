@@ -9,6 +9,7 @@ import com.ajjpj.acollections.internal.AListDefaults;
 import com.ajjpj.acollections.internal.AListIteratorWrapper;
 import com.ajjpj.acollections.util.AOption;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -21,7 +22,7 @@ import java.util.stream.Stream;
  * Always AEquality.EQUALS --> least surprise
  *
  */
-public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrapper<T>> {
+public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrapper<T>>, Serializable {
     private List<T> inner;
 
     public static <T> AMutableListWrapper<T> wrap(List<T> inner) {
@@ -59,6 +60,10 @@ public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrap
 
     @Override public AMutableListWrapper<T> toMutableList () {
         return this;
+    }
+
+    public List<T> getInner() {
+        return inner;
     }
 
     @Override

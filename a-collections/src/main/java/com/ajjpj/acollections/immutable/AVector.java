@@ -5,12 +5,13 @@ import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
 import com.ajjpj.acollections.internal.AListSupport;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public class AVector<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, AVector<T>>, RandomAccess {
+public class AVector<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, AVector<T>>, RandomAccess, Serializable {
     private static final int Log2ConcatFaster = 5;
     private static final int TinyAppendFaster = 2;
 
@@ -659,7 +660,7 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
     }
 
 
-    static class VectorPointer<T> {
+    static class VectorPointer<T> implements Serializable {
         int depth = 0;
         Object[] display0 = null;
         Object[] display1 = null;

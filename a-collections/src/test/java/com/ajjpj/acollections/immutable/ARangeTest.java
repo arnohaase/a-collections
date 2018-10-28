@@ -2,6 +2,7 @@ package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.AListTests;
+import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -10,12 +11,22 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class ARangeTest implements AListTests {
     @Override public boolean isImmutable () {
         return true;
+    }
+
+    @Override @Test public void testSerDeser () {
+        assertEquals(ARange.empty(), TestHelpers.serDeser(ARange.empty()));
+        assertNotSame(ARange.empty(), TestHelpers.serDeser(ARange.empty()));
+
+        assertEquals(ARange.create(1, 5), TestHelpers.serDeser(ARange.create(1, 5)));
+        assertEquals(ARange.create(1, 99, 4), TestHelpers.serDeser(ARange.create(1, 99, 4)));
+        assertEquals(ARange.create(200, 15, -7), TestHelpers.serDeser(ARange.create(200, 15, -7)));
     }
 
     @Override @Test public void testSize () {

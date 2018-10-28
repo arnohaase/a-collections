@@ -1,12 +1,27 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.*;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Comparator;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 
 public class ValueCollectionTest implements ACollectionTests {
+    @Override @Test public void testEquals () {
+        fail("todo");
+    }
+
+    @Override @Test public void testHashCode () {
+        fail("todo");
+    }
+
+    @Override @Test public void testSerDeser () {
+        fail("todo");
+    }
+
     private static class ValueCollectionBuilder implements ACollectionBuilder<Integer, ACollection<Integer>> {
         private ATreeMap<Integer, Integer> map;
 

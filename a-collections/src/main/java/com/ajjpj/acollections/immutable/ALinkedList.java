@@ -8,6 +8,7 @@ import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
 import com.ajjpj.acollections.internal.AListSupport;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -16,7 +17,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, ALinkedList<T>> {
+public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, ALinkedList<T>>, Serializable {
     public static <T> ALinkedList<T> from(Iterable<T> that) {
         return fromIterator(that.iterator());
     }

@@ -7,9 +7,14 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class ATreeSetTest implements ASetTests  {
+    @Override @Test public void testSerDeser () {
+        fail("todo");
+    }
+
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
                 new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),

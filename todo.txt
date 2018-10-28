@@ -31,10 +31,35 @@ todo
 
   * partial order
 
-* equals, hashCode
 * Serializable
-  * readResolve
-  * uniqueness for None, empty, ...
+  * unit tests(!)
+
+  * mutable: -
+  * AVector:
+    * unique 'empty'
+    * ???
+  * ALinkedList
+    * unique Nil
+    * ???
+  * AOption
+    * ???
+    * unique ANone
+  * AHashMap
+    * rehashing
+    * unique 'empty'
+    * ???
+  * ATreeMap
+    * unique 'empty'
+    * ???
+  * AHashSet
+    * unique 'empty'
+    * rehashing
+    * ???
+  * ATreeSet
+    * unique 'empty'
+    * ???
+  * ARange: ???
+
 
 
 // ACollection.flatten
@@ -46,12 +71,3 @@ todo
 // partition (ACollection?!), groupBy (ACollection?), splitAt, span, distinct (ACollection?!)
 // reverseMap
 // corresponds
-
-
-
-
-//    AMap<K,V> withDefaultValue(V defaultValue);
-//    AMap<K,V> withDefault(AFunction1<? super K, ? extends V, ? extends RuntimeException> function);
-// filterKeys()
-// mapValues()
-

@@ -6,9 +6,14 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class AHashMapTest implements AMapTests {
+    @Override @Test public void testSerDeser () {
+        fail("todo");
+    }
+
     @Override public Iterable<Variant> variants () {
         return Collections.singletonList(
                 new Variant(AHashMap::builder, null)

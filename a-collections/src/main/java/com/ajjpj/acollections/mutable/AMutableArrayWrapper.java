@@ -7,12 +7,13 @@ import com.ajjpj.acollections.AbstractAIterator;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMutableArrayWrapper<T>> {
+public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMutableArrayWrapper<T>>, Serializable {
     private T[] inner;
 
     //TODO static factories
@@ -32,6 +33,10 @@ public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMuta
 
     @Override public <U> ACollectionBuilder<U, AMutableArrayWrapper<U>> newBuilder () {
         return builder();
+    }
+
+    public T[] getInner() {
+        return inner;
     }
 
     @Override public AMutableArrayWrapper<T> prepend (T o) {

@@ -1,14 +1,27 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.AListTests;
+import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ALinkedListTest implements AListTests {
+    @Override @Test public void testSerDeser () {
+        assertSame(ALinkedList.nil(), ALinkedList.nil());
+        assertSame(ALinkedList.nil(), TestHelpers.serDeser(ALinkedList.nil()));
+
+        assertEquals(ALinkedList.of(1), TestHelpers.serDeser(ALinkedList.of(1)));
+        assertNotSame(ALinkedList.of(1), TestHelpers.serDeser(ALinkedList.of(1)));
+
+        assertEquals(ALinkedList.of(1, 2, 3), TestHelpers.serDeser(ALinkedList.of(1, 2, 3)));
+        assertNotSame(ALinkedList.of(1, 2, 3), TestHelpers.serDeser(ALinkedList.of(1, 2, 3)));
+    }
+
+
     @Override public Iterable<Variant> variants () {
         return Collections.singletonList(
                 new Variant(ALinkedList::builder, AVector.of(1, 2, 3))

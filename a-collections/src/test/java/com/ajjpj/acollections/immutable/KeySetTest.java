@@ -3,11 +3,18 @@ package com.ajjpj.acollections.immutable;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.ASetTests;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 
 public class KeySetTest implements ASetTests {
+    @Override @Test public void testSerDeser () {
+        fail("todo");
+    }
+
     private static class KeySetBuilder implements ACollectionBuilder<Integer, ASet<Integer>> {
         private AHashMap<Integer, Integer> map;
 
