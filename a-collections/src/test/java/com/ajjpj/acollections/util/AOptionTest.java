@@ -2,6 +2,7 @@ package com.ajjpj.acollections.util;
 
 import com.ajjpj.acollections.ACollectionOpsTests;
 import com.ajjpj.acollections.AIterator;
+import com.ajjpj.acollections.TestHelpers;
 import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.mutable.AMutableSetWrapper;
@@ -36,7 +37,11 @@ public class AOptionTest implements ACollectionOpsTests {
     }
 
     @Override @Test public void testSerDeser () {
-        fail("todo");
+        assertSame(AOption.none(), TestHelpers.serDeser(AOption.none()));
+
+        assertEquals(AOption.some(1), TestHelpers.serDeser(AOption.some(1)));
+        assertEquals(AOption.some(2), TestHelpers.serDeser(AOption.some(2)));
+        assertEquals(AOption.some(null), TestHelpers.serDeser(AOption.some(null)));
     }
 
     @Test void testStaticFactory() {

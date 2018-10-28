@@ -7,6 +7,7 @@ import com.ajjpj.acollections.immutable.AbstractImmutableCollection;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -16,7 +17,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 
-public abstract class AOption<T> extends AbstractImmutableCollection<T> implements ACollectionDefaults<T, AOption<T>> {
+public abstract class AOption<T> extends AbstractImmutableCollection<T> implements ACollectionDefaults<T, AOption<T>>, Serializable {
 
     public abstract T get();
     public abstract T orElse(T defaultValue);
@@ -35,7 +36,7 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
     }
     public static <T> AOption<T> none() {
         //noinspection unchecked
-        return ANone;
+        return (AOption<T>) ANone.INSTANCE;
     }
 
     @Override public String toString () {
@@ -174,7 +175,13 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
         }
     }
 
-    private static final AOption ANone = new AOption<Object>() {
+    private static class ANone extends AOption<Object> {
+        static final ANone INSTANCE = new ANone();
+
+        private Object readResolve() {
+            return INSTANCE;
+        }
+
         @Override public boolean equals (Object o) {
             return o == this;
         }

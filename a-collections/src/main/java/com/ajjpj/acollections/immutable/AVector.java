@@ -75,6 +75,11 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
         return EMPTY;
     }
 
+    private Object readResolve() {
+        if (isEmpty()) return EMPTY;
+        return this;
+    }
+
     private final VectorPointer<T> pointer = new VectorPointer<T>();
 
     private final int startIndex;

@@ -319,6 +319,10 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         @Override public boolean contains (Object o) {
             return false;
         }
+
+        private Object readResolve() {
+            return INSTANCE;
+        }
     }
 
     public static <T> Builder<T> builder() {
