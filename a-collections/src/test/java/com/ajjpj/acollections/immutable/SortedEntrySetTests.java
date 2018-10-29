@@ -3,6 +3,7 @@ package com.ajjpj.acollections.immutable;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AEntryCollectionOpsTests;
 import com.ajjpj.acollections.ASet;
+import com.ajjpj.acollections.TestHelpers;
 import com.ajjpj.acollections.internal.AMapSupport;
 import org.junit.jupiter.api.Test;
 
@@ -10,12 +11,21 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static com.ajjpj.acollections.AEntryCollectionOpsTests.*;
 
 
 public class SortedEntrySetTests implements AEntryCollectionOpsTests {
     @Override @Test public void testSerDeser () {
-        fail("todo");
+        doTest(v -> {
+            assertTrue(TestHelpers.serDeser(v.mkColl()).isEmpty());
+            assertEquals(v.mkColl().getClass(), TestHelpers.serDeser(v.mkColl()).getClass());
+
+            assertEquals(AHashSet.of(entryOf(1)), TestHelpers.serDeser(v.mkColl(1)));
+            assertEquals(AHashSet.of(entryOf(1), entryOf(2), entryOf(3)), TestHelpers.serDeser(v.mkColl(1, 2, 3)));
+        });
     }
 
     private static class Builder implements ACollectionBuilder<Map.Entry<Integer, Integer>, ASet<Map.Entry<Integer,Integer>>> {

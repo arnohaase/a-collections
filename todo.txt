@@ -15,8 +15,7 @@ todo
 
 * ASortedSet.reverseIterator()
 
-
-
+* AIterator: equals(!), hashCode = UnsupportedOperation
 
 * CHAMP algorithm
 * tuning of RedBlackTree
@@ -32,33 +31,7 @@ todo
   * partial order
 
 * Serializable
-  * unit tests(!)
-
-  * mutable: -
-  * AVector:
-    * unique 'empty'
-    * ???
-  * ALinkedList
-    * unique Nil
-    * ???
-  * AOption
-    * ???
-    * unique ANone
-  * AHashMap
-    * rehashing
-    * unique 'empty'
-    * ???
-  * ATreeMap
-    * unique 'empty'
-    * ???
-  * AHashSet
-    * unique 'empty'
-    * rehashing
-    * ???
-  * ATreeSet
-    * unique 'empty'
-    * ???
-  * ARange: ???
+  * map with default ...
 
 
 

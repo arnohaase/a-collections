@@ -7,12 +7,13 @@ import com.ajjpj.acollections.internal.ASetDefaults;
 import com.ajjpj.acollections.internal.ASetSupport;
 import com.ajjpj.acollections.util.AOption;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T,ATreeSet<T>>, ASetDefaults<T,ATreeSet<T>> {
+public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T,ATreeSet<T>>, ASetDefaults<T,ATreeSet<T>>, Serializable {
     private final RedBlackTree.Tree<T,Object> root;
     private final Comparator<T> comparator;
 

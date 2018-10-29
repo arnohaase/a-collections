@@ -1,12 +1,12 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.AMapTests;
+import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ATreeMapTest implements AMapTests {
@@ -18,7 +18,11 @@ public class ATreeMapTest implements AMapTests {
     }
 
     @Override @Test public void testSerDeser () {
-        fail("todo");
+        doTest(v -> {
+            assertEquals(v.mkMap(), TestHelpers.serDeser(v.mkMap()));
+            assertEquals(v.mkMap(1), TestHelpers.serDeser(v.mkMap(1)));
+            assertEquals(v.mkMap(1, 2, 3), TestHelpers.serDeser(v.mkMap(1, 2, 3)));
+        });
     }
 
     final int size = 100_000;

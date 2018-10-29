@@ -8,6 +8,10 @@ import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.ASetDefaults;
 import com.ajjpj.acollections.internal.ASetSupport;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
@@ -16,7 +20,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public abstract class AHashSet<T> extends AbstractImmutableCollection<T> implements ACollectionDefaults<T, AHashSet<T>>, ASetDefaults<T, AHashSet<T>> {
+public abstract class AHashSet<T> extends AbstractImmutableCollection<T> implements ACollectionDefaults<T, AHashSet<T>>, ASetDefaults<T, AHashSet<T>>, Serializable {
     private final CompactHashMap<SetEntryWithEquality<T>> compactHashMap;
 
     public static<T> AHashSet<T> empty() {
@@ -79,6 +83,10 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
 
     AHashSet (CompactHashMap<SetEntryWithEquality<T>> compactHashMap) {
         this.compactHashMap = compactHashMap;
+    }
+
+    protected Object writeReplace() {
+        return new SerializationProxy(this);
     }
 
     abstract AHashSet<T> newInstance(CompactHashMap<SetEntryWithEquality<T>> compactHashMap);
@@ -170,7 +178,7 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
         return ACollectionDefaults.super.containsAll(c);
     }
 
-    public static <T> ACollectionBuilder<T, AHashSet<T>> builder() {
+    public static <T> Builder<T> builder() {
         return new EqualsBuilder<>();
     }
 
@@ -237,6 +245,36 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
 
         @Override public int keyHash () {
             return Objects.hashCode(el);
+        }
+    }
+
+    private static class SerializationProxy implements Serializable {
+        private static final long serialVersionUID = 123L;
+
+        private transient AHashSet<?> orig;
+
+        SerializationProxy (AHashSet<?> orig) {
+            this.orig = orig;
+        }
+
+        private void writeObject(ObjectOutputStream oos) throws IOException {
+            oos.writeInt(orig.size());
+            for (Object o: orig) {
+                oos.writeObject(o);
+            }
+        }
+
+        private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+            final Builder<Object> builder = builder();
+            final int size = ois.readInt();
+            for (int i=0; i<size; i++) {
+                builder.add(ois.readObject());
+            }
+            orig = builder.build();
+        }
+
+        private Object readResolve() {
+            return orig;
         }
     }
 }

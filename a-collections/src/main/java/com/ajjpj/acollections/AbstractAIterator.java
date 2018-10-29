@@ -2,12 +2,11 @@ package com.ajjpj.acollections;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 
 public abstract class AbstractAIterator<T> implements AIterator<T> {
-
-    public abstract boolean hasNext();
 
     @Override public AIterator<T> filter (Predicate<T> f) {
         return filter(this, f);

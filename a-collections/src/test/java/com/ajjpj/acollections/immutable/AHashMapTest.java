@@ -1,17 +1,21 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.AMapTests;
+import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class AHashMapTest implements AMapTests {
     @Override @Test public void testSerDeser () {
-        fail("todo");
+        assertEquals(AHashMap.empty(), TestHelpers.serDeser(AHashMap.empty()));
+        assertEquals(AHashMap.empty().plus(1,2), TestHelpers.serDeser(AHashMap.empty().plus(1,2)));
+        assertEquals(AHashMap.empty().plus(1,2).plus(3,4).plus(5,6), TestHelpers.serDeser(AHashMap.empty().plus(1,2).plus(3,4).plus(5,6)));
     }
 
     @Override public Iterable<Variant> variants () {

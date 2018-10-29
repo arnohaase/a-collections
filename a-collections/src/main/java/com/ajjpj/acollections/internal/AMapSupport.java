@@ -4,6 +4,7 @@ import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.util.AOption;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 
@@ -31,7 +32,7 @@ public class AMapSupport {
         return m.getOptional(e.getKey()).contains(e.getValue());
     }
 
-    public static class KeySet<T> extends AbstractImmutableCollection<T> implements ASet<T>, ACollectionDefaults<T, AHashSet<T>>, ASetDefaults<T, AHashSet<T>> {
+    public static class KeySet<T> extends AbstractImmutableCollection<T> implements ASet<T>, ACollectionDefaults<T, AHashSet<T>>, ASetDefaults<T, AHashSet<T>>, Serializable {
         private final AMap<T,?> map;
 
         public KeySet (AMap<T, ?> map) {
@@ -122,7 +123,7 @@ public class AMapSupport {
         }
     }
 
-    public static class ValuesCollection<T> extends AbstractImmutableCollection<T> implements ACollection<T>, ACollectionDefaults<T, AVector<T>> {
+    public static class ValuesCollection<T> extends AbstractImmutableCollection<T> implements ACollection<T>, ACollectionDefaults<T, AVector<T>>, Serializable {
         private final AMap<?,T> map;
 
         public ValuesCollection (AMap<?, T> map) {
@@ -194,7 +195,7 @@ public class AMapSupport {
         }
     }
 
-    public static class EntrySet<K,V> extends AbstractImmutableCollection<Map.Entry<K,V>> implements ASet<Map.Entry<K,V>>, ACollectionDefaults<Map.Entry<K,V>, AHashSet<Map.Entry<K,V>>>, ASetDefaults<Map.Entry<K,V>, AHashSet<Map.Entry<K,V>>> {
+    public static class EntrySet<K,V> extends AbstractImmutableCollection<Map.Entry<K,V>> implements ASet<Map.Entry<K,V>>, ACollectionDefaults<Map.Entry<K,V>, AHashSet<Map.Entry<K,V>>>, ASetDefaults<Map.Entry<K,V>, AHashSet<Map.Entry<K,V>>>, Serializable {
         private final AMap<K,V> map;
 
         public EntrySet (AMap<K, V> map) {
@@ -303,7 +304,7 @@ public class AMapSupport {
         }
     }
 
-    public static class SortedKeySet<T> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T, ATreeSet<T>>, ASetDefaults<T, ATreeSet<T>> {
+    public static class SortedKeySet<T> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T, ATreeSet<T>>, ASetDefaults<T, ATreeSet<T>>, Serializable {
         private final ASortedMap<T,?> map;
 
         public SortedKeySet (ASortedMap<T, ?> map) {
@@ -441,7 +442,7 @@ public class AMapSupport {
         }
     }
 
-    public static class SortedEntrySet<K,V> extends AbstractImmutableCollection<Map.Entry<K,V>> implements ASortedSet<Map.Entry<K,V>>, ACollectionDefaults<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>>, ASetDefaults<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>> {
+    public static class SortedEntrySet<K,V> extends AbstractImmutableCollection<Map.Entry<K,V>> implements ASortedSet<Map.Entry<K,V>>, ACollectionDefaults<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>>, ASetDefaults<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>>, Serializable {
         private final ASortedMap<K,V> map;
 
         public SortedEntrySet (ASortedMap<K, V> map) {

@@ -2,6 +2,7 @@ package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.ASetTests;
+import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -20,7 +21,14 @@ public class AHashSetTest implements ASetTests {
     }
 
     @Override @Test public void testSerDeser () {
-        fail("todo");
+        assertEquals(AHashSet.empty(), TestHelpers.serDeser(AHashSet.empty()));
+        assertEquals(AHashSet.empty().getClass(), TestHelpers.serDeser(AHashSet.empty()).getClass());
+
+        assertEquals(AHashSet.of(1), TestHelpers.serDeser(AHashSet.of(1)));
+        assertEquals(AHashSet.of(1).getClass(), TestHelpers.serDeser(AHashSet.of(1)).getClass());
+
+        assertEquals(AHashSet.of(1, 2, 3), TestHelpers.serDeser(AHashSet.of(1, 2, 3)));
+        assertEquals(AHashSet.of(1, 2, 3).getClass(), TestHelpers.serDeser(AHashSet.of(1, 2, 3)).getClass());
     }
 
     private Set<Integer> createJu() {

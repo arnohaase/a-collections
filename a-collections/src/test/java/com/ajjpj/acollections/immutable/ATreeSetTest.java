@@ -1,6 +1,7 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.ASetTests;
+import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -12,7 +13,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class ATreeSetTest implements ASetTests  {
     @Override @Test public void testSerDeser () {
-        fail("todo");
+        doTest(v -> {
+            assertEquals(AHashSet.empty(), TestHelpers.serDeser(v.mkSet()));
+            assertEquals(v.mkSet().getClass(), TestHelpers.serDeser(v.mkSet()).getClass());
+            assertEquals(((ATreeSet)v.mkSet()).comparator(), ((ATreeSet)TestHelpers.serDeser(v.mkSet())).comparator());
+
+            assertEquals(AHashSet.of(1), TestHelpers.serDeser(v.mkSet(1)));
+            assertEquals(AHashSet.of(1, 2, 3), TestHelpers.serDeser(v.mkSet(1, 2, 3)));
+        });
     }
 
     @Override public Iterable<Variant> variants () {

@@ -6,20 +6,27 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class ValueCollectionTest implements ACollectionTests {
     @Override @Test public void testEquals () {
-        fail("todo");
+        // value collections really are not supposed to be compared
     }
 
     @Override @Test public void testHashCode () {
-        fail("todo");
+        // value collections really are not supposed to be compared
     }
 
     @Override @Test public void testSerDeser () {
-        fail("todo");
+        doTest(v -> {
+            assertEquals(v.mkColl(), TestHelpers.serDeser(v.mkColl()));
+            assertEquals(v.mkColl().getClass(), TestHelpers.serDeser(v.mkColl()).getClass());
+
+            assertEquals(v.mkColl(1), TestHelpers.serDeser(v.mkColl(1)));
+            assertEquals(v.mkColl(1, 2, 3), TestHelpers.serDeser(v.mkColl(1, 2, 3)));
+        });
     }
 
     private static class ValueCollectionBuilder implements ACollectionBuilder<Integer, ACollection<Integer>> {

@@ -5,6 +5,7 @@ import com.ajjpj.acollections.AMap;
 import com.ajjpj.acollections.AbstractAIterator;
 import com.ajjpj.acollections.util.AOption;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -508,7 +509,7 @@ class RedBlackTree {
         }
     }
 
-    static abstract class Tree<A, B> {
+    static abstract class Tree<A, B> implements Serializable {
         final A key;
         final B value;
         final Tree<A, B> left, right;

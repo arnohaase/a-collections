@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.Map;
 
 
-public interface ASortedMap<K,V> extends AMap<K,V> {
+public interface ASortedMap<K,V> extends AMap<K,V> { //TODO implements NavigableMap
     Comparator<K> comparator();
 
     /**

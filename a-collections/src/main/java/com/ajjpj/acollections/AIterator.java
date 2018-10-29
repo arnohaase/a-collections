@@ -9,7 +9,9 @@ import com.ajjpj.acollections.util.AOption;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -41,6 +43,17 @@ public interface AIterator<T> extends Iterator<T> {
         return ATreeSet.fromIterator(this, (Comparator) Comparator.naturalOrder());
     }
     //TODO toBuffer
+
+    default boolean corresponds(Iterator<T> that) {
+        return corresponds(that, Objects::equals);
+    }
+    default <U> boolean corresponds(Iterator<U> that, BiPredicate<T,U> f) { //TODO unit test
+        while (this.hasNext() && that.hasNext()) {
+            if (!f.test(this.next(), that.next())) return false;
+        }
+        return this.hasNext() == that.hasNext();
+
+    }
 
     default <U> AIterator<U> map(Function<T,U> f) {
         final AIterator<T> inner = this;

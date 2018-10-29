@@ -7,12 +7,13 @@ import com.ajjpj.acollections.internal.AMapDefaults;
 import com.ajjpj.acollections.internal.AMapSupport;
 import com.ajjpj.acollections.util.AOption;
 
+import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements ACollectionDefaults<Map.Entry<K,V>, AHashMap<K,V>>, AMapDefaults<K,V,AHashMap<K,V>> {
+public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements ACollectionDefaults<Map.Entry<K,V>, AHashMap<K,V>>, AMapDefaults<K,V,AHashMap<K,V>>, Serializable {
     private final CompactHashMap<MapEntryWithEquality> compactHashMap;
 
     @SuppressWarnings("unchecked")
@@ -29,6 +30,10 @@ public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements
     }
     AHashMap (CompactHashMap<MapEntryWithEquality> compactHashMap) {
         this.compactHashMap = compactHashMap;
+    }
+
+    protected Object writeReplace() throws ObjectStreamException {
+        return new SerializationProxy(this);
     }
 
     public AHashMap<K, V> plus (K key, V value) {
@@ -229,6 +234,40 @@ public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements
                 keyHash = improve(Objects.hashCode(getKey()));
             }
             return keyHash;
+        }
+    }
+
+    /**
+     * proxy class to allow deserializing an immutable hash map without relying on hash codes remaining the same
+     */
+    private static class SerializationProxy implements Serializable {
+        private transient AHashMap<?,?> orig;
+
+        SerializationProxy (AHashMap<?,?> orig) {
+            this.orig = orig;
+        }
+
+        private static final long serialVersionUID = 2L;
+
+        private void writeObject(ObjectOutputStream oos) throws IOException {
+            oos.writeInt(orig.size());
+            for (Map.Entry<?,?> e: orig) {
+                oos.writeObject(e.getKey());
+                oos.writeObject(e.getValue());
+            }
+        }
+
+        private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+            final Builder<Object,Object> builder = builder();
+            final int size = ois.readInt();
+            for (int i=0; i<size; i++) {
+                builder.add(ois.readObject(), ois.readObject());
+            }
+            orig = builder.build();
+        }
+
+        private Object readResolve() {
+            return orig;
         }
     }
 }

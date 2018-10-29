@@ -7,6 +7,7 @@ import com.ajjpj.acollections.internal.AMapDefaults;
 import com.ajjpj.acollections.internal.AMapSupport;
 import com.ajjpj.acollections.util.AOption;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
@@ -15,7 +16,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.Entry<K,V>, ATreeMap<K,V>>, AMapDefaults<K,V,ATreeMap<K,V>> {
+public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.Entry<K,V>, ATreeMap<K,V>>, AMapDefaults<K,V,ATreeMap<K,V>>, Serializable {
     private final RedBlackTree.Tree<K,V> root;
     private final Comparator<K> comparator;
 
