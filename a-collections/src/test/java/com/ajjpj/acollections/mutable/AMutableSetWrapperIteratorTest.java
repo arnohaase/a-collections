@@ -8,6 +8,10 @@ import java.util.HashSet;
 
 
 public class AMutableSetWrapperIteratorTest implements AIteratorTests {
+    @Override public boolean isOrdered () {
+        return false;
+    }
+
     @Override public AIterator<Integer> mkIterator (Integer... values) {
         return AMutableSetWrapper.wrap(new HashSet<>(Arrays.asList(values))).iterator();
     }

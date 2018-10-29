@@ -9,6 +9,10 @@ import java.util.Arrays;
 
 
 class ATreeSetIteratorWithStart1Test implements AIteratorTests {
+    @Override public boolean isOrdered () {
+        return false;
+    }
+
     @Override public AIterator<Integer> mkIterator (Integer... values) {
         return AMutableArrayWrapper.wrap(values).prepend(0).toSortedSet().iterator(AOption.some(1));
     }

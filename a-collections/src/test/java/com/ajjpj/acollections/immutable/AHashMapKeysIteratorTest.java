@@ -5,6 +5,10 @@ import com.ajjpj.acollections.AIteratorTests;
 
 
 class AHashMapKeysIteratorTest implements AIteratorTests {
+    @Override public boolean isOrdered () {
+        return false;
+    }
+
     @Override public AIterator<Integer> mkIterator (Integer... values) {
         AHashMap.Builder<Integer,Integer> b = AHashMap.builder();
         for (int i: values) b.add(i, 2*i+1);

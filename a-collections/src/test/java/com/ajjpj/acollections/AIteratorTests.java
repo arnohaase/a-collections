@@ -4,12 +4,14 @@ import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
 import static com.ajjpj.acollections.util.AOption.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
 import java.util.NoSuchElementException;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,6 +51,45 @@ public interface AIteratorTests {
         assertTrue(mkIterator().toSortedSet().isEmpty());
         assertEquals(ATreeSet.of(1), mkIterator(1).toSortedSet());
         assertEquals(ATreeSet.of(1, 2, 3), mkIterator(1, 2, 3).toSortedSet());
+    }
+    @Test default void testToMutableList() {
+        assertTrue(mkIterator().toMutableList().isEmpty());
+        assertEquals(AMutableListWrapper.of(1), mkIterator(1).toMutableList());
+        assertEquals(AMutableListWrapper.of(1, 2, 3), mkIterator(1, 2, 3).toMutableList());
+    }
+
+    @Test default void testCorresponds() {
+        assertTrue(mkIterator().corresponds(mkIterator()));
+        assertFalse(mkIterator(1).corresponds(mkIterator()));
+        assertFalse(mkIterator().corresponds(mkIterator(1)));
+
+        assertTrue(mkIterator(1).corresponds(mkIterator(1)));
+        assertFalse(mkIterator(1).corresponds(mkIterator(2)));
+        assertFalse(mkIterator(1).corresponds(mkIterator(1, 2)));
+        assertFalse(mkIterator(1, 2).corresponds(mkIterator(1)));
+
+        assertTrue(mkIterator(1, 2, 3).corresponds(mkIterator(1, 2, 3)));
+        if (isOrdered()) {
+            assertFalse(mkIterator(1, 2, 3).corresponds(mkIterator(3, 2, 1)));
+        }
+    }
+    @Test default void testCorrespondsWithPredicate() {
+        final BiPredicate<Integer,Integer> eqDouble = (a,b) -> a == 2*b;
+
+        assertTrue(mkIterator().corresponds(mkIterator(), eqDouble));
+        assertFalse(mkIterator(1).corresponds(mkIterator(), eqDouble));
+        assertFalse(mkIterator().corresponds(mkIterator(1), eqDouble));
+
+        assertFalse(mkIterator(1).corresponds(mkIterator(1), eqDouble));
+        assertTrue(mkIterator(2).corresponds(mkIterator(1), eqDouble));
+        assertFalse(mkIterator(3).corresponds(mkIterator(1), eqDouble));
+        assertFalse(mkIterator(2).corresponds(mkIterator(1, 2), eqDouble));
+        assertFalse(mkIterator(2, 4).corresponds(mkIterator(1), eqDouble));
+
+        if (isOrdered()) {
+            assertTrue(mkIterator(2, 4, 6).corresponds(mkIterator(1, 2, 3), eqDouble));
+            assertFalse(mkIterator(2, 4, 6).corresponds(mkIterator(3, 2, 1), eqDouble));
+        }
     }
 
     @Test default void testMap () {

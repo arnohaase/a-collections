@@ -1,6 +1,5 @@
 package com.ajjpj.acollections.internal;
 
-import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.ACollectionOps;
 import com.ajjpj.acollections.AMap;

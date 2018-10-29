@@ -41,15 +41,21 @@ public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrap
         return new AMutableListWrapper<>(new ArrayList<>());
     }
 
-    public static <T> AMutableListWrapper<T> from(Iterator<T> it) {
+    public static <T> AMutableListWrapper<T> fromIterator (Iterator<T> it) {
         return AMutableListWrapper.<T>builder().addAll(it).build();
     }
-    public static <T> AMutableListWrapper<T> from(Iterable<T> iterable) {
+    public static <T> AMutableListWrapper<T> from (Iterable<T> iterable) {
         return AMutableListWrapper.<T>builder().addAll(iterable).build();
     }
 
     public static <T> AMutableListWrapper<T> of(T o1) {
         return AMutableListWrapper.<T>builder().add(o1).build();
+    }
+    public static <T> AMutableListWrapper<T> of(T o1, T o2) {
+        return AMutableListWrapper.<T>builder().add(o1).add(o2).build();
+    }
+    public static <T> AMutableListWrapper<T> of(T o1, T o2, T o3) {
+        return AMutableListWrapper.<T>builder().add(o1).add(o2).add(o3).build();
     }
 
     //TODO static factories

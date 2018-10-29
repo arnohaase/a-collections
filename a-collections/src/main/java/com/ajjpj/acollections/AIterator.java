@@ -4,6 +4,7 @@ import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Comparator;
@@ -42,12 +43,14 @@ public interface AIterator<T> extends Iterator<T> {
         //noinspection unchecked
         return ATreeSet.fromIterator(this, (Comparator) Comparator.naturalOrder());
     }
-    //TODO toBuffer
+    default AMutableListWrapper toMutableList() {
+        return AMutableListWrapper.fromIterator(this);
+    }
 
     default boolean corresponds(Iterator<T> that) {
         return corresponds(that, Objects::equals);
     }
-    default <U> boolean corresponds(Iterator<U> that, BiPredicate<T,U> f) { //TODO unit test
+    default <U> boolean corresponds(Iterator<U> that, BiPredicate<T,U> f) {
         while (this.hasNext() && that.hasNext()) {
             if (!f.test(this.next(), that.next())) return false;
         }

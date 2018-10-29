@@ -8,6 +8,10 @@ import java.util.Arrays;
 
 
 class ATreeSetIteratorWithStart0Test implements AIteratorTests {
+    @Override public boolean isOrdered () {
+        return false;
+    }
+
     @Override public AIterator<Integer> mkIterator (Integer... values) {
         return ATreeSet.from(Arrays.asList(values)).iterator(AOption.some(0));
     }
