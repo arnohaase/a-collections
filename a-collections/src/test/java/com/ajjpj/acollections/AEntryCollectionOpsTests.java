@@ -418,8 +418,6 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
         });
     }
 
-    //TODO 2x EntrySet; AMap
-
     //---------------------------- internal -------------------------------
 
     Comparator<Map.Entry<Integer,Integer>> keyComparator = Map.Entry.comparingByKey();

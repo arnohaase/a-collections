@@ -16,6 +16,9 @@ import java.util.function.*;
 public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWrapper<K,V>>, ACollectionDefaults<Map.Entry<K,V>, AMutableMapWrapper<K,V>>, Serializable {
     private final Map<K,V> inner;
 
+    public static <K,V> AMutableMapWrapper<K,V> empty() {
+        return new AMutableMapWrapper<>(new HashMap<>());
+    }
     //TODO static factories
 
     public static <K,V> AMutableMapWrapper<K,V> fromIterator(Iterator<Map.Entry<K,V>> it) {

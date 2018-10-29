@@ -8,10 +8,6 @@ todo
 * AbstractImmutableSet
 
 * add mutable JU code to benchmarks
-* explicitly delegate optional j.u.Coll methods to inner
-
-* unit tests
-  * entry iterators
 
 * ASortedSet.reverseIterator()
 
@@ -22,14 +18,11 @@ todo
   * static factories a la Java 10
   * ACollection: permutations, combinations
   * ACollection: flatten
-  * AMap withDerivedDefault, withDefaultValue, filterKeys, filterValues(?)
   * AIterator methods: see decompiled TreeIterator
   * toMap (?) (2x?)
 
   * partial order
 
-// ACollection.flatten
-// permutations, combinations
 
 //AList: zip, zipWithIndex
 // sortWith, sortBy, shuffle --> ACollection, produces AList?

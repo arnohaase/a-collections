@@ -12,10 +12,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -69,10 +66,11 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
                 .build();
     }
 
+    public static <T> AHashSet<T> from(T[] that) {
+        return fromIterator(Arrays.asList(that).iterator());
+    }
     public static <T> AHashSet<T> from(Iterable<T> that) {
-        return AHashSet.<T>builder()
-                .addAll(that)
-                .build();
+        return fromIterator(that.iterator());
     }
 
     public static <T> AHashSet<T> fromIterator(Iterator<T> it) {
