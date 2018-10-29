@@ -358,6 +358,19 @@ public interface AMapTests extends AEntryCollectionOpsTests {
         });
     }
 
+    @Test default void testWithDefaultValueSerializable() {
+        doTest(v -> {
+            assertEquals (3, TestHelpers.serDeser(v.mkMap(1, 2, 3).withDefaultValue(99)).get(1).intValue());
+            assertEquals (99, TestHelpers.serDeser(v.mkMap(1, 2, 3).withDefaultValue(99)).get(4).intValue());
+        });
+    }
+    @Test default void testWithDerivedDefaultValueSerializable() {
+        doTest(v -> {
+            assertEquals (3, TestHelpers.serDeser(v.mkMap(1, 2, 3).withDerivedDefaultValue(new TestHelpers.SerializableDoublingFunction())).get(1).intValue());
+            assertEquals (8, TestHelpers.serDeser(v.mkMap(1, 2, 3).withDerivedDefaultValue(new TestHelpers.SerializableDoublingFunction())).get(4).intValue());
+        });
+    }
+
     @Test default void testKeySet() {
         doTest(v -> {
             assertTrue(v.mkMap().keySet().isEmpty());

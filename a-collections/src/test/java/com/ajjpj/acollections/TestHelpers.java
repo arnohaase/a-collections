@@ -2,10 +2,9 @@ package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.util.AUnchecker;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
 
 
 public class TestHelpers {
@@ -22,5 +21,11 @@ public class TestHelpers {
             //noinspection unchecked
             return (T) ois.readObject();
         });
+    }
+
+    public static class SerializableDoublingFunction implements Function<Integer,Integer>, Serializable {
+        @Override public Integer apply (Integer i) {
+            return 2*i;
+        }
     }
 }

@@ -9,13 +9,14 @@ import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.mutable.AMutableSetWrapper;
 import com.ajjpj.acollections.util.AOption;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Spliterator;
 import java.util.function.*;
 
 
-abstract class AbstractDelegatingMap<K,V> implements AMap<K,V> {
+abstract class AbstractDelegatingMap<K,V> implements AMap<K,V>, Serializable {
     final AMap<K,V> inner;
 
     public AbstractDelegatingMap (AMap<K, V> inner) {

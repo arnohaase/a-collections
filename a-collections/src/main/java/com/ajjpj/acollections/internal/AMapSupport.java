@@ -646,7 +646,8 @@ public class AMapSupport {
         }
     }
 
-    public static class MapWithDefaultValue<K,V> extends AbstractDelegatingMap<K,V> {
+    public static class MapWithDefaultValue<K,V> extends AbstractDelegatingMap<K,V> implements Serializable {
+        private static final long serialVersionUID = 1L;
         private final V defaultValue;
 
         public MapWithDefaultValue (AMap<K, V> inner, V defaultValue) {
@@ -665,7 +666,8 @@ public class AMapSupport {
         }
     }
 
-    public static class MapWithDerivedDefaultValue<K,V> extends AbstractDelegatingMap<K,V> {
+    public static class MapWithDerivedDefaultValue<K,V> extends AbstractDelegatingMap<K,V> implements Serializable {
+        private static final long serialVersionUID = 1L;
         private final Function<K,V> defaultProvider;
 
         public MapWithDerivedDefaultValue (AMap<K, V> inner, Function<K,V> defaultProvider) {

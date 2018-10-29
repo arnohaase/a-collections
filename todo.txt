@@ -15,8 +15,6 @@ todo
 
 * ASortedSet.reverseIterator()
 
-* AIterator: equals(!), hashCode = UnsupportedOperation
-
 * CHAMP algorithm
 * tuning of RedBlackTree
 
@@ -29,11 +27,6 @@ todo
   * toMap (?) (2x?)
 
   * partial order
-
-* Serializable
-  * map with default ...
-
-
 
 // ACollection.flatten
 // permutations, combinations
