@@ -8,10 +8,7 @@ import com.ajjpj.acollections.internal.AMapSupport;
 import com.ajjpj.acollections.util.AOption;
 
 import java.io.Serializable;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -35,12 +32,35 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     public static <K,V> ATreeMap<K,V> fromIterator(Iterator<Entry<K,V>> iterator, Comparator<K> comparator) {
         return ATreeMap.<K,V> builder(comparator).addAll(iterator).build();
     }
-    public static <K extends Comparable<K>,V> ATreeMap<K,V> fromIterable(Iterable<Entry<K,V>> iterable) {
-        return fromIterable(iterable, Comparator.naturalOrder());
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> fromMap(Map<K,V> m) {
+        return from(m.entrySet());
     }
-    public static <K,V> ATreeMap<K,V> fromIterable(Iterable<Entry<K,V>> iterator, Comparator<K> comparator) {
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> from(Iterable<Entry<K,V>> iterable) {
+        return from(iterable, Comparator.naturalOrder());
+    }
+    public static <K,V> ATreeMap<K,V> from(Iterable<Entry<K,V>> iterator, Comparator<K> comparator) {
         return ATreeMap.<K,V> builder(comparator).addAll(iterator).build();
     }
+
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> of() {
+        return empty(Comparator.<K>naturalOrder());
+    }
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> of(K k1, V v1) {
+        return ATreeMap.<K,V>builder().add(k1, v1).build();
+    }
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> of(K k1, V v1, K k2, V v2) {
+        return ATreeMap.<K,V>builder().add(k1, v1).add(k2, v2).build();
+    }
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return ATreeMap.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).build();
+    }
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+        return ATreeMap.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).add(k4,v4).build();
+    }
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> ofEntries(Iterable<Map.Entry<K,V>> coll) {
+        return from(coll);
+    }
+
 
     public static <K extends Comparable<K>,V> Builder<K,V> builder() {
         return builder(Comparator.<K>naturalOrder());
@@ -205,14 +225,27 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
             this.result = ATreeMap.empty(comparator);
         }
 
-        public ACollectionBuilder<Entry<K, V>, ATreeMap<K, V>> add (K key, V value) {
+        public Builder<K, V> add (K key, V value) {
             result = result.plus(key, value);
             return this;
         }
 
-        @Override public ACollectionBuilder<Entry<K, V>, ATreeMap<K, V>> add (Entry<K, V> el) {
+        @Override public Builder<K, V> add (Entry<K, V> el) {
             result = result.plus(el.getKey(), el.getValue());
             return this;
+        }
+
+        @Override public Builder<K, V> addAll (Iterator<? extends Entry<K, V>> it) {
+            while(it.hasNext()) add(it.next());
+            return this;
+        }
+
+        @Override public Builder<K, V> addAll (Iterable<? extends Entry<K, V>> coll) {
+            return addAll(coll.iterator());
+        }
+
+        @Override public Builder<K, V> addAll (Entry<K, V>[] coll) {
+            return addAll(Arrays.asList(coll));
         }
 
         @Override public ATreeMap<K, V> build () {

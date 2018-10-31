@@ -24,6 +24,9 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
         return new EqualsHashSet<>(CompactHashMap.empty());
     }
 
+    public static <T> AHashSet<T> of() {
+        return empty();
+    }
     public static <T> AHashSet<T> of(T o) {
         return AHashSet
                 .<T>builder()
@@ -54,7 +57,7 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
                 .add(o4)
                 .build();
     }
-    public static <T> AHashSet<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
+    @SafeVarargs public static <T> AHashSet<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
         return AHashSet
                 .<T>builder()
                 .add(o1)

@@ -18,6 +18,9 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
     public static <T> AVector<T> from(Iterable<T> that) {
         return fromIterator(that.iterator());
     }
+    public static <T> AVector<T> from(T[] that) {
+        return fromIterator(Arrays.asList(that).iterator());
+    }
 
     public static <T> AVector<T> fromIterator(Iterator<T> it) {
         return AVector
@@ -26,6 +29,9 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
                 .build();
     }
 
+    public static <T> AVector<T> of() {
+        return empty();
+    }
     public static <T> AVector<T> of(T o) {
         return AVector
                 .<T>builder()
@@ -56,7 +62,7 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
                 .add(o4)
                 .build();
     }
-    public static <T> AVector<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
+    @SafeVarargs public static <T> AVector<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
         return AVector
                 .<T>builder()
                 .add(o1)

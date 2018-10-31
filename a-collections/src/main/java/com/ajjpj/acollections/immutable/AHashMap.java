@@ -19,11 +19,36 @@ public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements
     @SuppressWarnings("unchecked")
     public static <K,V> AHashMap<K,V> empty() {
         return new AHashMapEquals<>(CompactHashMap.EMPTY);
-//        if (equality == AEquality.IDENTITY) return new AIdentityHashMap<>(CompactHashMap.EMPTY);
     }
 
+    public static <K,V> AHashMap<K,V> from(Map<K,V> m) {
+        return from(m.entrySet());
+    }
+    public static <K,V> AHashMap<K,V> from(Iterable<Map.Entry<K,V>> coll) {
+        return AHashMap.<K,V>builder().addAll(coll).build();
+    }
+    public static <K,V> AHashMap<K,V> fromIterator(Iterator<Entry<K,V>> iterator) {
+        return AHashMap.<K,V> builder().addAll(iterator).build();
+    }
 
-    //TODO fromIterator, fromIterable, of, fromMap, ...
+    public static <K,V> AHashMap<K,V> of() {
+        return empty();
+    }
+    public static <K,V> AHashMap<K,V> of(K k1, V v1) {
+        return AHashMap.<K,V>builder().add(k1, v1).build();
+    }
+    public static <K,V> AHashMap<K,V> of(K k1, V v1, K k2, V v2) {
+        return AHashMap.<K,V>builder().add(k1, v1).add(k2, v2).build();
+    }
+    public static <K,V> AHashMap<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return AHashMap.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).build();
+    }
+    public static <K,V> AHashMap<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+        return AHashMap.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).add(k4,v4).build();
+    }
+    public static <K,V> AHashMap<K,V> ofEntries(Iterable<Map.Entry<K,V>> coll) {
+        return from(coll);
+    }
 
     AHashMap () {
         this (new CompactHashMap<>());
@@ -45,16 +70,6 @@ public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements
 
     abstract AHashMap<K,V> newInstance(CompactHashMap<MapEntryWithEquality> compact);
     abstract MapEntryWithEquality newEntry(K key, V value);
-
-    public static <K,V> AHashMap<K,V> fromIterator(Iterator<Entry<K,V>> iterator) {
-        return AHashMap.<K,V> builder().addAll(iterator).build();
-    }
-    public static <K,V> AHashMap<K,V> from(Iterable<Entry<K,V>> iterable) {
-        return AHashMap.<K,V> builder().addAll(iterable).build();
-    }
-    public static <K,V> AHashMap<K,V> fromMap(Map<K,V> m) {
-        return AHashMap.<K,V> builder().addAll(m.entrySet().iterator()).build();
-    }
 
     public static <K,V> Builder<K,V> builder() {
         return new Builder<>();
@@ -162,31 +177,38 @@ public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements
         return new AMapSupport.EntrySet<>(this);
     }
 
-    abstract static class AbstractBuilder<K,V> implements ACollectionBuilder<Map.Entry<K,V>, AHashMap<K,V>> {
+    public static class Builder<K,V> implements ACollectionBuilder<Map.Entry<K,V>, AHashMap<K,V>> {
         private AHashMap<K,V> result;
 
-        AbstractBuilder(AHashMap<K,V> empty) {
-            this.result = empty;
+        Builder() {
+            this.result = empty();
         }
 
-        public ACollectionBuilder<Entry<K, V>, AHashMap<K, V>> add (K key, V value) {
+        public Builder<K, V> add (K key, V value) {
             result = result.plus(key, value);
             return this;
         }
 
-        @Override public ACollectionBuilder<Entry<K, V>, AHashMap<K, V>> add (Entry<K, V> el) {
+        @Override public Builder<K, V> add (Entry<K, V> el) {
             result = result.plus(el.getKey(), el.getValue());
             return this;
         }
 
+        @Override public Builder<K, V> addAll (Iterator<? extends Entry<K, V>> it) {
+            while (it.hasNext()) add(it.next());
+            return this;
+        }
+
+        @Override public Builder<K, V> addAll (Iterable<? extends Entry<K, V>> coll) {
+            return addAll(coll.iterator());
+        }
+
+        @Override public Builder<K, V> addAll (Entry<K, V>[] coll) {
+            return addAll(Arrays.asList(coll).iterator());
+        }
+
         @Override public AHashMap<K, V> build () {
             return result;
-        }
-    }
-
-    public static class Builder<K,V> extends AbstractBuilder<K,V> {
-        public Builder () {
-            super(empty());
         }
     }
 

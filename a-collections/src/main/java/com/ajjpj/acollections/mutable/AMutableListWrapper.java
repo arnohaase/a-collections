@@ -4,6 +4,7 @@ import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.AbstractAIterator;
+import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
 import com.ajjpj.acollections.internal.AListIteratorWrapper;
@@ -47,7 +48,13 @@ public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrap
     public static <T> AMutableListWrapper<T> from (Iterable<T> iterable) {
         return AMutableListWrapper.<T>builder().addAll(iterable).build();
     }
+    public static <T> AMutableListWrapper<T> from (T[] that) {
+        return AMutableListWrapper.<T>builder().addAll(that).build();
+    }
 
+    public static <T> AMutableListWrapper<T> of() {
+        return empty();
+    }
     public static <T> AMutableListWrapper<T> of(T o1) {
         return AMutableListWrapper.<T>builder().add(o1).build();
     }
@@ -57,6 +64,21 @@ public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrap
     public static <T> AMutableListWrapper<T> of(T o1, T o2, T o3) {
         return AMutableListWrapper.<T>builder().add(o1).add(o2).add(o3).build();
     }
+    public static <T> AMutableListWrapper<T> of(T o1, T o2, T o3, T o4) {
+        return AMutableListWrapper.<T>builder().add(o1).add(o2).add(o3).add(o4).build();
+    }
+    @SafeVarargs public static <T> AMutableListWrapper<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
+        return AMutableListWrapper
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .add(o3)
+                .add(o4)
+                .add(o5)
+                .addAll(others)
+                .build();
+    }
+
 
     //TODO static factories
 

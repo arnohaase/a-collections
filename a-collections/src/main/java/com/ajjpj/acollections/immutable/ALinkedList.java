@@ -9,15 +9,15 @@ import com.ajjpj.acollections.internal.AListDefaults;
 import com.ajjpj.acollections.internal.AListSupport;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 
 public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, ALinkedList<T>>, Serializable {
+    public static <T> ALinkedList<T> from(T[] that) {
+        return fromIterator(Arrays.asList(that).iterator());
+    }
     public static <T> ALinkedList<T> from(Iterable<T> that) {
         return fromIterator(that.iterator());
     }
@@ -29,6 +29,9 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
                 .build();
     }
 
+    public static <T> ALinkedList<T> of() {
+        return empty();
+    }
     public static <T> ALinkedList<T> of(T o) {
         return ALinkedList.<T>nil().prepend(o);
     }
@@ -40,6 +43,17 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
     public static <T> ALinkedList<T> of(T o1, T o2, T o3, T o4) {
         return ALinkedList.<T>nil().prepend(o4).prepend(o3).prepend(o2).prepend(o1);
+    }
+    @SafeVarargs public static <T> ALinkedList<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
+        return ALinkedList
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .add(o3)
+                .add(o4)
+                .add(o5)
+                .addAll(others)
+                .build();
     }
 
 

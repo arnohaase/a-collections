@@ -5,6 +5,9 @@ todo
   * README.md
   * package.java
 
+* static factories
+  * unit tests
+
 * AbstractImmutableSet
 
 * add mutable JU code to benchmarks
@@ -15,11 +18,9 @@ todo
 * tuning of RedBlackTree
 
 * API
-  * static factories a la Java 10
   * ACollection: permutations, combinations
   * ACollection: flatten
   * AIterator methods: see decompiled TreeIterator
-  * toMap (?) (2x?)
 
   * partial order
 

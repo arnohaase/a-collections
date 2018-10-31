@@ -16,8 +16,6 @@ import java.util.function.Predicate;
 public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMutableArrayWrapper<T>>, Serializable {
     private T[] inner;
 
-    //TODO static factories
-
     public static <T> AMutableArrayWrapper<T> empty() {
         //noinspection unchecked
         return new AMutableArrayWrapper(new Object[0]);
@@ -27,7 +25,48 @@ public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMuta
         return new AMutableArrayWrapper<>(inner);
     }
 
-    AMutableArrayWrapper (T[] inner) {
+    public static <T> AMutableArrayWrapper<T> fromIterator (Iterator<T> it) {
+        return AMutableArrayWrapper.<T>builder().addAll(it).build();
+    }
+    public static <T> AMutableArrayWrapper<T> from (Iterable<T> iterable) {
+        return AMutableArrayWrapper.<T>builder().addAll(iterable).build();
+    }
+    public static <T> AMutableArrayWrapper<T> from (T[] that) {
+        return AMutableArrayWrapper.<T>builder().addAll(that).build();
+    }
+
+    public static <T> AMutableArrayWrapper<T> of() {
+        return empty();
+    }
+    public static <T> AMutableArrayWrapper<T> of(T o1) {
+        return AMutableArrayWrapper.<T>builder().add(o1).build();
+    }
+    public static <T> AMutableArrayWrapper<T> of(T o1, T o2) {
+        return AMutableArrayWrapper.<T>builder().add(o1).add(o2).build();
+    }
+    public static <T> AMutableArrayWrapper<T> of(T o1, T o2, T o3) {
+        return AMutableArrayWrapper.<T>builder().add(o1).add(o2).add(o3).build();
+    }
+    public static <T> AMutableArrayWrapper<T> of(T o1, T o2, T o3, T o4) {
+        return AMutableArrayWrapper.<T>builder().add(o1).add(o2).add(o3).add(o4).build();
+    }
+    @SafeVarargs public static <T> AMutableArrayWrapper<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
+        return AMutableArrayWrapper
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .add(o3)
+                .add(o4)
+                .add(o5)
+                .addAll(others)
+                .build();
+    }
+
+
+    //TODO static factories
+
+
+    private AMutableArrayWrapper (T[] inner) {
         this.inner = inner;
     }
 

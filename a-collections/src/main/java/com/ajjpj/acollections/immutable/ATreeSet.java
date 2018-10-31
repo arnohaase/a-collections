@@ -24,6 +24,9 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return new ATreeSet<>(null, comparator);
     }
 
+    public static <T extends Comparable<T>> ATreeSet<T> of() {
+        return empty();
+    }
     public static <T extends Comparable<T>> ATreeSet<T> of(T o) {
         return ATreeSet
                 .<T>builder()
@@ -54,7 +57,25 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
                 .add(o4)
                 .build();
     }
+    @SafeVarargs public static <T extends Comparable<T>> ATreeSet<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
+        return ATreeSet
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .add(o3)
+                .add(o4)
+                .add(o5)
+                .addAll(others)
+                .build();
+    }
 
+
+    public static <T extends Comparable<T>> ATreeSet<T> from(T[] that) {
+        return from(that, Comparator.naturalOrder());
+    }
+    public static <T> ATreeSet<T> from(T[] that, Comparator<T> comparator) {
+        return fromIterator(Arrays.asList(that).iterator(), comparator);
+    }
     public static <T extends Comparable<T>> ATreeSet<T> from(Iterable<T> iterable) {
         return from(iterable, Comparator.naturalOrder());
     }

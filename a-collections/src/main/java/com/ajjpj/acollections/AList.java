@@ -1,9 +1,10 @@
 package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.immutable.ARange;
+import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
 
-import java.security.SecureRandom;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -11,6 +12,39 @@ import java.util.function.Predicate;
 
 
 public interface AList<T> extends ACollection<T>, List<T> {
+    static <T> AList<T> wrap(List<T> l) {
+        return AMutableListWrapper.wrap(l);
+    }
+
+    static <T> AVector<T> from(Iterable<T> that) {
+        return AVector.from(that);
+    }
+    static <T> AVector<T> from(T[] that) {
+        return AVector.from(that);
+    }
+    static <T> AVector<T> fromIterator(Iterator<T> it) {
+        return AVector.fromIterator(it);
+    }
+    public static <T> AVector<T> of() {
+        return AVector.of();
+    }
+    static <T> AVector<T> of(T o) {
+        return AVector.of(o);
+    }
+    static <T> AVector<T> of(T o1, T o2) {
+        return AVector.of(o1, o2);
+    }
+    static <T> AVector<T> of(T o1, T o2, T o3) {
+        return AVector.of(o1, o2, o3);
+    }
+    static <T> AVector<T> of(T o1, T o2, T o3, T o4) {
+        return AVector.of(o1, o2, o3, o4);
+    }
+    @SafeVarargs static <T> AVector<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
+        return AVector.of(o1, o2, o3, o4, o5, others);
+    }
+
+
     @Override <U> ACollectionBuilder<U, ? extends AList<U>> newBuilder();
 
     AList<T> prepend(T o);

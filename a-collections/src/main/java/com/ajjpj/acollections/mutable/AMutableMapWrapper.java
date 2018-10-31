@@ -19,10 +19,34 @@ public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWr
     public static <K,V> AMutableMapWrapper<K,V> empty() {
         return new AMutableMapWrapper<>(new HashMap<>());
     }
-    //TODO static factories
 
+    public static <K,V> AMutableMapWrapper<K,V> from(Map<K,V> m) {
+        return from(m.entrySet());
+    }
+    public static <K,V> AMutableMapWrapper<K,V> from(Iterable<Map.Entry<K,V>> coll) {
+        return AMutableMapWrapper.<K,V>builder().addAll(coll).build();
+    }
     public static <K,V> AMutableMapWrapper<K,V> fromIterator(Iterator<Map.Entry<K,V>> it) {
         return AMutableMapWrapper.<K,V>builder().addAll(it).build();
+    }
+
+    public static <K,V> AMutableMapWrapper<K,V> of() {
+        return empty();
+    }
+    public static <K,V> AMutableMapWrapper<K,V> of(K k1, V v1) {
+        return AMutableMapWrapper.<K,V>builder().add(k1, v1).build();
+    }
+    public static <K,V> AMutableMapWrapper<K,V> of(K k1, V v1, K k2, V v2) {
+        return AMutableMapWrapper.<K,V>builder().add(k1, v1).add(k2, v2).build();
+    }
+    public static <K,V> AMutableMapWrapper<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return AMutableMapWrapper.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).build();
+    }
+    public static <K,V> AMutableMapWrapper<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+        return AMutableMapWrapper.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).add(k4,v4).build();
+    }
+    public static <K,V> AMutableMapWrapper<K,V> ofEntries(Iterable<Map.Entry<K,V>> coll) {
+        return from(coll);
     }
 
     public static <K,V> AMutableMapWrapper<K,V> wrap(Map<K,V> inner) {
@@ -230,14 +254,27 @@ public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWr
     public static class Builder<K,V> implements ACollectionBuilder<Map.Entry<K,V>, AMutableMapWrapper<K,V>> {
         private final Map<K,V> result = new HashMap<>();
 
-        public ACollectionBuilder<Entry<K, V>, AMutableMapWrapper<K, V>> add (K key, V value) {
+        public Builder<K, V> add (K key, V value) {
             result.put(key, value);
             return this;
         }
 
-        @Override public ACollectionBuilder<Entry<K, V>, AMutableMapWrapper<K, V>> add (Entry<K, V> el) {
+        @Override public Builder<K, V> add (Entry<K, V> el) {
             result.put(el.getKey(), el.getValue());
             return this;
+        }
+
+        @Override public Builder<K, V> addAll (Iterator<? extends Entry<K, V>> it) {
+            while(it.hasNext()) add(it.next());
+            return this;
+        }
+
+        @Override public Builder<K, V> addAll (Iterable<? extends Entry<K, V>> coll) {
+            return addAll(coll.iterator());
+        }
+
+        @Override public Builder<K, V> addAll (Entry<K, V>[] coll) {
+            return addAll(Arrays.asList(coll));
         }
 
         @Override public AMutableMapWrapper<K, V> build () {

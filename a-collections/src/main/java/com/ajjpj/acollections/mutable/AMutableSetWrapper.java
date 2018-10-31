@@ -1,6 +1,7 @@
 package com.ajjpj.acollections.mutable;
 
 import com.ajjpj.acollections.*;
+import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.ASetDefaults;
@@ -20,20 +21,48 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
         return new AMutableSetWrapper<>(inner);
     }
 
-    public static <T> AMutableSetWrapper<T> from(Iterator<T> it) {
+    public static <T> AMutableSetWrapper<T> fromIterator(Iterator<T> it) {
         return AMutableSetWrapper.<T>builder().addAll(it).build();
     }
-    public static <T> AMutableSetWrapper<T> from(Iterable<T> iterable) {
-        return AMutableSetWrapper.<T>builder().addAll(iterable).build();
+    public static <T> AMutableSetWrapper<T> from(T[] that) {
+        return fromIterator(Arrays.asList(that).iterator());
+    }
+    public static <T> AMutableSetWrapper<T> from(Iterable<T> that) {
+        return fromIterator(that.iterator());
     }
 
+    public static <T> AMutableSetWrapper<T> empty() {
+        return new AMutableSetWrapper<>(new HashSet<>());
+    }
+
+    public static <T> AMutableSetWrapper<T> of() {
+        return empty();
+    }
     public static <T> AMutableSetWrapper<T> of(T o1) {
         return AMutableSetWrapper.<T>builder().add(o1).build();
     }
+    public static <T> AMutableSetWrapper<T> of(T o1, T o2) {
+        return AMutableSetWrapper.<T>builder().add(o1).add(o2).build();
+    }
+    public static <T> AMutableSetWrapper<T> of(T o1, T o2, T o3) {
+        return AMutableSetWrapper.<T>builder().add(o1).add(o2).add(o3).build();
+    }
+    public static <T> AMutableSetWrapper<T> of(T o1, T o2, T o3, T o4) {
+        return AMutableSetWrapper.<T>builder().add(o1).add(o2).add(o3).add(o4).build();
+    }
+    @SafeVarargs public static <T> AMutableSetWrapper<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
+        return AMutableSetWrapper
+                .<T>builder()
+                .add(o1)
+                .add(o2)
+                .add(o3)
+                .add(o4)
+                .add(o5)
+                .addAll(others)
+                .build();
+    }
 
-    //TODO static factories, empty
-
-    public AMutableSetWrapper (Set<T> inner) {
+    private AMutableSetWrapper (Set<T> inner) {
         this.inner = inner;
     }
 
