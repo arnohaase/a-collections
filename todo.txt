@@ -5,6 +5,28 @@ todo
   * README.md
   * package.java
 
+  * ASet, ACollection, AList, AMap, ACollectionOps
+  * AIterator
+  * ACollectionBuilder
+
+  * AVector
+  * ALinkedList
+  * AHashSet
+  * ATreeSet
+  * ARange
+
+  * AOption
+    * distinguish from Optional
+    * null handling
+    * trasnformation etc.
+  * AUnchecker
+
+  * AHashMap
+  * ATreeMap
+
+  * mutable array, list, set, map
+
+
 * static factories
   * unit tests
 

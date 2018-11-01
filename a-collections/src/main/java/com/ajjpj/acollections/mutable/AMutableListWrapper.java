@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 
 /**
- * Always AEquality.EQUALS --> least surprise
+ * Always AEquality.EQUALS - least surprise
  *
  */
 public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrapper<T>>, Serializable {

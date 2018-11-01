@@ -57,7 +57,7 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
     }
     @Override default <K, V> AMap<K, V> toMap () {
         //noinspection unchecked
-        return AHashMap.fromEntries((Iterable<Map.Entry<K,V>>)this);
+        return AHashMap.from((Iterable<Map.Entry<K,V>>)this);
     }
 
     @Override default AMutableListWrapper<T> toMutableList () {
