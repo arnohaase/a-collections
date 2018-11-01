@@ -44,7 +44,7 @@ public interface ACollectionOps<T> {
      */
     default <K,V> ACollectionBuilder<Map.Entry<K,V>, ? extends ACollectionOps<Map.Entry<K,V>>> newEntryBuilder() {
         return newBuilder();
-    };
+    }
 
     /**
      * @return the number of elements in this collection.
@@ -308,7 +308,7 @@ public interface ACollectionOps<T> {
      * @param f the reduction function
      * @return the reduced value, or {@link AOption#none()} if this collection is empty
      */
-    default AOption<T> reduceOption(BiFunction<T,T,T> f) { //TODO junit ttest
+    default AOption<T> reduceOption(BiFunction<T,T,T> f) { //TODO junit test
         return reduceLeftOption(f);
     }
 

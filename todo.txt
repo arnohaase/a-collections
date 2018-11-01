@@ -3,6 +3,8 @@ todo
 * Documentation
   * JavaDoc
   * README.md
+    * introduction, persistent collections
+    * building etc.
   * package.java
 
   * ASet, ACollection, AList, AMap, ACollectionOps

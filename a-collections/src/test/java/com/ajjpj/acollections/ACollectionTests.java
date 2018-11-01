@@ -376,6 +376,23 @@ public interface ACollectionTests extends ACollectionOpsTests {
             }
         });
     }
+    @Test @Override default void testReduceOption() {
+        doTest(v -> {
+            assertEquals(AOption.none(), v.mkColl().reduceOption(this::sum));
+            assertEquals(AOption.some(1), v.mkColl(1).reduceOption(this::sum));
+            assertEquals(AOption.some(6), v.mkColl(1, 2, 3).reduceOption(this::sum));
+
+            if (v.iterationOrder123() != null) {
+                final List<Integer> trace = new ArrayList<>();
+                v.mkColl(1, 2, 3).reduceOption((a, b) -> {
+                    trace.add(a);
+                    trace.add(b);
+                    return 0;
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), 0, v.iterationOrder123().get(2)), trace);
+            }
+        });
+    }
     @Test @Override default void testReduceLeft() {
         doTest(v -> {
             assertThrows(NoSuchElementException.class, () -> v.mkColl().reduceLeft(this::sum));

@@ -305,6 +305,23 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
             }
         });
     }
+    @Test @Override default void testReduceOption () {
+        doTest(v -> {
+            assertEquals(AOption.none(), v.mkColl().reduceOption(this::sum));
+            assertEquals(AOption.some(entryOf(1)), v.mkColl(1).reduceOption(this::sum));
+            assertEquals(AOption.some(entryOf(6)), v.mkColl(1, 2, 3).reduceOption(this::sum));
+
+            if (v.iterationOrder123() != null) {
+                final List<Map.Entry<Integer,Integer>> trace = new ArrayList<>();
+                v.mkColl(1, 2, 3).reduceOption((a, b) -> {
+                    trace.add(a);
+                    trace.add(b);
+                    return entryOf(0);
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), entryOf(0), v.iterationOrder123().get(2)), trace);
+            }
+        });
+    }
     @Test @Override default void testReduceLeft () {
         doTest(v -> {
             assertThrows(NoSuchElementException.class, () -> v.mkColl().reduceLeft(this::sum));

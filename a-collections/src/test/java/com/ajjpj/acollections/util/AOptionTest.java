@@ -239,6 +239,10 @@ public class AOptionTest implements ACollectionOpsTests {
         assertThrows(NoSuchElementException.class, () -> none().reduce((a, b) -> null));
         assertEquals("a", some("a").reduce((a,b) -> null));
     }
+    @Override @Test public void testReduceOption () {
+        assertEquals(none(), none().reduceOption((a, b) -> null));
+        assertEquals(some("a"), some("a").reduceOption((a,b) -> null));
+    }
     @Override @Test public void testReduceLeft () {
         assertThrows(NoSuchElementException.class, () -> none().reduceLeft((a, b) -> null));
         assertEquals("a", some("a").reduceLeft((a,b) -> null));

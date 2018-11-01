@@ -38,6 +38,7 @@ public interface ACollectionOpsTests {
     void testContains();
 
     void testReduce();
+    void testReduceOption();
     void testReduceLeft();
     void testReduceLeftOption();
 
