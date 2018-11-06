@@ -1,5 +1,6 @@
 package com.ajjpj.acollections.util;
 
+import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AMap;
@@ -12,11 +13,55 @@ import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 
+/**
+ * An {@code AOption} is a wrapper type, containing either one actual element or none. It represents a value that is either present or not,
+ *  and it can be used instead of {@code null} in many cases.
+ *
+ * <p> AOption exists although Java's standard library contains {@link java.util.Optional}. The reason is that {@code Optional} has a very
+ *  limited API and is intended for a very limited range of use cases, whereas {@code AOption} is designed for wide-spread use (e.g. as
+ *  parameter type in APIs) and implements {@link ACollection}, giving it a rich API for working with its values.
+ *
+ * <p> The following examples illustrate some typical uses of {@code AOption} that go beyond simple wrapping / unwrapping:
+ * <ul>
+ *     <li> Fetch the corresponding 'Person' object for an optional 'person ID' using {@link #map(Function)}:
+ *         <p> {@code AOption<Long> personId = ...;}
+ *         <p> {@code AOption<Person> = personId.map(this::fetchPerson);}
+*      <li> Given a method returning the (optional) address for a person, resolve an optional person to their optional address using
+ *          {@link #flatMap(Function)}:
+ *         <p> {@code AOption<Address> addressFor(Person p) {...}}
+ *         <p> {@code AOption<Person> person = ...;}
+ *         <p> {@code AOption<Address> address = person.flatMap(this::addressFor);}
+ *     <li> Given an optional order, send a confirmation email if there actually is an order using {@link #forEach(Consumer)}:
+ *         <p> {@code AOption<Order> optOrder = ...;}
+ *         <p> {@code optOrder.forEach(this::sendConfirmationEmail);}
+ * </ul>
+ *
+ * Using {@link ACollection#flatMap(Function)} with a function returning an {@code AOption} is also useful to filter out those elements
+ *  for which there is no result. The following code for example transforms a list of persons into a list of their addresses, leaving out
+ *  those persons for which no address is available (using 'addressFor' from the above example):
+ * <p> {@code AList<Person> persons = ...;}
+ * <p> {@code AList<Address> addresses = persons.flatMap(this::addressFor);}
+ *
+ * <p><b>Null Handling:</b> AOption can hold {@code null} values and distinguishes between {@code some(null)} and {@code none()}. This
+ *  decision was made because it is a meaningful distinction in many situations:
+ * <ul>
+ *     <li> Some Map classes allow {@code null} values, in which case there is a difference between 'no entry for a given key' and 'a value
+ *           of {@code null} for that key'.
+ *     <li> In a JSON object, there is a formal difference between a key with value null and that key not being present
+ *     <li> ...
+ * </ul>
+ *
+ * We are aware that there some controversy as to whether an 'option' type should allow null values or not, and users of AOption may not
+ *  want to use it that way. The above examples however are the reason why AOption allows values of {@code null}.
+ *
+ * @param <T> the element type
+ */
 public abstract class AOption<T> extends AbstractImmutableCollection<T> implements ACollectionDefaults<T, AOption<T>>, Serializable {
 
     public abstract T get();
@@ -77,7 +122,7 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
     }
 
     @Override public abstract boolean contains(Object o);
-    
+
     @Override public boolean containsAll (Collection<?> c) {
         return ACollectionDefaults.super.containsAll(c);
     }

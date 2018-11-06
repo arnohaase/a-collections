@@ -1,5 +1,6 @@
 package com.ajjpj.acollections.internal;
 
+import com.ajjpj.acollections.ACollection;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.ACollectionOps;
 import com.ajjpj.acollections.AMap;
@@ -17,7 +18,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * This interface contains default implementations for some / most ACollection methods. It is typed in both element type and concrete
+ * This interface contains default implementations for many {@link ACollection} methods. It is typed in both element type and concrete
  *  collection type to allow concrete collection classes to implement it without overriding "just to get the return type right". This
  *  interface is separate from ACollection itself to keep that API clean and simple.
  *
@@ -145,6 +146,12 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
         return iterator().mkString(prefix, infix, suffix);
     }
 
+    /**
+     * returns true if and only if this collection contains all elements in the collection that is passed in as a parameter.
+     *
+     * @param c the collection whose element this collection is supposed to contain
+     * @return true if and only if this collections contains all of c's elements
+     */
     default boolean containsAll (Collection<?> c) {
         for(Object o: c)
             if (! contains(o)) return false;

@@ -47,16 +47,22 @@ public interface ACollectionOps<T> {
     }
 
     /**
+     * returns the number of elements in this collection.
+     *
      * @return the number of elements in this collection.
      */
     int size();
 
     /**
+     * returns true if and only if this collection has no elements.
+     *
      * @return true if and only if this collection has no elements
      */
     boolean isEmpty();
 
     /**
+     * returns true if and only if this collection has at least one element
+     *
      * @return true if and only if this collection has at least one element
      */
     default boolean nonEmpty() {
@@ -64,13 +70,15 @@ public interface ACollectionOps<T> {
     }
 
     /**
-     * @return the collection's first element, of {@code null} if it is empty. 'First' element means first element in iteration order,
+     * returns this collection's first element, or {@code null} if it is empty. 'First' element means first element in iteration order,
      *  which differs a lot for different kinds of collections:
-     *  <ul>
-     *      <li> For an {@link AList}, it is the element at index 0.
-     *      <li> For an {@link ASortedSet} or {@link ASortedMap}, it is the 'smallest' element (as defined by its sort order)
-     *      <li> For an {@link AHashSet} or {@link AHashMap}, it can be any element.
-     *  </ul>
+     * <ul>
+     *     <li> For an {@link AList}, it is the element at index 0.
+     *     <li> For an {@link ASortedSet} or {@link ASortedMap}, it is the 'smallest' element (as defined by its sort order)
+     *     <li> For an {@link AHashSet} or {@link AHashMap}, it can be any element.
+     * </ul>
+     *
+     * @return this collection's first element, of {@code null} if it is empty.
      */
     T head();
 
