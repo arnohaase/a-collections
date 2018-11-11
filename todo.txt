@@ -7,7 +7,7 @@ todo
     * building etc.
   * package.java
 
-  * ASet, ACollection, AList, AMap, ACollectionOps
+  * AList, AMap
   * AIterator
 
   * AVector
