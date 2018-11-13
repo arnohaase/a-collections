@@ -7,7 +7,7 @@ todo
     * building etc.
   * package.java
 
-  * AMap
+  * AMap, ASortedMap
   * AIterator
 
   * AVector
@@ -27,9 +27,15 @@ todo
 
 * ASet#plusAll
 
-* static factories
-  * unit tests
+* static factories for ASortedSet
+
+* unit tests
+  * static factories
   * AList.reduceRightOption
+  * ASortedSet.countInRange,
+  * ASortedSet.slice
+  * ATreeSet methods in general
+
 
 * AbstractImmutableSet
 

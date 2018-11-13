@@ -9,7 +9,7 @@ import java.util.Set;
 
 
 /**
- * This interface represents a {@link java.util.Set} with additional API (mostly inherited from {@link ACollection}. {@code ASet}
+ * This interface represents a {@link java.util.Set} with additional API (mostly inherited from {@link ACollection}). {@code ASet}
  *  implementations can be either mutable or immutable - see {@link ACollection} for details.
  *
  * <p> This interface defines methods {@link #plus(Object)} and {@link #minus(Object)} for adding / removing elements to an immutable
