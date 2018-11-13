@@ -17,15 +17,15 @@ import java.util.Set;
  *  leaving the original unmodified:
  *
  * <p>{@code ASet<Integer> s0 = ASet.of(1, 2, 3);}
- * <p>{@code s1 = s0.plus(5);}
- * <p>{@code s2 = s1.minus(2);}
+ * <p>{@code ASet<Integer> s1 = s0.plus(5);}
+ * <p>{@code ASet<Integer> s2 = s1.minus(2);}
  * <p>{@code System.out.println(s0); // 1, 2, 3 }
  * <p>{@code System.out.println(s1); // 1, 2, 3, 5 }
  * <p>{@code System.out.println(s2); // 1, 3, 5 }
  *
  * <p> These calls can of course be chained:
 
- * <p>{@code s3 = s2.plus(8).plus(9).minus(3); }
+ * <p>{@code ASet<Integer> s3 = s2.plus(8).plus(9).minus(3); }
  * <p>{@code System.out.println(s3); // 1, 5, 8, 9 }
  *
  * <p> This interface has static factory methods (Java 9 style) for convenience creating instances. They create immutable {@link AHashSet}
@@ -246,7 +246,7 @@ public interface ASet<T> extends ACollection<T>, Set<T> {
 
     /**
      * Returns an iterator with all of this set's subsets. The number of subsets can be huge compared to the
-     *  number of elements in the set (e.g. > 1.000.000 subsets for a set of 20 elements), which is the reason
+     *  number of elements in the set (e.g. &gt; 1.000.000 subsets for a set of 20 elements), which is the reason
      *  the method returns an iterator rather than a collection.
      *
      * <p> The method loops of subset length, starting with 0 and ending with {@link #size()}, iterating
@@ -262,7 +262,7 @@ public interface ASet<T> extends ACollection<T>, Set<T> {
 
     /**
      * Returns an iterator with all of this set's subsets with a given number of elements. The number of
-     *  subsets can be huge compared to the number of elements in the set (e.g. > 184.000 subsets of length 10
+     *  subsets can be huge compared to the number of elements in the set (e.g. &gt; 184.000 subsets of length 10
      *  for a set of 20 elements), which is the reason the method returns an iterator rather than a collection.
      *
      * <p> Going from one subset to the next (i.e. calling {@link AIterator#next()} on the result) is cheap,

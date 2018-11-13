@@ -7,7 +7,7 @@ todo
     * building etc.
   * package.java
 
-  * AList, AMap
+  * AMap
   * AIterator
 
   * AVector
@@ -25,8 +25,11 @@ todo
 
   * Link auf github in jede (wichtige) Datei
 
+* ASet#plusAll
+
 * static factories
   * unit tests
+  * AList.reduceRightOption
 
 * AbstractImmutableSet
 

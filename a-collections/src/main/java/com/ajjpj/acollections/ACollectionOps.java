@@ -30,7 +30,7 @@ public interface ACollectionOps<T> {
     AIterator<T> iterator ();
 
     /**
-     * This returns a builder for a collection of the same type (and with the same configuration, e.g. comparator in case of sorted
+     * Returns a builder for a collection of the same type (and with the same configuration, e.g. comparator in case of sorted
      *  collections).
      *
      * <p> This is public API, but it was added largely for internal use: Having this method allows generically implementing transformation
