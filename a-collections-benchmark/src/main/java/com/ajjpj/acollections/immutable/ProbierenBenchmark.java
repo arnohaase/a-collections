@@ -42,7 +42,7 @@ public class ProbierenBenchmark {
         RedBlackTree.Tree<Integer,Integer> root = null;
 
         for(int i=0; i<numIter; i++) {
-            final int key = rand.nextInt(size);
+            final int key = 10; //rand.nextInt(size);
             root = RedBlackTree.update(root, key, key, true, ordering);
         }
         bh.consume(root);
@@ -56,7 +56,7 @@ public class ProbierenBenchmark {
         scala.collection.immutable.RedBlackTree.Tree<Integer,Integer> root = null;
 
         for(int i=0; i<numIter; i++) {
-            final int key = rand.nextInt(size);
+            final int key = 10; //rand.nextInt(size);
             root = scala.collection.immutable.RedBlackTree.update(root, key, key, true, ordering);
         }
         bh.consume(root);
