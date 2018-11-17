@@ -13,8 +13,8 @@ import java.util.Set;
  *  implementations can be either mutable or immutable - see {@link ACollection} for details.
  *
  * <p> This interface defines methods {@link #plus(Object)} and {@link #minus(Object)} for adding / removing elements to an immutable
- *  ASet. (They work on mutable instances as well, but they are not necessary there.) These methods return new sets with the new elements,
- *  leaving the original unmodified:
+ *  ASet. (They work on mutable instances as well, but they are not necessary there.) For immutable collections, these methods return new
+ *  sets with the new elements, leaving the original unmodified:
  *
  * <p>{@code ASet<Integer> s0 = ASet.of(1, 2, 3);}
  * <p>{@code ASet<Integer> s1 = s0.plus(5);}
