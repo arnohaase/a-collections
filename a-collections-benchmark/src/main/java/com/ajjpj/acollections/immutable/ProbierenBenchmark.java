@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit;
 @Fork(2)
 public class ProbierenBenchmark {
     private static final int size = 100_000;
-    private static final int numIter = 10_000_000;
+    private static final int numIter = 2;
 
-    @Benchmark
+//    @Benchmark
     public void testProbieren(Blackhole bh) {
         final Comparator<Integer> ordering = Comparator.naturalOrder();
         RedBlackTree.Tree<Integer,Integer> root = null;
