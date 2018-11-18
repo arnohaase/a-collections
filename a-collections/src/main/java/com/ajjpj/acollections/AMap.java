@@ -205,10 +205,49 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
      */
     AOption<V> getOptional(K key);
 
+    /**
+     * Adds an entry to this map, replacing an existing entry if it exists with an equal key, returning the modified map.
+     *
+     * <p> For a mutable AMap, this is equivalent to calling {@link java.util.Map#put(Object, Object)}; for an immutable AMap, the method
+     *  returns a new instance with the new entry.
+     *
+     * @param key   the key
+     * @param value the value
+     * @return the map with the new entry
+     */
     AMap<K,V> plus(K key, V value);
+
+    /**
+     * Adds an entry to this map, replacing an existing entry if it exists with an equal key, returning the modified map.
+     *
+     * <p> For a mutable AMap, this is equivalent to calling {@link java.util.Map#put(Object, Object)}; for an immutable AMap, the method
+     *  returns a new instance with the new entry.
+     *
+     * @param entry the new key/value pair
+     * @return the map with the new entry
+     */
     AMap<K,V> plus(Map.Entry<K,V> entry);
+
+    /**
+     * Removes an entry from this map (if there is an entry for a given key), returning the modified map.
+     *
+     * <p> For a mutable AMap, this is equivalent to calling {@link java.util.Map#remove(Object)}; for an immutable AMap, the method
+     *  returns a new instance with the new entry.
+     *
+     * @param key   the key for which the entry is removed if it exists
+     * @return the (potentially) modified map
+     */
     AMap<K,V> minus(K key);
 
+    /**
+     * Adds entries to this map, replacing existing entries if they exists, returning the modified map.
+     *
+     * <p> For a mutable AMap, this is equivalent to calling {@link java.util.Map#putAll(Map)}; for an immutable AMap, the method
+     *  returns a new instance with the new entry.
+     *
+     * @param other the map whose entries are added to this map
+     * @return the map with the new entries
+     */
     default <K1 extends K, V1 extends V> AMap<K,V> plusAll (Map<K1, V1> other) {
         AMap<K,V> result = this;
         for (Map.Entry<K1,V1> e: other.entrySet()) {
@@ -220,16 +259,100 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
     @Override AMap<K, V> filter (Predicate<Entry<K, V>> f);
     @Override AMap<K, V> filterNot (Predicate<Entry<K, V>> f);
 
+    /**
+     * Filters this map by testing its keys against a predicate. Entries are retained if and only if their key matches the predicate. This
+     *  is a simpler alternative to {@link #filter(Predicate)} for predicates that depend only on an entry's key and not on its value.
+     *
+     * <p> This method creates and returns a new map.
+     *
+     * @param f the predicate to test against
+     * @return the filtered map
+     * @see #filter(Predicate)
+     */
     AMap<K,V> filterKeys(Predicate<K> f);
+
+    /**
+     * Creates a new AMap, transforming the value associated with each key. This is a simpler alternative to {@link #map} for cases where
+     *  only the value is transformed. More specifically, this method is equivalent to calling
+     * {@code this.map(e -> new AbstractMap.SimpleEntry(e.getKey(), f.apply(e.getValue()))}.
+     *
+     * @param f   the transformation method for each entry's value
+     * @param <U> the new values' type
+     * @return the transformed AMap
+     * @see #map(Function)
+     */
     <U> AMap<K,U> mapValues(Function<V,U> f);
 
+    /**
+     * Returns a new AMap containing the same entries as this AMap, but which returns a default value when {@link #get(Object)} or
+     *  {@link #getOptional(Object)} are called for a key it does not contain.
+     *
+     * <p> The method does not modify the map's contents, and calling {@link #get(Object)} for a non-existing key does not add the default
+     *  value to the map.
+     *
+     * <p> {@code AMap<Integer,Integer> m = AMap.of(1, 11);}
+     * <p> {@code AMap<Integer,Integer> wr = m.withDefaultValue(99);}
+     * <p> {@code m.get(2); // null}
+     * <p> {@code m.getOptional(2); // AOption.none()}
+     * <p> {@code wr.get(2); // 99}
+     * <p> {@code wr.getOptional(2); // AOption.some(99)}
+     * <p> {@code wr.containsKey(2); // still false}
+     * <p> {@code wr = wr.plus(3, 17);}
+     * <p> {@code wr.get(5); // 99: the default value still applies after the update}
+     *
+     * <p> This method is useful e.g. for aggregating or counting data for a given key. The following snippet counts occurrences of words
+     *  in a text:
+     *
+     * <p> {@code AMap<String,Integer> wordCount = AMutableMapWrapper.<String,Integer>empty().withDefaultValue(0);}
+     * <p> {@code String text = ...;}
+     * <p> {@code for (String word: text.split(" ")) wordCount.put(word, wordCount.get(word)+1); }
+     *
+     * @param defaultValue the value that should be returned if the map does not contain a key
+     * @return the wrapped AMap returning the default value
+     */
     AMap<K,V> withDefaultValue(V defaultValue);
+
+    /**
+     * Returns a new AMap containing the same entries as this AMap, but which calculates and returns a default value based on the key
+     *  when {@link #get(Object)} or {@link #getOptional(Object)} are called for a key it does not contain.
+     *
+     * <p> The method does not modify the map's contents, and calling {@link #get(Object)} for a non-existing key does not add the default
+     *  value to the map. The map does not "remember" the provided default for a key - it recalculates the default value for each call to
+     *  {@link #get(Object)}.
+     *
+     * <p> {@code AMap<Integer,Integer> m = AMap.of(1, 5).withDerivedDefaultValue(n -> n*11);}
+     * <p> {@code m.get(2); // 22}
+     * <p> {@code m.getOptional(2); // AOption.some(22)}
+     * <p> {@code m.containsKey(2); // still false}
+     * <p> {@code m = m.plus(2, 9);}
+     * <p> {@code m.get(2); // 9}
+     * <p> {@code m.containsKey(2); // true}
+     * <p> {@code m.get(3); // 33: the default value still applies after the update}
+     *
+     * @param defaultProvider the function called to calculate the value for unknown keys
+     * @return the wrapped AMap returning the default values
+     */
+
     AMap<K,V> withDerivedDefaultValue(Function<K,V> defaultProvider);
 
     ASet<K> keySet();
     ACollection<V> values();
     ASet<Map.Entry<K,V>> entrySet();
 
+    /**
+     * Returns an {@link AIterator} over this map's keys.
+     *
+     * @return an iterator over this map's keys
+     */
     AIterator<K> keysIterator();
+
+    /**
+     * Returns an {@link AIterator} over this map's values. Iteration order is the same as for {@link #iterator()}; more specifically
+     *  calling this method is equivalent to (though potentially more efficient than) calling {@code this.iterator().map(e -> e.getValue())}.
+     *  If this map contains the same value for different keys, the iterator returned by this method will contain the same value several
+     *  times.
+     *
+     * @return an iterator over this map's values
+     */
     AIterator<V> valuesIterator();
 }
