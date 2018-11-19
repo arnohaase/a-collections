@@ -7,8 +7,6 @@ todo
     * building etc.
   * package.java
 
-  * AIterator
-
   * AVector
   * ALinkedList
   * AHashSet
@@ -28,6 +26,10 @@ todo
 * ASortedMap should implement NavigableMap
 * ASortedMap: upper bound for iterator methods
 
+* AIterator: fromStream, toStream
+* AIterator.flatMap
+* stream support: collectors for ACollection instances
+
 * static factories for ASortedSet
 
 * unit tests
@@ -36,6 +38,7 @@ todo
   * ASortedSet.countInRange,
   * ASortedSet.slice
   * ATreeSet methods in general
+  * AIterator.toMutableSet
 
 
 * AbstractImmutableSet
