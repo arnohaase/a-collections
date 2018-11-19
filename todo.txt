@@ -7,7 +7,6 @@ todo
     * building etc.
   * package.java
 
-  * AMap, ASortedMap
   * AIterator
 
   * AVector
@@ -26,6 +25,8 @@ todo
   * Link auf github in jede (wichtige) Datei
 
 * ASet#plusAll
+* ASortedMap should implement NavigableMap
+* ASortedMap: upper bound for iterator methods
 
 * static factories for ASortedSet
 

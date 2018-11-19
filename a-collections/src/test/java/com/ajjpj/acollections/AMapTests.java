@@ -166,7 +166,7 @@ public interface AMapTests extends AEntryCollectionOpsTests {
         });
     }
 
-    @Test default void testUpdated() {
+    @Test default void testPlus() {
         doTest(v -> {
             AMap<Integer,Integer> m = v.mkMap();
 
@@ -182,7 +182,23 @@ public interface AMapTests extends AEntryCollectionOpsTests {
             assertEquals(3, m.size());
         });
     }
-    @Test default void testRemoved() {
+    @Test default void testPlusEntry() {
+        doTest(v -> {
+            AMap<Integer,Integer> m = v.mkMap();
+
+            m = m.plus(new AbstractMap.SimpleEntry<>(1, 3));
+            assertEquals(v.mkMap(1), m);
+            m = m.plus(new AbstractMap.SimpleEntry<>(9, 19));
+            assertEquals(v.mkMap(1,9), m);
+            m = m.plus(new AbstractMap.SimpleEntry<>(2, 5));
+            assertEquals(v.mkMap(2, 9, 1), m);
+
+            m = m.plus(new AbstractMap.SimpleEntry<>(2, 99));
+            assertEquals(99, m.get(2).intValue());
+            assertEquals(3, m.size());
+        });
+    }
+    @Test default void testMinus() {
         doTest(v -> {
             assertTrue(v.mkMap().minus(1).isEmpty());
 
@@ -193,7 +209,7 @@ public interface AMapTests extends AEntryCollectionOpsTests {
         });
     }
 
-    @Test default void testWithAll() {
+    @Test default void testPlusAll() {
         doTest(v -> {
             assertTrue(v.mkMap().plusAll(v.mkMap()).isEmpty());
             assertEquals(v.mkMap(1), v.mkMap().plusAll(v.mkMap(1)));
