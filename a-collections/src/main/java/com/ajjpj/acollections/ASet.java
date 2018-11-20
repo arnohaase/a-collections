@@ -16,19 +16,22 @@ import java.util.Set;
  *  ASet. (They work on mutable instances as well, but they are not necessary there.) For immutable collections, these methods return new
  *  sets with the new elements, leaving the original unmodified:
  *
- * <p>{@code ASet<Integer> s0 = ASet.of(1, 2, 3);}
- * <p>{@code ASet<Integer> s1 = s0.plus(5);}
- * <p>{@code ASet<Integer> s2 = s1.minus(2);}
- * <p>{@code System.out.println(s0); // 1, 2, 3 }
- * <p>{@code System.out.println(s1); // 1, 2, 3, 5 }
- * <p>{@code System.out.println(s2); // 1, 3, 5 }
+ * <pre>
+ * {@code ASet<Integer> s0 = ASet.of(1, 2, 3);}
+ * {@code ASet<Integer> s1 = s0.plus(5);}
+ * {@code ASet<Integer> s2 = s1.minus(2);}
+ * {@code System.out.println(s0); // 1, 2, 3 }
+ * {@code System.out.println(s1); // 1, 2, 3, 5 }
+ * {@code System.out.println(s2); // 1, 3, 5 }
+ * </pre>
  *
  * <p> These calls can of course be chained:
-
- * <p>{@code ASet<Integer> s3 = s2.plus(8).plus(9).minus(3); }
- * <p>{@code System.out.println(s3); // 1, 5, 8, 9 }
  *
- * <p> This interface has static factory methods (Java 9 style) for convenience creating instances. They create immutable {@link AHashSet}
+ * <pre>
+ * {@code ASet<Integer> s3 = s2.plus(8).plus(9).minus(3); }
+ * {@code System.out.println(s3); // 1, 5, 8, 9 }
+ * </pre>
+ * This interface has static factory methods (Java 9 style) for convenience creating instances. They create immutable {@link AHashSet}
  *  instances.
  *
  * @param <T> The ASet's element type

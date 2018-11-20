@@ -4,7 +4,7 @@ import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.AbstractAIterator;
-import com.ajjpj.acollections.immutable.AHashSet;
+import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.AListDefaults;
 import com.ajjpj.acollections.internal.AListIteratorWrapper;
@@ -20,12 +20,29 @@ import java.util.stream.Stream;
 
 
 /**
- * Always AEquality.EQUALS - least surprise
+ * This class wraps any {@link java.util.List} as an {@link AList}. All modifying operations - both those from {@link java.util.List} and
+ *  those added by {@link AList} - write through to the wrapped list.
  *
+ * <p> This is a simple way to start using a-collections: Wrap an existing {@link java.util.List} to add a rich API while maintaining
+ *  100% backwards compatibility: operations on the wrapper are write-through, i.e. all changes are applied to the underlying {@code List}.
+ *  This class makes it simple to use {@link AList}'s rich API on any list in an ad-hoc fashion.
+ *
+ * <p> The wrapped list with all modifications applied to it can always be retrieved by calling {@link #getInner()}.
+ *
+ * @param <T> the list's element type.
  */
 public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrapper<T>>, Serializable {
     private List<T> inner;
 
+    /**
+     * This factory method wraps an arbitrary (typically mutable) {@link java.util.List} in an {@link AMutableListWrapper}.
+     *  This is a simple way to start using a-collections: Wrap an existing {@code List} to add a rich API while maintaining 100% backwards
+     *  compatibility: operations on the wrapper are write-through, i.e. all changes are applied to the underlying {@code List}.
+     *
+     * @param inner the List being wrapped
+     * @param <T> the List's element type
+     * @return the wrapped List
+     */
     public static <T> AMutableListWrapper<T> wrap(List<T> inner) {
         return new AMutableListWrapper<>(inner);
     }
@@ -34,39 +51,149 @@ public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrap
         this.inner = inner;
     }
 
-    public List<T> inner() {
+    /**
+     * Returns the wrapped list to which all modifications were applied.
+     *
+     * @return the wrapped list
+     */
+    public List<T> getInner() {
         return inner;
     }
 
+    /**
+     * Convenience method for creating an empty list. For creating a list with known elements, calling one of the {@code of}
+     *  factory methods is a more concise alternative.
+     *
+     * @param <T> the new list's element type
+     * @return an empty list
+     */
     public static <T> AMutableListWrapper<T> empty() {
         return new AMutableListWrapper<>(new ArrayList<>());
     }
 
+    /**
+     * Creates a new list based on an iterator's elements.
+     *
+     * @param it the iterator from which the new list is initialized
+     * @param <T> the list's element type
+     * @return the new list
+     */
     public static <T> AMutableListWrapper<T> fromIterator (Iterator<T> it) {
         return AMutableListWrapper.<T>builder().addAll(it).build();
     }
-    public static <T> AMutableListWrapper<T> from (Iterable<T> iterable) {
-        return AMutableListWrapper.<T>builder().addAll(iterable).build();
+
+    /**
+     * Creates a new list based on an Iterable's elements.
+     *
+     * @param that the Iterable from which the new list is initialized
+     * @param <T> the list's element type
+     * @return the new list
+     */
+    public static <T> AMutableListWrapper<T> from (Iterable<T> that) {
+        return AMutableListWrapper.<T>builder().addAll(that).build();
     }
+
+    /**
+     * Creates a new list based on an array's elements.
+     *
+     * @param that the array from which the new list is initialized
+     * @param <T> the list's element type
+     * @return the new list
+     */
     public static <T> AMutableListWrapper<T> from (T[] that) {
         return AMutableListWrapper.<T>builder().addAll(that).build();
     }
 
+    /**
+     * This is an alias for {@link #empty()} for consistency with Java 9 conventions - it creates an empty list.
+     *
+     * <p> NB: Other than Java's 'of' methods in collection interfaces, this method creates a <em>mutable</em> list instance - that is the
+     *  whole point of class {@link AMutableListWrapper}. If you want immutable lists, use {@link AList#of()}.
+     *
+     * @param <T> the new list's element type
+     * @return an empty list
+     */
     public static <T> AMutableListWrapper<T> of() {
         return empty();
     }
-    public static <T> AMutableListWrapper<T> of(T o1) {
-        return AMutableListWrapper.<T>builder().add(o1).build();
+
+    /**
+     * Convenience factory method creating a list with exactly one element.
+     *
+     * <p> NB: Other than Java's 'of' methods in collection interfaces, this method creates a <em>mutable</em> list instance - that is the
+     *  whole point of class {@link AMutableListWrapper}. If you want immutable lists, use {@link AList#of()}.
+     *
+     * @param o the single element for the new list
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new list
+     */
+    public static <T> AMutableListWrapper<T> of(T o) {
+        return AMutableListWrapper.<T>builder().add(o).build();
     }
+
+    /**
+     * Convenience factory method creating a list with two elements.
+     *
+     * <p> NB: Other than Java's 'of' methods in collection interfaces, this method creates a <em>mutable</em> list instance - that is the
+     *  whole point of class {@link AMutableListWrapper}. If you want immutable lists, use {@link AList#of()}.
+     *
+     * @param o1 the first element for the new list
+     * @param o2 the second element for the new list
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new list
+     */
     public static <T> AMutableListWrapper<T> of(T o1, T o2) {
         return AMutableListWrapper.<T>builder().add(o1).add(o2).build();
     }
+
+    /**
+     * Convenience factory method creating a list with three elements.
+     *
+     * <p> NB: Other than Java's 'of' methods in collection interfaces, this method creates a <em>mutable</em> list instance - that is the
+     *  whole point of class {@link AMutableListWrapper}. If you want immutable lists, use {@link AList#of()}.
+     *
+     * @param o1 the first element for the new list
+     * @param o2 the second element for the new list
+     * @param o3 the third element for the new list
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new list
+     */
     public static <T> AMutableListWrapper<T> of(T o1, T o2, T o3) {
         return AMutableListWrapper.<T>builder().add(o1).add(o2).add(o3).build();
     }
+
+    /**
+     * Convenience factory method creating a list with four elements.
+     *
+     * <p> NB: Other than Java's 'of' methods in collection interfaces, this method creates a <em>mutable</em> list instance - that is the
+     *  whole point of class {@link AMutableListWrapper}. If you want immutable lists, use {@link AList#of()}.
+     *
+     * @param o1 the first element for the new list
+     * @param o2 the second element for the new list
+     * @param o3 the third element for the new list
+     * @param o4 the fourth element for the new list
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new list
+     */
     public static <T> AMutableListWrapper<T> of(T o1, T o2, T o3, T o4) {
         return AMutableListWrapper.<T>builder().add(o1).add(o2).add(o3).add(o4).build();
     }
+
+    /**
+     * Convenience factory method creating a list with more than four elements.
+     *
+     * <p> NB: Other than Java's 'of' methods in collection interfaces, this method creates a <em>mutable</em> list instance - that is the
+     *  whole point of class {@link AMutableListWrapper}. If you want immutable lists, use {@link AList#of()}.
+     *
+     * @param o1 the first element for the new list
+     * @param o2 the second element for the new list
+     * @param o3 the third element for the new list
+     * @param o4 the fourth element for the new list
+     * @param o5 the fifth element for the new list
+     * @param others the (variable number of) additional elements
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new list
+     */
     @SafeVarargs public static <T> AMutableListWrapper<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
         return AMutableListWrapper
                 .<T>builder()
@@ -80,18 +207,12 @@ public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrap
     }
 
 
-    //TODO static factories
-
     @Override public <U> ACollectionBuilder<U, AMutableListWrapper<U>> newBuilder () {
         return builder();
     }
 
     @Override public AMutableListWrapper<T> toMutableList () {
         return this;
-    }
-
-    public List<T> getInner() {
-        return inner;
     }
 
     @Override
@@ -156,7 +277,7 @@ public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrap
             inner = AMutableListWrapper.<T>builder()
                     .addAll(inner.listIterator(size()-n))
                     .build()
-                    .inner();
+                    .getInner();
         }
         return this;
     }
