@@ -19,6 +19,10 @@ import java.util.function.Predicate;
  *  stack-like access patterns. If you need another access pattern, for example, random access or FIFO, {@link AVector} is probably the
  *  better alternative.
  *
+ * <p> Since this is an immutable class, it does not support modifying methods from {@link java.util.List}: Those methods return
+ *  {@code boolean} or a previous element, but in order to "modify" an immutable collection, they would need to return the new collection
+ *  instance.
+ *
  * <p> Performance Considerations:
  * <ul>
  *     <li> Time: ALinkedList has O(1) prepend and head/tail access. Most other operations are O(n) on the number of elements in the list.

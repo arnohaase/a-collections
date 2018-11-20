@@ -17,6 +17,13 @@ import java.util.function.Predicate;
  *  a good balance between fast random selections and fast random functional updates and is
  *  the default {@link AList} implementation.
  *
+ * <p> Since this is an immutable class, it does not support modifying methods from {@link java.util.List}: Those methods return
+ *  {@code boolean} or a previous element, but in order to "modify" an immutable collection, they would need to return the new collection
+ *  instance.
+ *
+ * <p> So instances of this class rely on methods like {@link #prepend(Object)}, {@link #append(Object)}, {@link #tail()}, {@link #init()}
+ *  or {@link #updated(int, Object)} for adding / removing / modifying entries. For examples, see {@link AList}.
+ *
  * <p> Implementation note: This class is ported from Scala's standard library 'Vector'. It is backed by a little
  *  endian bit-mapped vector trie with a branching factor of 32.  Locality is very good, but not
  *  contiguous, which is good for very large sequences.

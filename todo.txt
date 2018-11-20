@@ -6,13 +6,11 @@ todo
     * building etc.
   * package.java
 
-  * AHashSet
-  * ATreeSet
+  * AHashMap
+  * ATreeMap
 
   * AUnchecker
 
-  * AHashMap
-  * ATreeMap
 
   * mutable array, list, set, map
 

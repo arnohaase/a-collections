@@ -17,22 +17,82 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public abstract class AHashSet<T> extends AbstractImmutableCollection<T> implements ACollectionDefaults<T, AHashSet<T>>, ASetDefaults<T, AHashSet<T>>, Serializable {
-    private final CompactHashMap<SetEntryWithEquality<T>> compactHashMap;
+/**
+ * This class implements immutable sets using a hash trie. Elements must implement a valid {@link Object#hashCode()} method; in particular,
+ *  the hash code must be <em>stable</em> and <em>consistent with equality</em>.
+ *
+ * <p> Since this is an immutable class, it does not support modifying methods from {@link java.util.Set}: Those methods return
+ *  {@code boolean} or a previous element, but in order to "modify" an immutable collection, they would need to return the new collection
+ *  instance.
+ *
+ * <p> So instances of this class rely on methods like {@link #plus(Object)} or {@link #minus(Object)} for adding / removing
+ *  elements. These methods return new sets with the new elements, leaving the original unmodified:
+ *
+ * <p>{@code ASet<Integer> s0 = AHashSet.of(1, 2, 3);}
+ * <p>{@code ASet<Integer> s1 = s0.plus(5);}
+ * <p>{@code ASet<Integer> s2 = s1.minus(2);}
+ * <p>{@code System.out.println(s0); // 1, 2, 3 }
+ * <p>{@code System.out.println(s1); // 1, 2, 3, 5 }
+ * <p>{@code System.out.println(s2); // 1, 3, 5 }
+ *
+ * <p> These calls can of course be chained:
 
+ * <p>{@code ASet<Integer> s3 = s2.plus(8).plus(9).minus(3); }
+ * <p>{@code System.out.println(s3); // 1, 5, 8, 9 }
+ *
+ * <p> This class has static factory methods (Java 9 style) for convenience creating instances.
+ *
+ * <p> Implementation note: This is a port of Scala's standard library {@code HashMap}. It uses some optimization ideas from
+ *      the <a href="https://github.com/andrewoma/dexx">Dexx collections library</a>.
+ *
+ * @param <T> the set's element type
+ */
+public class AHashSet<T> extends AbstractImmutableCollection<T> implements ACollectionDefaults<T, AHashSet<T>>, ASetDefaults<T, AHashSet<T>>, Serializable {
+    private final CompactHashMap<EqualsSetEntry<T>> compactHashMap;
+
+    /**
+     * Convenience method for creating an empty {@link AHashSet}. This can later be modified by calling {@link #plus(Object)} or
+     * {@link #minus(Object)}. For creating a set with known elements, calling one of the {@code of} factory methods is usually more concise.
+     *
+     * @param <T> the new set's element type
+     * @return an empty {@link AHashSet}
+     */
     public static<T> AHashSet<T> empty() {
-        return new EqualsHashSet<>(CompactHashMap.empty());
+        return new AHashSet<>(CompactHashMap.empty());
     }
 
+    /**
+     * This is an alias for {@link #empty()} for consistency with Java 9 conventions - it creates an empty {@link AHashSet}.
+     *
+     * @param <T> the new set's element type
+     * @return an empty {@link AHashSet}
+     */
     public static <T> AHashSet<T> of() {
         return empty();
     }
+
+    /**
+     * Convenience factory method creating an {@link AHashSet} with exactly one element.
+     *
+     * @param o the single element for the new set
+     * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link AHashSet}
+     */
     public static <T> AHashSet<T> of(T o) {
         return AHashSet
                 .<T>builder()
                 .add(o)
                 .build();
     }
+
+    /**
+     * Convenience factory method creating an {@link AHashSet} with two elements.
+     *
+     * @param o1 the first element for the new set
+     * @param o2 the second element for the new set
+     * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link AHashSet}
+     */
     public static <T> AHashSet<T> of(T o1, T o2) {
         return AHashSet
                 .<T>builder()
@@ -40,6 +100,16 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
                 .add(o2)
                 .build();
     }
+
+    /**
+     * Convenience factory method creating an {@link AHashSet} with three elements.
+     *
+     * @param o1 the first element for the new set
+     * @param o2 the second element for the new set
+     * @param o3 the third element for the new set
+     * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link AHashSet}
+     */
     public static <T> AHashSet<T> of(T o1, T o2, T o3) {
         return AHashSet
                 .<T>builder()
@@ -48,6 +118,17 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
                 .add(o3)
                 .build();
     }
+
+    /**
+     * Convenience factory method creating an {@link AHashSet} with four elements.
+     *
+     * @param o1 the first element for the new set
+     * @param o2 the second element for the new set
+     * @param o3 the third element for the new set
+     * @param o4 the fourth element for the new set
+     * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link AHashSet}
+     */
     public static <T> AHashSet<T> of(T o1, T o2, T o3, T o4) {
         return AHashSet
                 .<T>builder()
@@ -57,6 +138,19 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
                 .add(o4)
                 .build();
     }
+
+    /**
+     * Convenience factory method creating an {@link AHashSet} with more than four elements.
+     *
+     * @param o1 the first element for the new set
+     * @param o2 the second element for the new set
+     * @param o3 the third element for the new set
+     * @param o4 the fourth element for the new set
+     * @param o5 the fifth element for the new set
+     * @param others the (variable number of) additional elements
+     * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link AHashSet}
+     */
     @SafeVarargs public static <T> AHashSet<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
         return AHashSet
                 .<T>builder()
@@ -69,20 +163,42 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
                 .build();
     }
 
+    /**
+     * Creates a new {@link AHashSet} based on an array's elements.
+     *
+     * @param that the array from which the new set is initialized
+     * @param <T> the set's element type
+     * @return the new set
+     */
     public static <T> AHashSet<T> from(T[] that) {
         return fromIterator(Arrays.asList(that).iterator());
     }
+
+    /**
+     * Creates a new {@link AHashSet} based on an {@link Iterable}'s elements.
+     *
+     * @param that the {@link Iterable} from which the new set is initialized
+     * @param <T> the set's element type
+     * @return the new set
+     */
     public static <T> AHashSet<T> from(Iterable<T> that) {
         return fromIterator(that.iterator());
     }
 
+    /**
+     * Creates a new {@link AHashSet} based on an {@link Iterator}'s elements.
+     *
+     * @param it the {@link Iterator} from which the new set is initialized
+     * @param <T> the set's element type
+     * @return the new set
+     */
     public static <T> AHashSet<T> fromIterator(Iterator<T> it) {
         return AHashSet.<T>builder()
                 .addAll(it)
                 .build();
     }
 
-    AHashSet (CompactHashMap<SetEntryWithEquality<T>> compactHashMap) {
+    private AHashSet (CompactHashMap<EqualsSetEntry<T>> compactHashMap) {
         this.compactHashMap = compactHashMap;
     }
 
@@ -90,9 +206,9 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
         return new SerializationProxy(this);
     }
 
-    abstract AHashSet<T> newInstance(CompactHashMap<SetEntryWithEquality<T>> compactHashMap);
-    abstract SetEntryWithEquality<T> newEntry(Object o);
-    @Override public abstract <U> ACollectionBuilder<U, AHashSet<U>> newBuilder();
+    @Override public <U> ACollectionBuilder<U, AHashSet<U>> newBuilder() {
+        return new Builder<>();
+    }
 
     @Override public boolean equals (Object o) {
         return ASetSupport.equals(this, o);
@@ -110,15 +226,16 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
     }
 
     @Override public AHashSet<T> plus (T o) {
-        return newInstance(compactHashMap.updated0(newEntry(o), 0));
+        return new AHashSet<>(compactHashMap.updated0(new EqualsSetEntry<>(o), 0));
     }
 
     @Override public AHashSet<T> minus (T o) {
-        return newInstance(compactHashMap.removed0(newEntry(o), 0));
+        return new AHashSet<>(compactHashMap.removed0(new EqualsSetEntry<>(o), 0));
     }
 
     @Override public boolean contains (Object o) {
-        return compactHashMap.get0(newEntry(o), 0) != null;
+        //noinspection unchecked
+        return compactHashMap.get0(new EqualsSetEntry<>((T)o), 0) != null;
     }
 
     @Override public AHashSet<T> union (Iterable<T> that) {
@@ -180,68 +297,32 @@ public abstract class AHashSet<T> extends AbstractImmutableCollection<T> impleme
     }
 
     public static <T> Builder<T> builder() {
-        return new EqualsBuilder<>();
+        return new Builder<>();
     }
 
-    static class EqualsHashSet<T> extends AHashSet<T> {
-        EqualsHashSet (CompactHashMap<SetEntryWithEquality<T>> compactHashMap) {
-            super(compactHashMap);
-        }
-
-        @Override AHashSet<T> newInstance (CompactHashMap<SetEntryWithEquality<T>> compactHashMap) {
-            return new EqualsHashSet<>(compactHashMap);
-        }
-
-        @Override SetEntryWithEquality<T> newEntry (Object o) {
-            //noinspection unchecked
-            return new EqualsSetEntry<T>((T) o);
-        }
-
-        @Override public <U> ACollectionBuilder<U, AHashSet<U>> newBuilder () {
-            return new EqualsBuilder<>();
-        }
-    }
-
-    public abstract static class Builder<T> implements ACollectionBuilder<T, AHashSet<T>> {
+    public static class Builder<T> implements ACollectionBuilder<T, AHashSet<T>> {
         @SuppressWarnings("unchecked")
-        CompactHashMap<SetEntryWithEquality<T>> result = CompactHashMap.EMPTY;
-
-        abstract AHashSet<T> newInstance();
-        abstract SetEntryWithEquality<T> newElement(T el);
+        CompactHashMap<EqualsSetEntry<T>> result = CompactHashMap.EMPTY;
 
         @Override public ACollectionBuilder<T, AHashSet<T>> add (T el) {
-            result = result.updated0(newElement(el), 0);
+            result = result.updated0(new EqualsSetEntry<>(el), 0);
             return this;
         }
 
         @Override public AHashSet<T> build () {
-            return newInstance();
-        }
-    }
-    static class EqualsBuilder<T> extends Builder<T> {
-        @Override AHashSet<T> newInstance () {
-            return new EqualsHashSet<>(result);
-        }
-        @Override SetEntryWithEquality<T> newElement (T el) {
-            return new EqualsSetEntry<>(el);
+            return new AHashSet<>(result);
         }
     }
 
-    static abstract class SetEntryWithEquality<T> implements CompactHashMap.EntryWithEquality {
-        T el;
+    private static class EqualsSetEntry<T> implements CompactHashMap.EntryWithEquality {
+        final T el;
 
-        SetEntryWithEquality (T el) {
-            this.el = el;
-        }
-    }
-
-    private static class EqualsSetEntry<T> extends SetEntryWithEquality<T> {
         EqualsSetEntry (T el) {
-            super(el);
+            this.el = el;
         }
 
         @Override public boolean hasEqualKey (CompactHashMap.EntryWithEquality other) {
-            return Objects.equals(el, ((SetEntryWithEquality) other).el);
+            return Objects.equals(el, ((EqualsSetEntry) other).el);
         }
 
         @Override public int keyHash () {

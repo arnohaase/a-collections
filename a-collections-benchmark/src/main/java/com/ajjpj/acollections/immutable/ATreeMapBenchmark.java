@@ -55,22 +55,6 @@ public class ATreeMapBenchmark {
         }
         bh.consume(m);
     }
-    @Benchmark
-    public void testModifyATreeMapFromFoundation(Blackhole bh) {
-        final Random rand = new Random(12345);
-        ATreeMapFromFoundation<Integer,Integer> m = ATreeMapFromFoundation.empty(Comparator.<Integer>naturalOrder());
-
-        for(int i=0; i<numIter; i++) {
-            final int key = rand.nextInt(size);
-            final boolean add = rand.nextBoolean();
-
-            if(add)
-                m=m.updated(key, key);
-            else
-                m=m.removed(key);
-        }
-        bh.consume(m);
-    }
 
     @Benchmark
     public void testModifyATreeMap(Blackhole bh) {
@@ -85,22 +69,6 @@ public class ATreeMapBenchmark {
                 m=m.plus(key, key);
             else
                 m=m.minus(key);
-        }
-        bh.consume(m);
-    }
-    @Benchmark
-    public void testModifyATreeMap3(Blackhole bh) {
-        final Random rand = new Random(12345);
-        ATreeMap3<Integer,Integer> m = ATreeMap3.empty(Comparator.<Integer>naturalOrder());
-
-        for(int i=0; i<numIter; i++) {
-            final int key = rand.nextInt(size);
-            final boolean add = rand.nextBoolean();
-
-            if(add)
-                m=m.updated(key, key);
-            else
-                m=m.removed(key);
         }
         bh.consume(m);
     }
@@ -136,19 +104,6 @@ public class ATreeMapBenchmark {
     }
 //    @Benchmark
     public void testIterateATreeMap(Blackhole bh) {
-        ATreeMapFromFoundation<Integer,Integer> m = ATreeMapFromFoundation.empty(Comparator.<Integer>naturalOrder());
-
-        for(int i=0; i<size; i++) {
-            m=m.updated(i, i);
-        }
-        int sum=0;
-        for (Map.Entry<Integer, Integer> el: m) {
-            sum += el.getValue();
-        }
-        bh.consume(sum);
-    }
-//    @Benchmark
-    public void testIterateATreeMap2(Blackhole bh) {
         ATreeMap<Integer,Integer> m = ATreeMap.empty(Comparator.<Integer>naturalOrder());
 
         for(int i=0; i<size; i++) {

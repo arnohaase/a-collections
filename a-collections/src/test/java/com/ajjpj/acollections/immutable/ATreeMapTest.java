@@ -25,8 +25,8 @@ public class ATreeMapTest implements AMapTests {
         });
     }
 
-    final int size = 100_000;
-    final int numIter = 1_000_000;
+    private final int size = 100_000;
+    private final int numIter = 1_000_000;
 
     private Map<Integer, Integer> createJu() {
         final Random rand = new Random(12345);
@@ -43,25 +43,25 @@ public class ATreeMapTest implements AMapTests {
         }
         return result;
     }
-    private ATreeMapFromFoundation<Integer, Integer> createA() {
+    private ATreeMap<Integer, Integer> createA() {
         final Random rand = new Random(12345);
-        ATreeMapFromFoundation<Integer, Integer> result = ATreeMapFromFoundation.empty(Comparator.<Integer>naturalOrder());
+        ATreeMap<Integer, Integer> result = ATreeMap.empty(Comparator.<Integer>naturalOrder());
 
         for(int i=0; i<numIter; i++) {
             final int key = rand.nextInt(size);
             final boolean add = rand.nextBoolean();
 
             if(add)
-                result = result.updated(key, key);
+                result = result.plus(key, key);
             else
-                result = result.removed(key);
+                result = result.minus(key);
         }
         return result;
     }
 
-    @Test public void testAddRemove() {
+    @Test void testAddRemove() {
         final Map<Integer, Integer> juMap = createJu();
-        final ATreeMapFromFoundation<Integer, Integer> aMap = createA();
+        final ATreeMap<Integer, Integer> aMap = createA();
 
         assertEquals(juMap.size(), aMap.size());
 
