@@ -13,50 +13,208 @@ import java.util.*;
 import java.util.function.*;
 
 
+/**
+ * This class wraps any {@link java.util.Map} as an {@link AMap}. All modifying operations - both those from {@link java.util.Map} and
+ *  those added by {@link AMap} - write through to the wrapped map.
+ *
+ * <p> This is a simple way to start using a-collections: Wrap an existing {@link java.util.Map} to add a rich API while maintaining
+ *  100% backwards compatibility: operations on the wrapper are write-through, i.e. all changes are applied to the underlying {@code Map}.
+ *  This class makes it simple to use {@link AMap}'s rich API on any map in an ad-hoc fashion.
+ *
+ * <p> The wrapped map with all modifications applied to it can always be retrieved by calling {@link #getInner()}, though there is
+ *  usually no reason for unwrapping: {@code AMutableMapWrapper} implements {@link java.util.Map}, so any method accepting
+ *  {@link java.util.Map} will also accept an {@code AMutableMapWrapper} as is.
+ *
+ * @param <K> the map's key type
+ * @param <V> the map's value type
+ */
 public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWrapper<K,V>>, ACollectionDefaults<Map.Entry<K,V>, AMutableMapWrapper<K,V>>, Serializable {
     private final Map<K,V> inner;
 
+    /**
+     * Convenience method for creating an empty map. For creating a map with known elements, calling one of the {@code of}
+     *  factory methods is a more concise alternative.
+     *
+     * @param <K> the new map's key type
+     * @param <V> the new map's value type
+     * @return an empty map
+     */
     public static <K,V> AMutableMapWrapper<K,V> empty() {
         return new AMutableMapWrapper<>(new HashMap<>());
     }
 
-    public static <K,V> AMutableMapWrapper<K,V> from(Map<K,V> m) {
+    /**
+     * Creates a new map based on an {@link java.util.Map}'s elements.
+     *
+     * NB: This method has the same signature as {@link #wrap(Map)}, but it copies the other map's contents rather than wrapping it.
+     *
+     * @param m the map from which the new map is initialized
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    public static <K,V> AMutableMapWrapper<K,V> fromMap(Map<K,V> m) {
         return from(m.entrySet());
     }
+
+    /**
+     * Creates a new map based on an Iterable's elements.
+     *
+     * @param coll the Iterable from which the new map is initialized
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
     public static <K,V> AMutableMapWrapper<K,V> from(Iterable<Map.Entry<K,V>> coll) {
         return AMutableMapWrapper.<K,V>builder().addAll(coll).build();
     }
+
+    /**
+     * Creates a new map based on an iterator's elements.
+     *
+     * @param it the iterator from which the new map is initialized
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new list
+     */
     public static <K,V> AMutableMapWrapper<K,V> fromIterator(Iterator<Map.Entry<K,V>> it) {
         return AMutableMapWrapper.<K,V>builder().addAll(it).build();
     }
 
+    /**
+     * This is an alias for {@link #empty()} for consistency with Java 9 conventions - it creates an empty map.
+     *
+     * <p> NB: Other than Java's 'of' methods in collection interfaces, this method creates a <em>mutable</em> map instance - that is the
+     *  whole point of class {@link AMutableMapWrapper}. If you want immutable maps, use {@link AMap#of()}.
+     *
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return an empty map
+     */
     public static <K,V> AMutableMapWrapper<K,V> of() {
         return empty();
     }
+
+    /**
+     * Creates a map with exactly one entry.
+     *
+     * <p> NB: Other than Java's 'of' methods in collection interfaces, this method creates a <em>mutable</em> map instance - that is the
+     *  whole point of class {@link AMutableMapWrapper}. If you want immutable maps, use {@link AMap#of()}.
+     *
+     * @param k1 the entry's key
+     * @param v1 the entry's value
+     *
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
     public static <K,V> AMutableMapWrapper<K,V> of(K k1, V v1) {
         return AMutableMapWrapper.<K,V>builder().add(k1, v1).build();
     }
+
+    /**
+     * Creates a map with exactly two entries.
+     *
+     * <p> NB: Other than Java's 'of' methods in collection interfaces, this method creates a <em>mutable</em> map instance - that is the
+     *  whole point of class {@link AMutableMapWrapper}. If you want immutable maps, use {@link AMap#of()}.
+     *
+     * @param k1 the first entry's key
+     * @param v1 the first entry's value
+     * @param k2 the second entry's key
+     * @param v2 the second entry's value
+     *
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
     public static <K,V> AMutableMapWrapper<K,V> of(K k1, V v1, K k2, V v2) {
         return AMutableMapWrapper.<K,V>builder().add(k1, v1).add(k2, v2).build();
     }
+
+    /**
+     * Creates a map with exactly three entries.
+     *
+     * <p> NB: Other than Java's 'of' methods in collection interfaces, this method creates a <em>mutable</em> map instance - that is the
+     *  whole point of class {@link AMutableMapWrapper}. If you want immutable maps, use {@link AMap#of()}.
+     *
+     * @param k1 the first entry's key
+     * @param v1 the first entry's value
+     * @param k2 the second entry's key
+     * @param v2 the second entry's value
+     * @param k3 the third entry's key
+     * @param v3 the third entry's value
+     *
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
     public static <K,V> AMutableMapWrapper<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
         return AMutableMapWrapper.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).build();
     }
+
+    /**
+     * Creates a map with exactly four entries.
+     *
+     * <p> NB: Other than Java's 'of' methods in collection interfaces, this method creates a <em>mutable</em> map instance - that is the
+     *  whole point of class {@link AMutableMapWrapper}. If you want immutable maps, use {@link AMap#of()}.
+     *
+     * @param k1 the first entry's key
+     * @param v1 the first entry's value
+     * @param k2 the second entry's key
+     * @param v2 the second entry's value
+     * @param k3 the third entry's key
+     * @param v3 the third entry's value
+     * @param k4 the fourth entry's key
+     * @param v4 the fourth entry's value
+     *
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
     public static <K,V> AMutableMapWrapper<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
         return AMutableMapWrapper.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).add(k4,v4).build();
     }
+
+    /**
+     * This is an alias for {@link #from(Iterable)} for consistency with Java 9 conventions - it creates an AMap from an Iterable of
+     * {@link Map.Entry}.
+     *
+     * @param coll the entries
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
     public static <K,V> AMutableMapWrapper<K,V> ofEntries(Iterable<Map.Entry<K,V>> coll) {
         return from(coll);
     }
 
+    /**
+     * This factory method wraps an arbitrary (typically mutable) {@link java.util.Map} in an {@link AMutableMapWrapper}.
+     *  This is a simple way to start using a-collections: Wrap an existing {@code Map} to add a rich API while maintaining 100% backwards
+     *  compatibility: operations on the wrapper are write-through, i.e. all changes are applied to the underlying {@code Map}.
+     *
+     * @param inner the map being wrapped
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the wrapped map
+     */
     public static <K,V> AMutableMapWrapper<K,V> wrap(Map<K,V> inner) {
+        if (inner instanceof AMutableMapWrapper) return (AMutableMapWrapper<K, V>) inner;
         return new AMutableMapWrapper<>(inner);
     }
 
-    AMutableMapWrapper (Map<K, V> inner) {
+    private AMutableMapWrapper (Map<K, V> inner) {
         this.inner = inner;
     }
 
+    /**
+     * Returns the wrapped map to which all modifications were applied.
+     *
+     * NB: AMutableMapWrapper implements {@link java.util.Map}, so usually there is no reason to unwrap it. Any API accepting
+     *  {@link java.util.Map} accepts an {@link AMutableMapWrapper} as is.
+     *
+     * @return the wrapped map
+     */
     public Map<K,V> getInner() {
         return inner;
     }

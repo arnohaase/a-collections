@@ -40,7 +40,7 @@ import java.util.function.Predicate;
  *
  * <p> Implementation note: This class is a port of Scala's standard library {@code TreeSet}.
  *
- * @param <T>
+ * @param <T> the set's element type
  */
 public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T,ATreeSet<T>>, ASetDefaults<T,ATreeSet<T>>, Serializable {
     private final RedBlackTree.Tree<T,Object> root;

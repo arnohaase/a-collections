@@ -43,7 +43,7 @@ import java.util.function.Predicate;
  *
  * <p> Implementation note: This class is a port of Scala's standard library 'List'.
  *
- * @param <T>
+ * @param <T> the list's element type
  */
 public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, ALinkedList<T>>, Serializable {
     /**

@@ -27,7 +27,9 @@ import java.util.stream.Stream;
  *  100% backwards compatibility: operations on the wrapper are write-through, i.e. all changes are applied to the underlying {@code List}.
  *  This class makes it simple to use {@link AList}'s rich API on any list in an ad-hoc fashion.
  *
- * <p> The wrapped list with all modifications applied to it can always be retrieved by calling {@link #getInner()}.
+ * <p> The wrapped list with all modifications applied to it can always be retrieved by calling {@link #getInner()}, though there is
+ *  usually no reason for unwrapping: {@code AMutableListWrapper} implements {@link java.util.List}, so any method accepting
+ *  {@link java.util.List} will also accept an {@code AMutableListWrapper} as is.
  *
  * @param <T> the list's element type.
  */
@@ -44,6 +46,7 @@ public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrap
      * @return the wrapped List
      */
     public static <T> AMutableListWrapper<T> wrap(List<T> inner) {
+        if (inner instanceof AMutableListWrapper) return (AMutableListWrapper<T>) inner;
         return new AMutableListWrapper<>(inner);
     }
 
@@ -53,6 +56,9 @@ public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrap
 
     /**
      * Returns the wrapped list to which all modifications were applied.
+     *
+     * NB: AMutableListWrapper implements {@link java.util.List}, so usually there is no reason to unwrap it. Any API accepting
+     *  {@link java.util.List} accepts an {@link AMutableListWrapper} as is.
      *
      * @return the wrapped list
      */

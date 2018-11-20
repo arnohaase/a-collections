@@ -30,7 +30,7 @@ import java.util.function.Predicate;
  * <p> When working with an array that was returned by an API, {@code AMutableArrayWrapper} really comes into its own: It allows you to
  *  use the range of {@link AList} operations without adding the overhead of converting the array to a regular collection.
  *
- * @param <T>
+ * @param <T> the collection's element type
  */
 public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMutableArrayWrapper<T>>, Serializable {
     private T[] inner;

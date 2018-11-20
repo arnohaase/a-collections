@@ -51,6 +51,8 @@ public class AUnchecker {
      * Executes a callback, throwing all exceptions that may occur without requiring them to be declared in a 'throws' clause.
      *
      * @param callback the callback to execute
+     * @param <R>      the callback's result type
+     * @return the callback's result
      */
     public static <R> R executeUnchecked(Callable<R> callback) {
         try {

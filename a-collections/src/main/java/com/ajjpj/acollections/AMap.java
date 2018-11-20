@@ -246,6 +246,8 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
      *  returns a new instance with the new entry.
      *
      * @param other the map whose entries are added to this map
+     * @param <K1> the other map's key type
+     * @param <V1> the other map's value type
      * @return the map with the new entries
      */
     default <K1 extends K, V1 extends V> AMap<K,V> plusAll (Map<K1, V1> other) {

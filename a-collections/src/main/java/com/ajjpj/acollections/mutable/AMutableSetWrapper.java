@@ -22,7 +22,9 @@ import java.util.stream.Stream;
  *  100% backwards compatibility: operations on the wrapper are write-through, i.e. all changes are applied to the underlying {@code Set}.
  *  This class makes it simple to use {@link ASet}'s rich API on any list in an ad-hoc fashion.
  *
- * <p> The wrapped set with all modifications applied to it can always be retrieved by calling {@link #getInner()}.
+ * <p> The wrapped set with all modifications applied to it can always be retrieved by calling {@link #getInner()}, though there is
+ *  usually no reason for unwrapping: {@code AMutableSetWrapper} implements {@link java.util.Set}, so any method accepting
+ *  {@link java.util.Set} will also accept an {@code AMutableSetWrapper} as is.
  *
  * @param <T> the set's element type.
  */
@@ -39,6 +41,7 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
      * @return the wrapped Set
      */
     public static<T> AMutableSetWrapper<T> wrap(Set<T> inner) {
+        if (inner instanceof AMutableSetWrapper) return (AMutableSetWrapper<T>) inner;
         return new AMutableSetWrapper<>(inner);
     }
 
@@ -194,6 +197,9 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
 
     /**
      * Returns the wrapped Set to which all modifications were applied.
+     *
+     * NB: AMutableSetWrapper implements {@link java.util.Set}, so usually there is no reason to unwrap it. Any API accepting
+     *  {@link java.util.Set} accepts an {@link AMutableSetWrapper} as is.
      *
      * @return the wrapped Set
      */
