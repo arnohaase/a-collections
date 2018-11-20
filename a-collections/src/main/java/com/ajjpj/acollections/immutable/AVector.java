@@ -11,17 +11,58 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
+/**
+ * AVector is a general-purpose, immutable data structure. It provides random access and updates
+ *  in effectively constant time, as well as very fast append and prepend. AVector strikes
+ *  a good balance between fast random selections and fast random functional updates and is
+ *  the default {@link AList} implementation.
+ *
+ * <p> Since this is an immutable class, it does not support modifying methods from {@link java.util.List}: Those methods return
+ *  {@code boolean} or a previous element, but in order to "modify" an immutable collection, they would need to return the new collection
+ *  instance.
+ *
+ * <p> So instances of this class rely on methods like {@link #prepend(Object)}, {@link #append(Object)}, {@link #tail()}, {@link #init()}
+ *  or {@link #updated(int, Object)} for adding / removing / modifying entries. For examples, see {@link AList}.
+ *
+ * <p> Implementation note: This class is ported from Scala's standard library 'Vector'. It is backed by a little
+ *  endian bit-mapped vector trie with a branching factor of 32.  Locality is very good, but not
+ *  contiguous, which is good for very large sequences.
+ *
+ * @param <T> the element type
+ */
 public class AVector<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, AVector<T>>, RandomAccess, Serializable {
     private static final int Log2ConcatFaster = 5;
     private static final int TinyAppendFaster = 2;
 
+    /**
+     * Creates a new {@link AVector} based on an Iterable's elements.
+     *
+     * @param that the Iterable from which the new list is initialized
+     * @param <T> the list's element type
+     * @return the new list
+     */
     public static <T> AVector<T> from(Iterable<T> that) {
         return fromIterator(that.iterator());
     }
+
+    /**
+     * Creates a new {@link AVector} based on an array's elements.
+     *
+     * @param that the array from which the new list is initialized
+     * @param <T> the list's element type
+     * @return the new list
+     */
     public static <T> AVector<T> from(T[] that) {
         return fromIterator(Arrays.asList(that).iterator());
     }
 
+    /**
+     * Creates a new {@link AVector} based on an iterator's elements.
+     *
+     * @param it the iterator from which the new list is initialized
+     * @param <T> the list's element type
+     * @return the new list
+     */
     public static <T> AVector<T> fromIterator(Iterator<T> it) {
         return AVector
                 .<T>builder()
@@ -29,15 +70,38 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
                 .build();
     }
 
+    /**
+     * This is an alias for {@link #empty()} for consistency with Java 9 conventions - it creates an empty {@link AVector}.
+     *
+     * @param <T> the new list's element type
+     * @return an empty {@link AVector}
+     */
     public static <T> AVector<T> of() {
         return empty();
     }
+
+    /**
+     * Convenience factory method creating an {@link AVector} with exactly one element.
+     *
+     * @param o the single element for the new list
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link AVector}
+     */
     public static <T> AVector<T> of(T o) {
         return AVector
                 .<T>builder()
                 .add(o)
                 .build();
     }
+
+    /**
+     * Convenience factory method creating an {@link AVector} with two elements.
+     *
+     * @param o1 the first element for the new list
+     * @param o2 the second element for the new list
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link AVector}
+     */
     public static <T> AVector<T> of(T o1, T o2) {
         return AVector
                 .<T>builder()
@@ -45,6 +109,16 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
                 .add(o2)
                 .build();
     }
+
+    /**
+     * Convenience factory method creating an {@link AVector} with three elements.
+     *
+     * @param o1 the first element for the new list
+     * @param o2 the second element for the new list
+     * @param o3 the third element for the new list
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link AVector}
+     */
     public static <T> AVector<T> of(T o1, T o2, T o3) {
         return AVector
                 .<T>builder()
@@ -53,6 +127,17 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
                 .add(o3)
                 .build();
     }
+
+    /**
+     * Convenience factory method creating an {@link AVector} with four elements.
+     *
+     * @param o1 the first element for the new list
+     * @param o2 the second element for the new list
+     * @param o3 the third element for the new list
+     * @param o4 the fourth element for the new list
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link AVector}
+     */
     public static <T> AVector<T> of(T o1, T o2, T o3, T o4) {
         return AVector
                 .<T>builder()
@@ -62,6 +147,19 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
                 .add(o4)
                 .build();
     }
+
+    /**
+     * Convenience factory method creating an {@link AVector} with more than four elements.
+     *
+     * @param o1 the first element for the new list
+     * @param o2 the second element for the new list
+     * @param o3 the third element for the new list
+     * @param o4 the fourth element for the new list
+     * @param o5 the fifth element for the new list
+     * @param others the (variable number of) additional elements
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link AVector}
+     */
     @SafeVarargs public static <T> AVector<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
         return AVector
                 .<T>builder()
@@ -77,7 +175,15 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
     @SuppressWarnings("StaticInitializerReferencesSubClass")
     private static final AVector EMPTY = new AVector<>(0, 0, 0);
 
+    /**
+     * Convenience method for creating an empty {@link AVector}. For creating a list with known elements, calling one of the {@code of}
+     *  factory methods is a more concise alternative.
+     *
+     * @param <T> the new set's element type
+     * @return an empty {@link AVector}
+     */
     public static <T> AVector<T> empty() {
+        //noinspection unchecked
         return EMPTY;
     }
 

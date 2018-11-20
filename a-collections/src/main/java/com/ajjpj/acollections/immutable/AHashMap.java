@@ -13,47 +13,167 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
-public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements ACollectionDefaults<Map.Entry<K,V>, AHashMap<K,V>>, AMapDefaults<K,V,AHashMap<K,V>>, Serializable {
-    private final CompactHashMap<MapEntryWithEquality> compactHashMap;
+/**
+ * This class implements immutable maps using a hash trie. Keys must implement a valid {@link Object#hashCode()} method; in particular,
+ *  the hash code must be <em>stable</em> and <em>consistent with equality</em>.
+ *
+ * <p> Since this is an immutable class, it does not support modifying methods from {@link java.util.Map}: Those methods return
+ *  {@code boolean} or a previous element, but in order to "modify" an immutable collection, they would need to return the new collection
+ *  instance.
+ *
+ * <p> So instances of AHashMap rely on methods like {@link #plus(Object, Object)} or {@link #minus(Object)} that return the modified
+ *  collection to add or remove entries. For details and sample code, see {@link AMap}.
+ *
+ * <p> Implementation note: This is a port of Scala's standard library {@code HashMap}. It uses some optimization ideas from
+ *  the <a href="https://github.com/andrewoma/dexx">Dexx collections library</a>.
+ *
+ * @param <K> the map's key type
+ * @param <V> the map's value type
+ */
+public class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements ACollectionDefaults<Map.Entry<K,V>, AHashMap<K,V>>, AMapDefaults<K,V,AHashMap<K,V>>, Serializable {
+    private final CompactHashMap<MapEntryWithEquals> compactHashMap;
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Convenience method for creating an empty {@link AHashMap}. This can later be modified by calling {@link #plus(Object,Object)} or
+     * {@link #minus(Object)}. For creating a map with known elements, calling one of the {@code of} factory methods is usually more concise.
+     *
+     * @param <K> the new map's key type
+     * @param <V> the new map's value type
+     * @return an empty {@link AHashMap}
+     */
     public static <K,V> AHashMap<K,V> empty() {
-        return new AHashMapEquals<>(CompactHashMap.EMPTY);
+        //noinspection unchecked
+        return new AHashMap<>(CompactHashMap.EMPTY);
     }
 
-    public static <K,V> AHashMap<K,V> from(Map<K,V> m) {
+    /**
+     * Creates a new {@link AHashMap} based on a {@link java.util.Map}'s elements.
+     *
+     * @param m the {@link Map} from which the new map is initialized
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    public static <K,V> AHashMap<K,V> fromMap(Map<K,V> m) {
         return from(m.entrySet());
     }
+
+    /**
+     * Creates a new {@link AHashMap} based on an {@link Iterable}'s elements.
+     *
+     * @param coll the {@link Iterable} from which the new map is initialized
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
     public static <K,V> AHashMap<K,V> from(Iterable<Map.Entry<K,V>> coll) {
         return AHashMap.<K,V>builder().addAll(coll).build();
     }
-    public static <K,V> AHashMap<K,V> fromIterator(Iterator<Entry<K,V>> iterator) {
-        return AHashMap.<K,V> builder().addAll(iterator).build();
+
+    /**
+     * Creates a new {@link AHashMap} based on an {@link Iterator}'s elements.
+     *
+     * @param it the {@link Iterator} from which the new map is initialized
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    public static <K,V> AHashMap<K,V> fromIterator(Iterator<Entry<K,V>> it) {
+        return AHashMap.<K,V> builder().addAll(it).build();
     }
 
+    /**
+     * This is an alias for {@link #empty()} for consistency with Java 9 conventions - it creates an empty {@link AHashMap}.
+     *
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return an empty {@link AHashMap}
+     */
     public static <K,V> AHashMap<K,V> of() {
         return empty();
     }
+
+    /**
+     * Convenience factory method creating an {@link AHashMap} with exactly one entry.
+     *
+     * @param k1 the single entry's key
+     * @param v1 the single entry's value
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link AHashMap}
+     */
     public static <K,V> AHashMap<K,V> of(K k1, V v1) {
         return AHashMap.<K,V>builder().add(k1, v1).build();
     }
+
+    /**
+     * Convenience factory method creating an {@link AHashMap} with exactly two entries.
+     *
+     * @param k1 the first entry's key
+     * @param v1 the first entry's value
+     * @param k2 the second entry's key
+     * @param v2 the second entry's value
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link AHashMap}
+     */
     public static <K,V> AHashMap<K,V> of(K k1, V v1, K k2, V v2) {
         return AHashMap.<K,V>builder().add(k1, v1).add(k2, v2).build();
     }
+
+    /**
+     * Convenience factory method creating an {@link AHashMap} with three entries.
+     *
+     * @param k1 the first entry's key
+     * @param v1 the first entry's value
+     * @param k2 the second entry's key
+     * @param v2 the second entry's value
+     * @param k3 the third entry's key
+     * @param v3 the third entry's value
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link AHashMap}
+     */
     public static <K,V> AHashMap<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
         return AHashMap.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).build();
     }
+
+    /**
+     * Convenience factory method creating an {@link AHashMap} with four entries.
+     *
+     * @param k1 the first entry's key
+     * @param v1 the first entry's value
+     * @param k2 the second entry's key
+     * @param v2 the second entry's value
+     * @param k3 the third entry's key
+     * @param v3 the third entry's value
+     * @param k4 the fourth entry's key
+     * @param v4 the fourth entry's value
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link AHashMap}
+     */
     public static <K,V> AHashMap<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
         return AHashMap.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).add(k4,v4).build();
     }
+
+    /**
+     * This is an alias for {@link #from(Iterable)} for consistency with Java 9 conventions - it creates an AHashMap from an Iterable of
+     * {@link Map.Entry}.
+     *
+     * @param coll the entries
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link AHashMap}
+     */
     public static <K,V> AHashMap<K,V> ofEntries(Iterable<Map.Entry<K,V>> coll) {
         return from(coll);
     }
 
-    AHashMap () {
+    private AHashMap () {
         this (new CompactHashMap<>());
     }
-    AHashMap (CompactHashMap<MapEntryWithEquality> compactHashMap) {
+    private AHashMap (CompactHashMap<MapEntryWithEquals> compactHashMap) {
         this.compactHashMap = compactHashMap;
     }
 
@@ -61,15 +181,13 @@ public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements
         return new SerializationProxy(this);
     }
 
-    public AHashMap<K, V> plus (K key, V value) {
-        return newInstance(compactHashMap.updated0(newEntry(key, value), 0));
+    @Override public AHashMap<K, V> plus (K key, V value) {
+        return new AHashMap<>(compactHashMap.updated0(new MapEntryWithEquals<>(key, value), 0));
     }
-    public AHashMap<K, V> minus (K key) {
-        return newInstance(compactHashMap.removed0(newEntry(key, null), 0));
+    @Override public AHashMap<K, V> minus (K key) {
+        return new AHashMap<>(compactHashMap.removed0(new MapEntryWithEquals<>(key, null), 0));
     }
 
-    abstract AHashMap<K,V> newInstance(CompactHashMap<MapEntryWithEquality> compact);
-    abstract MapEntryWithEquality newEntry(K key, V value);
 
     public static <K,V> Builder<K,V> builder() {
         return new Builder<>();
@@ -95,12 +213,15 @@ public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements
 
     @Override public boolean containsKey (Object key) {
         //noinspection unchecked
-        return compactHashMap.get0(newEntry((K)key, null), 0) != null;
+        MapEntryWithEquals result = new MapEntryWithEquals<>((K) key, (V) null);
+        return compactHashMap.get0(result, 0) != null;
     }
 
     @Override public V get (Object key) {
         //noinspection unchecked
-        final MapEntryWithEquality<K,V> raw = compactHashMap.get0(newEntry((K)key, null), 0);
+        MapEntryWithEquals<K,V> result = new MapEntryWithEquals<>((K) key, null);
+        //noinspection unchecked
+        final MapEntryWithEquals<K,V> raw = compactHashMap.get0(result, 0);
         if (raw != null)
             return raw.getValue();
         else
@@ -109,8 +230,10 @@ public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements
 
     @Override public AOption<V> getOptional (K key) {
         //noinspection unchecked
-        final MapEntryWithEquality<K,V> raw = compactHashMap.get0(newEntry(key, null), 0);
-        return AOption.of(raw).map(MapEntryWithEquality::getValue);
+        MapEntryWithEquals result = new MapEntryWithEquals<>(key, (V) null);
+        //noinspection unchecked
+        final MapEntryWithEquals<K,V> raw = compactHashMap.get0(result, 0);
+        return AOption.of(raw).map(MapEntryWithEquals::getValue);
     }
 
     @Override public AIterator<Entry<K, V>> iterator () {
@@ -212,35 +335,15 @@ public abstract class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements
         }
     }
 
-    static class AHashMapEquals<K,V> extends AHashMap<K,V> {
-        AHashMapEquals (CompactHashMap<MapEntryWithEquality> compactHashMap) {
-            super(compactHashMap);
-        }
 
-        @Override AHashMap<K,V> newInstance (CompactHashMap<MapEntryWithEquality> compactHashMap) {
-            return new AHashMapEquals<>(compactHashMap);
-        }
-
-        @Override MapEntryWithEquality newEntry (K key, V value) {
-            return new MapEntryWithEquals<>(key, value);
-        }
-    }
-
-
-    static abstract class MapEntryWithEquality<K,V> extends AbstractMap.SimpleImmutableEntry<K,V> implements CompactHashMap.EntryWithEquality, Map.Entry<K,V> {
-        MapEntryWithEquality (K key, V value) {
-            super(key, value);
-        }
-    }
-
-    private static class MapEntryWithEquals<K,V> extends MapEntryWithEquality<K,V> {
+    private static class MapEntryWithEquals<K,V> extends AbstractMap.SimpleImmutableEntry<K,V> implements CompactHashMap.EntryWithEquality {
         private int keyHash = -123; // 'safe data race' - see String.hashCode() implementation
 
         MapEntryWithEquals (K key, V value) { super(key, value); }
 
         @Override public boolean hasEqualKey (CompactHashMap.EntryWithEquality other) {
             // compare hash for safety and as an optimization
-            return keyHash() == other.keyHash() && Objects.equals(getKey(), ((MapEntryWithEquality) other).getKey());
+            return keyHash() == other.keyHash() && Objects.equals(getKey(), ((MapEntryWithEquals) other).getKey());
         }
 
         private int improve(int hashCode) {

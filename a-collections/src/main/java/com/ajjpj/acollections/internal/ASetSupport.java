@@ -37,7 +37,8 @@ public class ASetSupport {
         return new SubsetsItr<>((T[])coll.toArray(), len, builderFactory);
     }
 
-    /** An iterator over all subsets of this set.
+    /*
+     * An iterator over all subsets of a set.
      */
     public static <T, C extends ASet<T>> AIterator<C> subsets(Collection<T> coll, Supplier<ACollectionBuilder<T, C>> builderFactory) {
         return new AbstractAIterator<C>() {

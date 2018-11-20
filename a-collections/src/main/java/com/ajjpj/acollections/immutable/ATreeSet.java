@@ -13,6 +13,35 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
+/**
+ * This class implements immutable sets using a red-black tree, sorting elements based on a {@link Comparator} and providing a
+ *  {@link SortedSet}.
+ *
+ * <p> Since this is an immutable class, it does not support modifying methods from {@link java.util.Set}: Those methods return
+ *  {@code boolean} or a previous element, but in order to "modify" an immutable collection, they would need to return the new collection
+ *  instance.
+ *
+ * <p> So instances of this class rely on methods like {@link #plus(Object)} or {@link #minus(Object)} for adding / removing
+ *  elements. These methods return new sets with the new elements, leaving the original unmodified:
+ *
+ * <p>{@code ASet<Integer> s0 = ATreeSet.of(1, 2, 3);}
+ * <p>{@code ASet<Integer> s1 = s0.plus(5);}
+ * <p>{@code ASet<Integer> s2 = s1.minus(2);}
+ * <p>{@code System.out.println(s0); // 1, 2, 3 }
+ * <p>{@code System.out.println(s1); // 1, 2, 3, 5 }
+ * <p>{@code System.out.println(s2); // 1, 3, 5 }
+ *
+ * <p> These calls can of course be chained:
+
+ * <p>{@code ASet<Integer> s3 = s2.plus(8).plus(9).minus(3); }
+ * <p>{@code System.out.println(s3); // 1, 5, 8, 9 }
+ *
+ * <p> This class has static factory methods (Java 9 style) for convenience creating instances.
+ *
+ * <p> Implementation note: This class is a port of Scala's standard library {@code TreeSet}.
+ *
+ * @param <T> the set's element type
+ */
 public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T,ATreeSet<T>>, ASetDefaults<T,ATreeSet<T>>, Serializable {
     private final RedBlackTree.Tree<T,Object> root;
     private final Comparator<T> comparator;

@@ -501,6 +501,7 @@ public interface AIterator<T> extends Iterator<T> {
      *  strongly recommended (but not enforced) that input iterators are discarded and only the concatenated iterator used.
      *
      * @param inner the iterators whose elements are concatenated
+     * @param <T> the iterators' element type
      * @return a new iterator with all inner iterators' elements
      */
     @SafeVarargs

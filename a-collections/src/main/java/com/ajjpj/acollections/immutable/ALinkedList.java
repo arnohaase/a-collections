@@ -14,14 +14,67 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
+/**
+ * ALinkedList is a class for immutable singly-linked lists representing ordered collections. It is optimal for last-in-first-out (LIFO),
+ *  stack-like access patterns. If you need another access pattern, for example, random access or FIFO, {@link AVector} is probably the
+ *  better alternative.
+ *
+ * <p> Since this is an immutable class, it does not support modifying methods from {@link java.util.List}: Those methods return
+ *  {@code boolean} or a previous element, but in order to "modify" an immutable collection, they would need to return the new collection
+ *  instance.
+ *
+ * <p> Performance Considerations:
+ * <ul>
+ *     <li> Time: ALinkedList has O(1) prepend and head/tail access. Most other operations are O(n) on the number of elements in the list.
+ *           This includes the index-based lookup of elements, {@link #size()}, {@link #append(Object)} and {@link #reverse()}.
+ *     <li> Space: ALinkedList implements "structural sharing" of the tail list. This means that many operations are either zero- or
+ *           constant-memory cost.
+ *           <p> {@code AList<Integer> mainList = ALinkedList.of(3, 2, 1);}
+ *           <p> {@code AList<Integer> with4    = mainList.prepend(4);  // re-uses mainList, costs only one additional link for '4'}
+ *           <p> {@code AList<Integer> with42   = mainList.prepend(42); // also re-uses mainList, costs only one additional link for '42'}
+ *           <p> {@code AList<Integer> shorter  = mainList.tail();      // costs nothing because the tail sublist is already contained in mainList}
+ * </ul>
+ *
+ * <p> The functional list is characterized by persistence and structural sharing, thus offering considerable
+ *       performance and space consumption benefits in some scenarios if used correctly.
+ *       However, note that objects having multiple references into the same functional list (that is,
+ *       objects that rely on structural sharing), will be serialized and deserialized with multiple lists, one for
+ *       each reference to it. I.e. structural sharing is lost after serialization/deserialization.
+ *
+ * <p> Implementation note: This class is a port of Scala's standard library 'List'.
+ *
+ * @param <T> the list's element type
+ */
 public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> implements AListDefaults<T, ALinkedList<T>>, Serializable {
+    /**
+     * Creates a new {@link ALinkedList} based on an array's elements.
+     *
+     * @param that the array from which the new list is initialized
+     * @param <T> the list's element type
+     * @return the new list
+     */
     public static <T> ALinkedList<T> from(T[] that) {
         return fromIterator(Arrays.asList(that).iterator());
     }
+
+    /**
+     * Creates a new {@link ALinkedList} based on an Iterable's elements.
+     *
+     * @param that the Iterable from which the new list is initialized
+     * @param <T> the list's element type
+     * @return the new list
+     */
     public static <T> ALinkedList<T> from(Iterable<T> that) {
         return fromIterator(that.iterator());
     }
 
+    /**
+     * Creates a new {@link ALinkedList} based on an iterator's elements.
+     *
+     * @param it the iterator from which the new list is initialized
+     * @param <T> the list's element type
+     * @return the new list
+     */
     public static <T> ALinkedList<T> fromIterator(Iterator<T> it) {
         return ALinkedList
                 .<T>builder()
@@ -29,21 +82,78 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
                 .build();
     }
 
+    /**
+     * This is an alias for {@link #empty()} for consistency with Java 9 conventions - it creates an empty {@link ALinkedList}.
+     *
+     * @param <T> the new list's element type
+     * @return an empty {@link ALinkedList}
+     */
     public static <T> ALinkedList<T> of() {
         return empty();
     }
+
+    /**
+     * Convenience factory method creating an {@link ALinkedList} with exactly one element.
+     *
+     * @param o the single element for the new list
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link ALinkedList}
+     */
     public static <T> ALinkedList<T> of(T o) {
-        return ALinkedList.<T>nil().prepend(o);
+        return ALinkedList.<T>empty().prepend(o);
     }
+
+    /**
+     * Convenience factory method creating an {@link ALinkedList} with two elements.
+     *
+     * @param o1 the first element for the new list
+     * @param o2 the second element for the new list
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link ALinkedList}
+     */
     public static <T> ALinkedList<T> of(T o1, T o2) {
-        return ALinkedList.<T>nil().prepend(o2).prepend(o1);
+        return ALinkedList.<T>empty().prepend(o2).prepend(o1);
     }
+
+    /**
+     * Convenience factory method creating an {@link ALinkedList} with three elements.
+     *
+     * @param o1 the first element for the new list
+     * @param o2 the second element for the new list
+     * @param o3 the third element for the new list
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link ALinkedList}
+     */
     public static <T> ALinkedList<T> of(T o1, T o2, T o3) {
-        return ALinkedList.<T>nil().prepend(o3).prepend(o2).prepend(o1);
+        return ALinkedList.<T>empty().prepend(o3).prepend(o2).prepend(o1);
     }
+
+    /**
+     * Convenience factory method creating an {@link ALinkedList} with four elements.
+     *
+     * @param o1 the first element for the new list
+     * @param o2 the second element for the new list
+     * @param o3 the third element for the new list
+     * @param o4 the fourth element for the new list
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link ALinkedList}
+     */
     public static <T> ALinkedList<T> of(T o1, T o2, T o3, T o4) {
-        return ALinkedList.<T>nil().prepend(o4).prepend(o3).prepend(o2).prepend(o1);
+        return ALinkedList.<T>empty().prepend(o4).prepend(o3).prepend(o2).prepend(o1);
     }
+
+    /**
+     * Convenience factory method creating an {@link ALinkedList} with more than four elements.
+     *
+     * @param o1 the first element for the new list
+     * @param o2 the second element for the new list
+     * @param o3 the third element for the new list
+     * @param o4 the fourth element for the new list
+     * @param o5 the fifth element for the new list
+     * @param others the (variable number of) additional elements
+     * @param <T> the new list's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link ALinkedList}
+     */
     @SafeVarargs public static <T> ALinkedList<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
         return ALinkedList
                 .<T>builder()
@@ -56,11 +166,15 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
                 .build();
     }
 
-
+    /**
+     * Convenience method for creating an empty {@link ALinkedList}. For creating a list with known elements, calling one of the {@code of}
+     *  factory methods is a more concise alternative.
+     *
+     * @param <T> the new set's element type
+     * @return an empty {@link ALinkedList}
+     */
     public static <T> ALinkedList<T> empty() {
-        return nil();
-    }
-    public static <T> ALinkedList<T> nil() {
+        //noinspection unchecked
         return Nil.INSTANCE;
     }
 
@@ -136,7 +250,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     @Override public ALinkedList<T> take (int n) {
-        if (n < 0) return nil();
+        if (n < 0) return empty();
         final Builder<T> builder = new Builder<>();
         ALinkedList<T> l = this;
         for(int i=0; i<n; i++) {
@@ -156,7 +270,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         if (n < 0) return this; //throw new IllegalArgumentException();
         ALinkedList<T> l = this;
         for (int i=0; i<n; i++) {
-            if(l.isEmpty()) return nil();
+            if(l.isEmpty()) return empty();
             l = l.tail();
         }
         return l;
@@ -181,7 +295,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
 
     @Override public ALinkedList<T> reverse () {
         // This is a more efficient implementation than the generic builder-based code from AListDefaults
-        ALinkedList<T> result = nil();
+        ALinkedList<T> result = empty();
         for (T o: this) {
             result = result.prepend(o);
         }
@@ -344,7 +458,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
     }
 
     public static class Builder<T> implements ACollectionBuilder<T, ALinkedList<T>> {
-        private ALinkedList<T> result = nil();
+        private ALinkedList<T> result = empty();
         private HeadTail<T> last;
         private boolean wasBuilt=false;
 

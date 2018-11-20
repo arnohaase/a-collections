@@ -26,6 +26,8 @@ public interface ACollectionOps<T> {
     /**
      * Returns an iterator to this collection, just like {@link Collection#iterator()}. The returned iterator however implements
      *  {@link AIterator} which adds a rich API to {@link java.util.Iterator}.
+     *
+     * @return an iterator over this collection's elements
      */
     AIterator<T> iterator ();
 
@@ -35,12 +37,19 @@ public interface ACollectionOps<T> {
      *
      * <p> This is public API, but it was added largely for internal use: Having this method allows generically implementing transformation
      *  methods like {@link #map(Function)}.
+     *
+     * @param <U> the new builder's element type
+     * @return a new builder
      */
     <U> ACollectionBuilder<U, ? extends ACollectionOps<U>> newBuilder();
 
     /**
      * This is a special case of {@link #newBuilder()} which restricts the collection's type to {@link Map.Entry}. This method only exists
      *  for maps and some special cases surrounding them: If you see a map as a collection, it can only have elements of type {@link Map.Entry}.
+     *
+     * @param <K> the entry builder's key type
+     * @param <V> the entry builder's value type
+     * @return a new entry builder
      */
     default <K,V> ACollectionBuilder<Map.Entry<K,V>, ? extends ACollectionOps<Map.Entry<K,V>>> newEntryBuilder() {
         return newBuilder();
@@ -85,6 +94,8 @@ public interface ACollectionOps<T> {
     /**
      * This is the same as {@link #head()}, but returning {@link AOption#some(Object)} for non-empty collections and {@link AOption#none()}
      *  for empty collections.
+     *
+     * @return the first element, if any
      */
     AOption<T> headOption();
 
@@ -112,6 +123,8 @@ public interface ACollectionOps<T> {
     /**
      * This is the same as {@link #toSortedSet(Comparator)}, but using {@link Comparator#naturalOrder()} implicitly. This method relies
      *  on the collection's elements implementing {@link Comparable}, throwing a {@link ClassCastException} if they don't.
+     *
+     * @return an {@link ATreeSet} with this collection's elements
      */
     default ATreeSet<T> toSortedSet() {
         //noinspection unchecked
@@ -122,6 +135,7 @@ public interface ACollectionOps<T> {
      * This is a convenience method to convert any collection into an {@link ATreeSet} based on a {@link Comparator} passed in as a
      *  parameter.
      *
+     * @param comparator the comparator to use
      * @return an {@link ATreeSet} containing this collection's elements
      */
     ATreeSet<T> toSortedSet(Comparator<T> comparator);
@@ -129,6 +143,10 @@ public interface ACollectionOps<T> {
     /**
      * This is a convenience method converting this collection into an immutable {@link AMap}. It expects the collection to consist of
      *  {@link Map.Entry}, throwing a {@link ClassCastException} otherwise.
+     *
+     * @param <K> the new map's key type (usually needs to be explicitly provided by the caller)
+     * @param <V> the new map's value type (usually needs to be explicitly provided by the caller)
+     * @return an {@link AMap} with this collection's elements
      */
     <K,V> AMap<K,V> toMap();
 
