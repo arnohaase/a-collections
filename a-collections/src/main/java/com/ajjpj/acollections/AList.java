@@ -12,13 +12,13 @@ import java.util.function.Predicate;
 
 
 /**
- * This interface represents a {@link java.util.List} with additional API (mostly inherited from {@link ACollection}. {@code AList}
+ * This interface represents a {@link java.util.List} with additional API (mostly inherited from {@link ACollection}). {@code AList}
  *  implementations can be either mutable or immutable - see {@link ACollection} for details.
  *
  * <p> This interface provides a rich API for adding / removing data from immutable collections (which works for mutable implementations
  *  as well but is not as necessary there). All operations modifying a list return the modified collection to allow working with
  *  immutable collections.
- *
+ * <p>
  * <p> There are methods {@link #prepend(Object)} and {@link #append(Object)} to add elements at the start and at the end of a list:
  *
  * <p> {@code AList<Integer> l1 = AList.of(1, 2, 3);}
@@ -27,17 +27,17 @@ import java.util.function.Predicate;
  * <p> {@code System.out.println(l1); // 1, 2, 3}
  * <p> {@code System.out.println(l2); // 7, 1, 2, 3}
  * <p> {@code System.out.println(l3); // 7, 1, 2, 3, 8}
- *
+ * <p>
  * <p> These methods can of course be chained:
  *
  * <p> {@code AList<Integer> l4 = l1.append(1).prepend(2);}
  * <p> {@code System.out.println(l4); // 2, 1, 2, 3, 1}
- *
+ * <p>
  * <p> There are methods {@link #tail()} and {@link #init()} to remove the first and last element, respectively:
  *
  * <p> {@code System.out.println(l1.tail()); // 2, 3}
  * <p> {@code System.out.println(l1.init()); // 1, 2}
- *
+ * <p>
  * <p> There is also a method {@link #updated(int, Object)} for replacing an element at a given offset:
  *
  * <p> {@code System.out.println(l1.updated(1, 8)); // 1, 8, 3}
@@ -47,14 +47,14 @@ import java.util.function.Predicate;
  *
  * <p> This interface has static factory methods (Java 9 style) for convenience creating instances. They create immutable {@link AVector}
  *  instances.
- *
+ * <p>
  * @param <T> the list's element type
  */
 public interface AList<T> extends ACollection<T>, List<T> {
     /**
      * This is a convenience factory method wrapping an arbitrary (typically mutable) {@link java.util.List} in an {@link AMutableListWrapper}.
      *  This is a simple way to start using a-collections: Wrap an existing {@code List} to add a rich API while maintaining 100% backwards
-     *  compatibility: operations on the wrapper are write-through, i.e. all changes are applied to the underlying {@code List}.
+     *  compatibility. Operations on the wrapper are write-through, i.e. all changes are applied to the underlying {@code List}.
      *
      * @param l the List being wrapped
      * @param <T> the List's element type
@@ -65,7 +65,7 @@ public interface AList<T> extends ACollection<T>, List<T> {
     }
 
     /**
-     * Creates a new {@link AVector} based on an Iterable's elements.
+     * Creates a new {@link AVector} based on an iterable's elements.
      *
      * @param that the Iterable from which the new list is initialized
      * @param <T> the list's element type
@@ -188,7 +188,7 @@ public interface AList<T> extends ACollection<T>, List<T> {
 
     /**
      * Returns an AList with an additional element inserted at offset 0, shifting existing elements and increasing the list's size by 1.
-     *  For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
+     * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
      * @param o the new element to be inserted
      * @return the list with the new element inserted at offset 0
@@ -197,7 +197,7 @@ public interface AList<T> extends ACollection<T>, List<T> {
 
     /**
      * Returns an AList with an additional element added at offset {@link #size()}, increasing the list's size by 1.
-     *  For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
+     * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
      * @param o the new element to be appended
      * @return the list with the appended element
@@ -206,7 +206,7 @@ public interface AList<T> extends ACollection<T>, List<T> {
 
     /**
      * Returns an AList with an iterator's content added at the end.
-     *  For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
+     * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
      * @param that the iterator whose elements are to be appended
      * @return the list with the appended elements
@@ -214,8 +214,8 @@ public interface AList<T> extends ACollection<T>, List<T> {
     AList<T> concat (Iterator<? extends T> that);
 
     /**
-     * Returns an AList with an Iterable's content added at the end.
-     *  For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
+     * Returns an AList with an iterable's content added at the end.
+     * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
      * @param that the Iterable whose elements are to be appended
      * @return the list with the appended elements
@@ -224,7 +224,7 @@ public interface AList<T> extends ACollection<T>, List<T> {
 
     /**
      * Returns an AList with the element at offset {@code idx} replaced by the new element {@code o}.
-     *  For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
+     * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
      * @param idx the index at which the element is replaced
      * @param o   the new element replacing the previous element at index {@code idx}
@@ -235,7 +235,8 @@ public interface AList<T> extends ACollection<T>, List<T> {
     AList<T> updated(int idx, T o);
 
     /**
-     * Replaces a number of elements with the contents of a list passed in. More specifically, removes {@code numReplaced} elements
+     * Replaces a number of elements with the contents of a list passed in.
+     * <p> More specifically, removes {@code numReplaced} elements
      *  starting at offset {@code idx}, and then inserts the contents of {@code patch} at offset {@code idx}. The list of new values
      *  {@code patch} may have {@code numReplaced} elements, but it may be longer or shorter as well:
      *
@@ -263,10 +264,11 @@ public interface AList<T> extends ACollection<T>, List<T> {
     T last();
 
     /**
-     * For a non-empty list, returns the last element wrapped in {@link AOption#some(Object)}, and {@link AOption#none()} when called
-     *  on an empty collection
+     * Returns the last element, if exists.
+     * <p> For a non-empty list, returns the last element wrapped in {@link AOption#some(Object)}.
+     *  When called on an empty collection it returns {@link AOption#none()}.
      *
-     * @return the list's last element
+     * @return this list's last element
      */
     AOption<T> lastOption();
 
@@ -307,8 +309,8 @@ public interface AList<T> extends ACollection<T>, List<T> {
     AList<T> takeRight(int n);
 
     /**
-     * Returns a list with elements starting at the start until one element does not match the predicate. More formally,
-     *  returns the longest sublist starting at index 0 with the predicate testing to {@code true} for all elements.
+     * Returns a list with elements starting at the start until one element does not match the predicate.
+     * <p> More formally, returns the longest sublist starting at index 0 with the predicate testing to {@code true} for all elements.
      *
      * <p> For example:
      * <p> {@code AList.of(1).takeWhile(n -> n < 10); // 1 }
@@ -324,7 +326,6 @@ public interface AList<T> extends ACollection<T>, List<T> {
 
     /**
      * Returns this list without its first {@code n} elements, or an empty list if {@code n &gt; size()}.
-     *
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
      * @param n the number of elements to drop
@@ -334,7 +335,6 @@ public interface AList<T> extends ACollection<T>, List<T> {
 
     /**
      * Returns this list without its last {@code n} elements, or an empty list if {@code n &gt; size()}.
-     *
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
      * @param n the number of elements to drop
@@ -358,14 +358,14 @@ public interface AList<T> extends ACollection<T>, List<T> {
     AList<T> dropWhile(Predicate<T> f);
 
     /**
-     * Returns this list, but with inverted element order, i.e. first elements last and last elements first.
+     * Returns this list, but with reversed element order, i.e. first elements last and last elements first.
      *
      * <p> For example:
      * <p> {@code AList.of(1, 2, 3).reverse(); // 3, 2, 1}
      *
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
-     * @return this list but with inverted element order.
+     * @return this list but with reversed element order.
      */
     AList<T> reverse();
 
@@ -377,7 +377,8 @@ public interface AList<T> extends ACollection<T>, List<T> {
     AIterator<T> reverseIterator();
 
     /**
-     * Sorts this list's elements based on a {@link Comparator}. The sort operation is <em>stable</em>, i.e. elements comparing as equal
+     * Sorts this list's elements based on a {@link Comparator}.
+     * <p> The sort operation is <em>stable</em>, i.e. elements comparing as equal
      *  are not reordered (see {@link Collections#sort(List)}.
      *
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
@@ -388,8 +389,9 @@ public interface AList<T> extends ACollection<T>, List<T> {
     AList<T> sorted(Comparator<? super T> comparator);
 
     /**
-     * Sorts this list's elements based on a {@link Comparator#naturalOrder()}. This requires that elements implement {@link Comparable}.
-     *  The sort operation is <em>stable</em>, i.e. elements comparing as equal are not reordered (see {@link Collections#sort(List)}.
+     * Sorts this list's elements based on a {@link Comparator#naturalOrder()}.
+     * <p> This requires that elements implement {@link Comparable}. The sort operation is <em>stable</em>,
+     *   i.e. elements comparing as equal are not reordered (see {@link Collections#sort(List)}.
      *
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
@@ -399,8 +401,8 @@ public interface AList<T> extends ACollection<T>, List<T> {
     AList<T> sorted();
 
     /**
-     * Sorts this list's elements based on the results of a function that is applied to each element. This is typically used to sort
-     *  by an attribute of each element.
+     * Sorts this list's elements based on the results of a function that is applied to each element.
+     * <p> This is typically used to sort by an attribute of each element.
      *
      * <p> For example, the following sorts a list of (hypothetical) {@code Person} instances by their last name:
      * <p> {@code AList<Person> persons = ...;}
@@ -444,8 +446,8 @@ public interface AList<T> extends ACollection<T>, List<T> {
     boolean contains(Object o);
 
     /**
-     * Returns true if and only if this list starts with the same elements in the same order that another list has. More formally,
-     *  given a list {@code that} of length n, this method return true if and only if {@code this.size() >= n} and
+     * Returns true if and only if this list starts with the same elements in the same order that another list has.
+     * <p> More formally, given a list {@code that} of length n, this method return true if and only if {@code this.size() >= n} and
      *  {@code Objects.equals(this.get(i), that.get(i)} for each index i in the range {@code 0 <= i < n}.
      *
      * @param that the list that this list's start is compared to
@@ -454,8 +456,8 @@ public interface AList<T> extends ACollection<T>, List<T> {
     boolean startsWith(List<T> that);
 
     /**
-     * Returns true if and only if this list ends with the same elements in the same order that another list has. More formally,
-     *  given a list {@code that} of length n, this method return true if and only if {@code this.size() >= n} and
+     * Returns true if and only if this list ends with the same elements in the same order that another list has.
+     * <p> More formally, given a list {@code that} of length n, this method return true if and only if {@code this.size() >= n} and
      *  {@code Objects.equals(this.get(size() - n + i), that.get(i)} for each index i in the range {@code 0 <= i < n}.
      *
      * @param that the list that this list's end is compared to
@@ -465,7 +467,8 @@ public interface AList<T> extends ACollection<T>, List<T> {
 
     /**
      * Aggregates this collection's elements into a single element of a (potentially) different type, starting with a "zero" element
-     *  passed in as a parameter. For each element, a folding function is called with the intermediate result and the new element, producing
+     *  passed in as a parameter.
+     *  <p> For each element, a folding function is called with the intermediate result and the new element, producing
      *  the next intermediate result. Elements are traversed in reverse iteration order (i.e. right-to-left).
      *
      * <p> This is the same as {@link ACollection#foldLeft(Object, BiFunction)} but with reverse (right-to-left) iteration order.
@@ -478,8 +481,8 @@ public interface AList<T> extends ACollection<T>, List<T> {
     <U> U foldRight(U zero, BiFunction<U,T,U> f);
 
     /**
-     * Reduces the elements of this collection to a single value of the same type using a reduction function. This method is similar to
-     *  {@link #reduce(BiFunction)}, the only exception being that reduceRight guarantees the function being applied in reverse iteration
+     * Reduces the elements of this collection to a single value of the same type using a reduction function.
+     * <p> This method is similar to {@link #reduce(BiFunction)}, the only exception being that reduceRight guarantees the function being applied in reverse iteration
      *  order (i.e. right-to-left).
      *
      * @throws java.util.NoSuchElementException if the collection is empty
