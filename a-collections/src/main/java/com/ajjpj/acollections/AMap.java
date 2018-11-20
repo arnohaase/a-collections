@@ -73,8 +73,8 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
      * @param <V> the map's value type
      * @return the new map
      */
-    static <K,V> AHashMap<K,V> from(Map<K,V> m) {
-        return AHashMap.from(m);
+    static <K,V> AHashMap<K,V> fromMap(Map<K,V> m) {
+        return AHashMap.fromMap(m);
     }
 
     /**

@@ -6,9 +6,6 @@ todo
     * building etc.
   * package.java
 
-  * AHashMap
-  * ATreeMap
-
   * AUnchecker
 
 
