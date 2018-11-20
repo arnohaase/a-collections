@@ -33,13 +33,10 @@ todo
 
 * unit tests
   * static factories
-  * AList.reduceRightOption
   * ASortedSet.countInRange,
   * ASortedSet.slice
   * ATreeSet methods in general
   * AIterator.toMutableSet
-
-  * AUnchecker
 
 * AbstractImmutableSet
 

@@ -400,6 +400,23 @@ public interface AListTests extends ACollectionTests {
             }
         });
     }
+    @Test default void testReduceRightOption() {
+        doTest(v -> {
+            assertTrue(v.mkList().reduceRightOption(this::sum).isEmpty());
+            assertEquals(1, v.mkList(1).reduceRightOption(this::sum).get().intValue());
+            assertEquals(6, v.mkList(1, 2, 3).reduceRightOption(this::sum).get().intValue());
+
+            if (v.iterationOrder123() != null) {
+                final List<Integer> trace = new ArrayList<>();
+                v.mkList(3, 2, 1).reduceRightOption((a, b) -> {
+                    trace.add(a);
+                    trace.add(b);
+                    return 0;
+                });
+                assertEquals(Arrays.asList(v.iterationOrder123().get(0), v.iterationOrder123().get(1), 0, v.iterationOrder123().get(2)), trace);
+            }
+        });
+    }
 
     @Test default void testListIterator() {
         doTest(v -> {
