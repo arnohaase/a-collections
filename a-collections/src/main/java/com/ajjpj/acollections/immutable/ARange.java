@@ -17,15 +17,58 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 
+/**
+ * ARange is an efficient, immutable representation of numbers between a lower and upper bound at a fixed interval. It has an O(1) memory
+ *  footprint, and efficient read operations. This class is mainly useful for semi-internal use (e.g. for implementing {@link AList#indices()})
+ *  though there is no reason application code can not use it as well.
+ *
+ * <p> ARange supports modifying operations, but these create {@link AVector} instances (since the result is usually not an ARange) and
+ *      can incur significant time and memory overhead for large ARange instances.
+ */
 public class ARange extends AbstractImmutableCollection<Integer> implements AList<Integer>, AListDefaults<Integer, AList<Integer>>, RandomAccess, Serializable {
     private final int from, to, step;
 
+    /**
+     * Returns an empty ARange, i.e. an ARange with no values.
+     *
+     * @return am empty ARange
+     */
     public static ARange empty() {
         return new ARange(1, 1, 1);
     }
-    public static ARange create (int from, int to) { //TODO inclusive or exclusive?
+
+    /**
+     * Creates an ARange for the given interval and step 1 or -1, depending on whether 'from' or 'to' is larger.
+     *  Examples:
+     * <p> {@code ARange.create(1, 5); // 1, 2, 3, 4 }
+     * <p> {@code ARange.create(1, 2); // 1 }
+     * <p> {@code ARange.create(2, 1); // 2 }
+     * <p> {@code ARange.create(5, 1); // 5, 4, 3, 2 }
+     *
+     * @param from the range's starting point
+     * @param to   the range's end point (exclusive)
+     * @throws IllegalArgumentException if step is 0
+     * @return the ARange instance
+     */
+    public static ARange create (int from, int to) {
         return create (from, to, (from < to) ? 1 : -1);
     }
+
+    /**
+     * Returns an ARange with values from 'from' (inclusive) up to 'to' (exclusive), with an increment of 'step' between numbers.
+     *  Examples:
+     * <p> {@code ARange.create(3, 10, 1); // 3, 4, 5, 6, 7, 8, 9 }
+     * <p> {@code ARange.create(3, 10, 2); // 3, 5, 7, 9 }
+     * <p> {@code ARange.create(5, 1, -1); // 5, 4, 3, 2 }
+     * <p> {@code ARange.create(5, 1, -2); // 5, 3 }
+     *
+     * @param from the range's starting point
+     * @param to   the range's end point (exclusive)
+     * @param step the increment between values
+     *
+     * @throws IllegalArgumentException if step is 0
+     * @return the ARange instance
+     */
     public static ARange create (int from, int to, int step) {
         return new ARange(from, to, step);
     }
