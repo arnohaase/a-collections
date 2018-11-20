@@ -18,29 +18,36 @@ import java.util.function.Predicate;
  * <p> This interface provides a rich API for adding / removing data from immutable collections (which works for mutable implementations
  *  as well but is not as necessary there). All operations modifying a list return the modified collection to allow working with
  *  immutable collections.
- * <p>
+ *
  * <p> There are methods {@link #prepend(Object)} and {@link #append(Object)} to add elements at the start and at the end of a list:
  *
- * <p> {@code AList<Integer> l1 = AList.of(1, 2, 3);}
- * <p> {@code AList<Integer> l2 = l1.prepend(7);}
- * <p> {@code AList<Integer> l3 = l2.append(8);}
- * <p> {@code System.out.println(l1); // 1, 2, 3}
- * <p> {@code System.out.println(l2); // 7, 1, 2, 3}
- * <p> {@code System.out.println(l3); // 7, 1, 2, 3, 8}
- * <p>
+ * <pre>
+ * {@code AList<Integer> l1 = AList.of(1, 2, 3);}
+ * {@code AList<Integer> l2 = l1.prepend(7);}
+ * {@code AList<Integer> l3 = l2.append(8);}
+ * {@code System.out.println(l1); // 1, 2, 3}
+ * {@code System.out.println(l2); // 7, 1, 2, 3}
+ * {@code System.out.println(l3); // 7, 1, 2, 3, 8}
+ * </pre>
+ *
  * <p> These methods can of course be chained:
  *
- * <p> {@code AList<Integer> l4 = l1.append(1).prepend(2);}
- * <p> {@code System.out.println(l4); // 2, 1, 2, 3, 1}
- * <p>
+ * <pre>
+ * {@code AList<Integer> l4 = l1.append(1).prepend(2);}
+ * {@code System.out.println(l4); // 2, 1, 2, 3, 1}
+ * </pre>
  * <p> There are methods {@link #tail()} and {@link #init()} to remove the first and last element, respectively:
  *
- * <p> {@code System.out.println(l1.tail()); // 2, 3}
- * <p> {@code System.out.println(l1.init()); // 1, 2}
- * <p>
+ * <pre>
+ * {@code System.out.println(l1.tail()); // 2, 3}
+ * {@code System.out.println(l1.init()); // 1, 2}
+ * </pre>
+ *
  * <p> There is also a method {@link #updated(int, Object)} for replacing an element at a given offset:
  *
- * <p> {@code System.out.println(l1.updated(1, 8)); // 1, 8, 3}
+ * <pre>
+ * {@code System.out.println(l1.updated(1, 8)); // 1, 8, 3}
+ * </pre>
  *
  * <p> All of these methods modify the original collection if it is mutable. For immutable collections, they leave a original alone and return
  *  a modified copy.
@@ -240,10 +247,12 @@ public interface AList<T> extends ACollection<T>, List<T> {
      *  starting at offset {@code idx}, and then inserts the contents of {@code patch} at offset {@code idx}. The list of new values
      *  {@code patch} may have {@code numReplaced} elements, but it may be longer or shorter as well:
      *
-     * <p> {@code AList.of(1, 2, 3).patch(0, AList.of(4, 5, 6), 3); // 4, 5, 6}
-     * <p> {@code AList.of(1, 2, 3).patch(1, AList.of(4), 1); // 1, 4, 3}
-     * <p> {@code AList.of(1, 2, 3).patch(0, AList.of(9, 8, 7), 0); // 9, 8, 7, 1, 2, 3}
-     * <p> {@code AList.of(1, 2, 3).patch(1, AList.of(9, 8, 7), 1); // 1, 9, 8, 7, 3}
+     * <pre>
+     * {@code AList.of(1, 2, 3).patch(0, AList.of(4, 5, 6), 3); // 4, 5, 6}
+     * {@code AList.of(1, 2, 3).patch(1, AList.of(4), 1); // 1, 4, 3}
+     * {@code AList.of(1, 2, 3).patch(0, AList.of(9, 8, 7), 0); // 9, 8, 7, 1, 2, 3}
+     * {@code AList.of(1, 2, 3).patch(1, AList.of(9, 8, 7), 1); // 1, 9, 8, 7, 3}
+     * </pre>
      *
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
@@ -313,9 +322,11 @@ public interface AList<T> extends ACollection<T>, List<T> {
      * <p> More formally, returns the longest sublist starting at index 0 with the predicate testing to {@code true} for all elements.
      *
      * <p> For example:
-     * <p> {@code AList.of(1).takeWhile(n -> n < 10); // 1 }
-     * <p> {@code AList.of(1).takeWhile(n -> n > 10); // empty list }
-     * <p> {@code AList.of(1, 2, 1, 3, 1).takeWhile(n -> n < 3); // 1, 2, 1 }
+     * <pre>
+     * {@code AList.of(1).takeWhile(n -> n < 10); // 1 }
+     * {@code AList.of(1).takeWhile(n -> n > 10); // empty list }
+     * {@code AList.of(1, 2, 1, 3, 1).takeWhile(n -> n < 3); // 1, 2, 1 }
+     * </pre>
      *
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
@@ -346,9 +357,11 @@ public interface AList<T> extends ACollection<T>, List<T> {
      * Removes elements from this collection's start until an element does not match a condition or the collection is empty.
      *
      * <p> For example:
-     * <p> {@code AList.of(1).dropWhile(n -> n < 10) // empty list}
-     * <p> {@code AList.of(1).dropWhile(n -> n > 10) // 1}
-     * <p> {@code AList.of(1, 2, 1, 3, 1).dropWhile(n -> n < 3) // 3, 1}
+     * <pre>
+     * {@code AList.of(1).dropWhile(n -> n < 10) // empty list}
+     * {@code AList.of(1).dropWhile(n -> n > 10) // 1}
+     * {@code AList.of(1, 2, 1, 3, 1).dropWhile(n -> n < 3) // 3, 1}
+     * </pre>
      *
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
@@ -405,11 +418,15 @@ public interface AList<T> extends ACollection<T>, List<T> {
      * <p> This is typically used to sort by an attribute of each element.
      *
      * <p> For example, the following sorts a list of (hypothetical) {@code Person} instances by their last name:
-     * <p> {@code AList<Person> persons = ...;}
-     * <p> {@code AList<Person> sorted = persons.sortBy(p -> p.getLastName());}
+     * <pre>
+     * {@code AList<Person> persons = ...;}
+     * {@code AList<Person> sorted = persons.sortBy(p -> p.getLastName());}
+     * </pre>
      *
      * <p> The following sorts by last name and (in case of equal last names) first name:
-     * <p> {@code AList<Person> sorted2 = persons.sortBy(p -> p.getLastName() + " " + p.getFirstName);}
+     * <pre>
+     * {@code AList<Person> sorted2 = persons.sortBy(p -> p.getLastName() + " " + p.getFirstName);}
+     * </pre>
      *
      * <p> The sort operation is <em>stable</em>, i.e. elements comparing as equal are not reordered (see {@link Collections#sort(List)}.
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
@@ -520,9 +537,11 @@ public interface AList<T> extends ACollection<T>, List<T> {
      * Returns a (cheap and efficient) list containing all of this list's valid indices.
      *
      * <p> Examples:
-     * <p> {@code AList.empty().indices(); // empty list}
-     * <p> {@code AList.of(9, 2, 17).indices(); // 0, 1, 2}
-     * <p> {@code AList.of(6).indices(); // 0}
+     * <pre>
+     * {@code AList.empty().indices(); // empty list}
+     * {@code AList.of(9, 2, 17).indices(); // 0, 1, 2}
+     * {@code AList.of(6).indices(); // 0}
+     * </pre>
      *
      * @see ARange
      * @return a list containing all of this lists's valid indices
