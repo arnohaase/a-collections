@@ -54,7 +54,7 @@ import java.util.function.Predicate;
  *
  * <p> This interface has static factory methods (Java 9 style) for convenience creating instances. They create immutable {@link AVector}
  *  instances.
- * <p>
+ *
  * @param <T> the list's element type
  */
 public interface AList<T> extends ACollection<T>, List<T> {
@@ -72,7 +72,7 @@ public interface AList<T> extends ACollection<T>, List<T> {
     }
 
     /**
-     * Creates a new {@link AVector} based on an iterable's elements.
+     * Creates a new {@link AVector} based on an {@link Iterable}'s elements.
      *
      * @param that the Iterable from which the new list is initialized
      * @param <T> the list's element type
@@ -221,7 +221,7 @@ public interface AList<T> extends ACollection<T>, List<T> {
     AList<T> concat (Iterator<? extends T> that);
 
     /**
-     * Returns an AList with an iterable's content added at the end.
+     * Returns an AList with an {@link Iterable}'s content added at the end.
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
      * @param that the Iterable whose elements are to be appended
@@ -273,7 +273,7 @@ public interface AList<T> extends ACollection<T>, List<T> {
     T last();
 
     /**
-     * Returns the last element, if exists.
+     * Returns the last element, if one exists.
      * <p> For a non-empty list, returns the last element wrapped in {@link AOption#some(Object)}.
      *  When called on an empty collection it returns {@link AOption#none()}.
      *
