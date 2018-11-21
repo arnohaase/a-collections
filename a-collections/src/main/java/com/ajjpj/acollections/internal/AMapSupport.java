@@ -49,7 +49,7 @@ public class AMapSupport {
             return AHashSet.from(this).minus(o);
         }
 
-        @Override public AHashSet<T> union (Iterable<T> that) {
+        @Override public AHashSet<T> union (Iterable<? extends T> that) {
             return AHashSet.from(this).union(that);
         }
 
@@ -214,7 +214,7 @@ public class AMapSupport {
             return AHashSet.from(this).minus(o);
         }
 
-        @Override public AHashSet<Map.Entry<K,V>> union (Iterable<Map.Entry<K,V>> that) {
+        @Override public AHashSet<Map.Entry<K,V>> union (Iterable<? extends Map.Entry<K,V>> that) {
             return AHashSet.from(this).union(that);
         }
 
@@ -327,7 +327,7 @@ public class AMapSupport {
             return ATreeSet.from(this, map.comparator()).minus(o);
         }
 
-        @Override public ATreeSet<T> union (Iterable<T> that) {
+        @Override public ATreeSet<T> union (Iterable<? extends T> that) {
             return ATreeSet.builder(map.comparator())
                     .addAll(this)
                     .addAll(that)
@@ -487,7 +487,7 @@ public class AMapSupport {
             return ATreeSet.from(this, comparator()).minus(o);
         }
 
-        @Override public ATreeSet<Map.Entry<K,V>> union (Iterable<Map.Entry<K,V>> that) {
+        @Override public ATreeSet<Map.Entry<K,V>> union (Iterable<? extends Map.Entry<K,V>> that) {
             return ATreeSet.builder(comparator())
                     .addAll(this)
                     .addAll(that)

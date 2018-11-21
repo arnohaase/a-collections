@@ -20,16 +20,17 @@ todo
 
 
 
-* ASet#plusAll
 * ASortedMap should implement NavigableMap
 * ASortedMap: upper bound for iterator methods
 
-* AIterator: fromStream, toStream
 * AIterator.flatMap
 * stream support: collectors for ACollection instances
 
 * static factories for ASortedSet
-* static factories for AMutableArrayWrapper
+
+* ASortedSet.reverseIterator()
+
+
 
 * unit tests
   * static factories
@@ -42,7 +43,6 @@ todo
 
 * add mutable JU code to benchmarks
 
-* ASortedSet.reverseIterator()
 
 * CHAMP algorithm
 * tuning of RedBlackTree

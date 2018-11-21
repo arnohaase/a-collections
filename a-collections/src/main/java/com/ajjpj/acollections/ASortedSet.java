@@ -24,7 +24,7 @@ public interface ASortedSet<T> extends ASet<T> {
     ASortedSet<T> plus (T o);
     ASortedSet<T> minus (T o);
 
-    ASortedSet<T> union (Iterable<T> that);
+    ASortedSet<T> union (Iterable<? extends T> that);
     ASortedSet<T> intersect (Set<T> that);
     ASortedSet<T> diff (Set<T> that);
 

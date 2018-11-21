@@ -189,7 +189,20 @@ public interface ASet<T> extends ACollection<T>, Set<T> {
      * @return the (potentially) modified set
      */
     ASet<T> plus (T o);
-    //TODO plusAll
+
+    /**
+     * Returns an ASet containing all elements of the Iterable that is passed in. This is
+     *  equivalent (though potentially more efficient) to calling {@link #plus(Object)} for
+     *  each of those elements successively.
+     *
+     * <p> This is an alias for {@link #union(Iterable)}.
+     *
+     * @param that the elements to be added
+     * @return the (potentially) modified set
+     */
+    default ASet<T> plusAll(Iterable<? extends T> that) {
+        return union(that);
+    }
 
     /**
      * Returns an ASet containing all this set's elements without the element
@@ -221,7 +234,7 @@ public interface ASet<T> extends ACollection<T>, Set<T> {
      * @param that the {@link Iterable} whose elements are added
      * @return the set containing both collections' elements
      */
-    ASet<T> union(Iterable<T> that);
+    ASet<T> union(Iterable<? extends T> that);
 
     /**
      * Returns a set containing all of this' elements also contained in another set.

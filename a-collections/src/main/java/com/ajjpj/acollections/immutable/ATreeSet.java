@@ -155,7 +155,7 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return new ATreeSet<>(RedBlackTree.delete(root, o, comparator), comparator);
     }
 
-    @Override public ATreeSet<T> union (Iterable<T> that) {
+    @Override public ATreeSet<T> union (Iterable<? extends T> that) {
         ATreeSet<T> result = this;
         for (T o: that) result = result.plus(o);
         return result;

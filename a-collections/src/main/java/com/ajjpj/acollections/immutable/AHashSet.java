@@ -238,7 +238,7 @@ public class AHashSet<T> extends AbstractImmutableCollection<T> implements AColl
         return compactHashMap.get0(new EqualsSetEntry<>((T)o), 0) != null;
     }
 
-    @Override public AHashSet<T> union (Iterable<T> that) {
+    @Override public AHashSet<T> union (Iterable<? extends T> that) {
         AHashSet<T> result = this;
         for (T o: that)
             result = result.plus(o);

@@ -78,6 +78,16 @@ public interface ASetTests extends ACollectionTests {
         });
     }
 
+    @Test default void testPlusAll() {
+        doTest(v -> {
+            assertTrue (v.mkSet().plusAll(AHashSet.empty()).isEmpty());
+            assertEquals (AHashSet.of(1), v.mkSet().plusAll(AHashSet.of(1)));
+            assertEquals (AHashSet.of(1), v.mkSet(1).plusAll(AHashSet.empty()));
+            assertEquals (AHashSet.of(1, 2), v.mkSet(1).plusAll(AHashSet.of(2)));
+            assertEquals (AHashSet.of(1, 2, 3), v.mkSet(1, 2).plusAll(AHashSet.of(2, 3)));
+        });
+    }
+
     @Test default void testUnion() {
         doTest(v -> {
             assertTrue (v.mkSet().union(AHashSet.empty()).isEmpty());

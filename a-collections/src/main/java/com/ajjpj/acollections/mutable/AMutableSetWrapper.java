@@ -1,7 +1,6 @@
 package com.ajjpj.acollections.mutable;
 
 import com.ajjpj.acollections.*;
-import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.ASetDefaults;
@@ -221,7 +220,7 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
         return this;
     }
 
-    @Override public AMutableSetWrapper<T> union (Iterable<T> that) {
+    @Override public AMutableSetWrapper<T> union (Iterable<? extends T> that) {
         for (T o: that) inner.add(o);
         return this;
     }
