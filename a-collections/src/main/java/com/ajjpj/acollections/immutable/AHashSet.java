@@ -51,8 +51,9 @@ public class AHashSet<T> extends AbstractImmutableCollection<T> implements AColl
     private final CompactHashMap<EqualsSetEntry<T>> compactHashMap;
 
     /**
-     * Convenience method for creating an empty {@link AHashSet}. This can later be modified by calling {@link #plus(Object)} or
-     * {@link #minus(Object)}. For creating a set with known elements, calling one of the {@code of} factory methods is usually more concise.
+     * Creates an empty {@link AHashSet}.
+     * <p> This can later be modified by calling {@link #plus(Object)} or {@link #minus(Object)}. For creating a set with known elements,
+     *  calling one of the {@code of} factory methods is usually more concise.
      *
      * @param <T> the new set's element type
      * @return an empty {@link AHashSet}

@@ -46,22 +46,64 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
     private final RedBlackTree.Tree<T,Object> root;
     private final Comparator<T> comparator;
 
+    /**
+     * Creates an empty {@link ATreeSet} with {@link Comparator#naturalOrder()}.
+     * <p> This can later be modified by calling {@link #plus(Object)} or {@link #minus(Object)}. For creating a set with known elements,
+     *  calling one of the {@code of} factory methods is usually more concise.
+     *
+     * @param <T> the new set's element type
+     * @return an empty {@link ATreeSet}
+     */
     public static <T extends Comparable<T>> ATreeSet<T> empty() {
         return empty(Comparator.<T>naturalOrder());
     }
+
+    /**
+     * Creates an empty {@link ATreeSet} with a given {@link Comparator}.
+     * <p> This can later be modified by calling {@link #plus(Object)} or {@link #minus(Object)}. For creating a set with known elements,
+     *  calling one of the {@code of} factory methods is usually more concise.
+     *
+     * @param comparator the new set's comparator
+     * @param <T> the new set's element type
+     * @return an empty {@link ATreeSet}
+     */
     public static <T> ATreeSet<T> empty(Comparator<T> comparator) {
         return new ATreeSet<>(null, comparator);
     }
 
+    /**
+     * This is an alias for {@link #empty()} for consistency with Java 9 conventions - it creates an empty {@link ATreeSet} with
+     *  {@link Comparator#naturalOrder()}.
+     *
+     * @param <T> the new set's element type
+     * @return an empty {@link ATreeSet}
+     */
     public static <T extends Comparable<T>> ATreeSet<T> of() {
         return empty();
     }
+
+    /**
+     * Convenience factory method creating an {@link ATreeSet} with exactly one element and {@link Comparator#naturalOrder()}.
+     *
+     * @param o the single element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link ATreeSet}
+     */
     public static <T extends Comparable<T>> ATreeSet<T> of(T o) {
         return ATreeSet
                 .<T>builder()
                 .add(o)
                 .build();
     }
+
+    /**
+     * Convenience factory method creating an {@link ATreeSet} with exactly two elements and {@link Comparator#naturalOrder()}.
+     *
+     * @param o1 the first element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param o2 the second element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link ATreeSet}
+     */
     public static <T extends Comparable<T>> ATreeSet<T> of(T o1, T o2) {
         return ATreeSet
                 .<T>builder()
@@ -69,6 +111,16 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
                 .add(o2)
                 .build();
     }
+
+    /**
+     * Convenience factory method creating an {@link ATreeSet} with exactly three elements and {@link Comparator#naturalOrder()}.
+     *
+     * @param o1 the first element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param o2 the second element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param o3 the third element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link ATreeSet}
+     */
     public static <T extends Comparable<T>> ATreeSet<T> of(T o1, T o2, T o3) {
         return ATreeSet
                 .<T>builder()
@@ -77,6 +129,17 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
                 .add(o3)
                 .build();
     }
+
+    /**
+     * Convenience factory method creating an {@link ATreeSet} with exactly four elements and {@link Comparator#naturalOrder()}.
+     *
+     * @param o1 the first element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param o2 the second element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param o3 the third element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param o4 the fourth element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link ATreeSet}
+     */
     public static <T extends Comparable<T>> ATreeSet<T> of(T o1, T o2, T o3, T o4) {
         return ATreeSet
                 .<T>builder()
@@ -86,6 +149,19 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
                 .add(o4)
                 .build();
     }
+
+    /**
+     * Convenience factory method creating an {@link ATreeSet} with more than four elements and {@link Comparator#naturalOrder()}.
+     *
+     * @param o1 the first element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param o2 the second element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param o3 the third element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param o4 the fourth element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param o5 the fifth element for the new set. It must implement {@link Comparable} to work with {@link Comparator#naturalOrder()}.
+     * @param others the (variable number of) additional elements
+     * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
+     * @return the new {@link ATreeSet}
+     */
     @SafeVarargs public static <T extends Comparable<T>> ATreeSet<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
         return ATreeSet
                 .<T>builder()
@@ -98,22 +174,71 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
                 .build();
     }
 
-
+    /**
+     * Creates a new {@link ATreeSet} based on an array's elements.
+     *
+     * @param that the array from which the new set is initialized
+     * @param <T> the set's element type
+     * @return the new set
+     */
     public static <T extends Comparable<T>> ATreeSet<T> from(T[] that) {
         return from(that, Comparator.naturalOrder());
     }
+
+    /**
+     * Creates a new {@link ATreeSet} based on an array's elements with a given {@link Comparator}.
+     *
+     * @param that the array from which the new set is initialized
+     * @param comparator the new set's comparator
+     * @param <T> the set's element type
+     * @return the new set
+     */
     public static <T> ATreeSet<T> from(T[] that, Comparator<T> comparator) {
         return fromIterator(Arrays.asList(that).iterator(), comparator);
     }
-    public static <T extends Comparable<T>> ATreeSet<T> from(Iterable<T> iterable) {
-        return from(iterable, Comparator.naturalOrder());
+
+    /**
+     * Creates a new {@link ATreeSet} based on an {@link Iterable}'s elements.
+     *
+     * @param that the {@link Iterable} from which the new set is initialized
+     * @param <T> the set's element type
+     * @return the new set
+     */
+    public static <T extends Comparable<T>> ATreeSet<T> from(Iterable<T> that) {
+        return from(that, Comparator.naturalOrder());
     }
-    public static <T> ATreeSet<T> from(Iterable<T> iterable, Comparator<T> comparator) {
-        return builder(comparator).addAll(iterable).build();
+
+    /**
+     * Creates a new {@link ATreeSet} based on an {@link Iterable}'s elements with a given {@link Comparator}.
+     *
+     * @param that the {@link Iterable} from which the new set is initialized
+     * @param comparator the new set's comparator
+     * @param <T> the set's element type
+     * @return the new set
+     */
+    public static <T> ATreeSet<T> from(Iterable<T> that, Comparator<T> comparator) {
+        return builder(comparator).addAll(that).build();
     }
+
+    /**
+     * Creates a new {@link ATreeSet} based on an {@link Iterator}'s elements.
+     *
+     * @param it the {@link Iterator} from which the new set is initialized
+     * @param <T> the set's element type
+     * @return the new set
+     */
     public static <T extends Comparable<T>> ATreeSet<T> fromIterator(Iterator<T> it) {
         return fromIterator(it, Comparator.naturalOrder());
     }
+
+    /**
+     * Creates a new {@link ATreeSet} based on an {@link Iterator}'s elements with a given {@link Comparator}.
+     *
+     * @param it the {@link Iterator} from which the new set is initialized
+     * @param comparator the new set's comparator
+     * @param <T> the set's element type
+     * @return the new set
+     */
     public static <T> ATreeSet<T> fromIterator(Iterator<T> it, Comparator<T> comparator) {
         return builder(comparator).addAll(it).build();
     }
