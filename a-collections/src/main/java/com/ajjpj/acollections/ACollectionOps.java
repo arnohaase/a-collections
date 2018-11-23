@@ -295,13 +295,13 @@ public interface ACollectionOps<T> {
     int count(Predicate<T> f);
 
     /**
-     * Returns <tt>true</tt> if this collection contains the specified element.
-     * More formally, returns <tt>true</tt> if and only if this collection
-     * contains at least one element <tt>e</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;e==null&nbsp;:&nbsp;o.equals(e))</tt>.
+     * Returns {@code true} if this collection contains the specified element.
+     * More formally, returns {@code true} if and only if this collection
+     * contains at least one element {@code e} such that
+     * {@code (o==null ? e==null : o.equals(e))}.
      *
      * @param o element whose presence in this collection is to be tested
-     * @return <tt>true</tt> if this collection contains the specified
+     * @return {@code true} if this collection contains the specified
      *         element
      */
     boolean contains(Object o);

@@ -176,9 +176,9 @@ public interface ASet<T> extends ACollection<T>, Set<T> {
     /**
      * Returns an ASet containing all this set's elements as well as an additional element.
      *  More formally, adds the specified element
-     *  <tt>o</tt> to this set if the set contains no element <tt>e2</tt>
+     *  {@code o} to this set if the set contains no element {@code e2}
      *  such that
-     *  <tt>(o==null&nbsp;?&nbsp;e2==null&nbsp;:&nbsp;o.equals(e2))</tt>.
+     *  {@code (o==null ? e2==null : o.equals(e2))}.
      *  If this set already contains the element, the call returns this set
      *  unchanged. This ensures that sets never contain duplicate elements.
      *
@@ -207,9 +207,9 @@ public interface ASet<T> extends ACollection<T>, Set<T> {
     /**
      * Returns an ASet containing all this set's elements without the element
      *  passed to the call.
-     * More formally, removes an element <tt>e</tt>
+     * More formally, removes an element {@code e}
      * such that
-     * <tt>(o==null&nbsp;?&nbsp;e==null&nbsp;:&nbsp;o.equals(e))</tt>, if
+     * {@code (o==null ? e==null : o.equals(e))}, if
      * this set contains such an element, returning the (potentially) modified set.
      * This returned set will not contain the element.
      *
