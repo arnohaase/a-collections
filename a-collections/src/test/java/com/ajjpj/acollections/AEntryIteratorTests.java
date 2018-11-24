@@ -2,7 +2,6 @@ package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ALinkedList;
-import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import org.junit.jupiter.api.Test;
@@ -60,7 +59,6 @@ public interface AEntryIteratorTests {
     @Test default void testToLinkedList () {
         assertTrue(mkIterator().toLinkedList().isEmpty());
         assertEquals(ALinkedList.of(entryOf(1)), mkIterator(1).toLinkedList());
-        //noinspection AssertEqualsBetweenInconvertibleTypes
         assertEquals(v123(), mkIterator(1, 2, 3).toLinkedList());
     }
     @Test default void testToSet () {
@@ -71,8 +69,12 @@ public interface AEntryIteratorTests {
     @Test default void testToMutableList () {
         assertTrue(mkIterator().toMutableList().isEmpty());
         assertEquals(AMutableListWrapper.of(entryOf(1)), mkIterator(1).toMutableList());
-        //noinspection AssertEqualsBetweenInconvertibleTypes
         assertEquals(v123(), mkIterator(1, 2, 3).toMutableList());
+    }
+    @Test default void testToMutableSet () {
+        assertTrue(mkIterator().toMutableSet().isEmpty());
+        assertEquals(AHashSet.of(entryOf(1)), mkIterator(1).toMutableSet());
+        assertEquals(AHashSet.of(entryOf(1), entryOf(2), entryOf(3)), mkIterator(1, 2, 3).toMutableSet());
     }
 
     @Test default void testCorresponds () {

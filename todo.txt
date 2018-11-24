@@ -27,7 +27,6 @@ todo
   * ASortedSet.countInRange,
   * ASortedSet.slice
   * ATreeSet methods in general
-  * AIterator.toMutableSet
 
 * AbstractImmutableSet
 

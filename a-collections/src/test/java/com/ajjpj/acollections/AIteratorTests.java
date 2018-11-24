@@ -5,8 +5,6 @@ import com.ajjpj.acollections.immutable.ALinkedList;
 import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
-import com.ajjpj.acollections.util.AOption;
-import static com.ajjpj.acollections.util.AOption.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
@@ -14,6 +12,8 @@ import java.util.NoSuchElementException;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 
+import static com.ajjpj.acollections.util.AOption.none;
+import static com.ajjpj.acollections.util.AOption.some;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -56,6 +56,11 @@ public interface AIteratorTests {
         assertTrue(mkIterator().toMutableList().isEmpty());
         assertEquals(AMutableListWrapper.of(1), mkIterator(1).toMutableList());
         assertEquals(AMutableListWrapper.of(1, 2, 3), mkIterator(1, 2, 3).toMutableList());
+    }
+    @Test default void testToMutableSet() {
+        assertTrue(mkIterator().toMutableSet().isEmpty());
+        assertEquals(AHashSet.of(1), mkIterator(1).toMutableSet());
+        assertEquals(AHashSet.of(1, 2, 3), mkIterator(1, 2, 3).toMutableSet());
     }
 
     @Test default void testCorresponds() {
