@@ -18,6 +18,10 @@ import static com.ajjpj.acollections.AEntryCollectionOpsTests.*;
 
 
 public class SortedEntrySetTests implements AEntryCollectionOpsTests {
+    @Override @Test public void testStaticFactories() {
+        // nothing to be done - no static factories
+    }
+
     @Override @Test public void testSerDeser () {
         doTest(v -> {
             assertTrue(TestHelpers.serDeser(v.mkColl()).isEmpty());

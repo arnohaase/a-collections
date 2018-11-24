@@ -85,7 +85,7 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
      * @param <V> the map's value type
      * @return the new map
      */
-    static <K,V> AHashMap<K,V> from(Iterable<Map.Entry<K,V>> coll) {
+    static <K,V> AHashMap<K,V> from(Iterable<? extends Map.Entry<K,V>> coll) {
         return AHashMap.from(coll);
     }
 
@@ -97,7 +97,7 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
      * @param <V> the map's value type
      * @return the new map
      */
-    static <K,V> AHashMap<K,V> fromIterator(Iterator<Entry<K,V>> it) {
+    static <K,V> AHashMap<K,V> fromIterator(Iterator<? extends Entry<K,V>> it) {
         return AHashMap.fromIterator(it);
     }
 

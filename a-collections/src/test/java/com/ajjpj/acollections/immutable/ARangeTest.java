@@ -10,14 +10,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ARangeTest implements AListTests {
     @Override public boolean isImmutable () {
         return true;
+    }
+
+    @Override @Test public void testStaticFactories() {
+        // nothing to be done - no static factories
     }
 
     @Override @Test public void testSerDeser () {

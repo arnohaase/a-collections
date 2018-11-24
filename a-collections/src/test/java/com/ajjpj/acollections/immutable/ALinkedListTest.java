@@ -4,6 +4,7 @@ import com.ajjpj.acollections.AListTests;
 import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,13 +29,18 @@ public class ALinkedListTest implements AListTests {
         );
     }
 
-    @Test public void test()  {
-        ALinkedList<Integer> l = ALinkedList.of(1, 2);
-        assertEquals(1, l.head().intValue());
-        assertEquals(2, l.tail().head().intValue());
+    @Override @Test public void testStaticFactories() {
+        assertTrue(ALinkedList.empty().isEmpty());
+        assertTrue(ALinkedList.of().isEmpty());
+        assertEquals("1", ALinkedList.of(1).mkString(","));
+        assertEquals("1,2", ALinkedList.of(1,2).mkString(","));
+        assertEquals("1,2,3", ALinkedList.of(1,2,3).mkString(","));
+        assertEquals("1,2,3,4", ALinkedList.of(1,2,3,4).mkString(","));
+        assertEquals("1,2,3,4,5", ALinkedList.of(1,2,3,4,5).mkString(","));
+        assertEquals("1,2,3,4,5,6", ALinkedList.of(1,2,3,4,5,6).mkString(","));
 
-        ALinkedList<Integer> filtered = ALinkedList.<Integer>builder().addAll(l.iterator().filterNot(el -> el == 2)).build();
-        assertEquals(1, filtered.size());
-        assertEquals(1, filtered.head().intValue());
+        assertEquals(ALinkedList.of(1, 2, 3), ALinkedList.from(Arrays.asList(1, 2, 3)));
+        assertEquals(ALinkedList.of(1, 2, 3), ALinkedList.from(new Integer[] {1, 2, 3}));
+        assertEquals(ALinkedList.of(1, 2, 3), ALinkedList.fromIterator(Arrays.asList(1, 2, 3).iterator()));
     }
 }

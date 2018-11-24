@@ -24,7 +24,6 @@ todo
 
 
 * unit tests
-  * static factories
   * ASortedSet.countInRange,
   * ASortedSet.slice
   * ATreeSet methods in general

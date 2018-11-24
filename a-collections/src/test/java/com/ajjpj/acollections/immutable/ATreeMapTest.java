@@ -1,7 +1,9 @@
 package com.ajjpj.acollections.immutable;
 
+import com.ajjpj.acollections.AMap;
 import com.ajjpj.acollections.AMapTests;
 import com.ajjpj.acollections.TestHelpers;
+import com.ajjpj.acollections.mutable.AMutableMapWrapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -15,6 +17,39 @@ public class ATreeMapTest implements AMapTests {
                 new Variant(() -> ATreeMap.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
                 new Variant(() -> ATreeMap.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
         );
+    }
+
+    @Override @Test public void testStaticFactories() {
+        assertTrue(ATreeMap.empty().isEmpty());
+
+        AMap<Integer,String> expected = AMap.empty();
+        assertEquals(expected, ATreeMap.of());
+        expected = expected.plus(1, "1");
+        assertEquals(expected, ATreeMap.of(1,"1"));
+        expected = expected.plus(2, "2");
+        assertEquals(expected, ATreeMap.of(1,"1", 2, "2"));
+        expected = expected.plus(3, "3");
+        assertEquals(expected, ATreeMap.of(1,"1", 2, "2", 3, "3"));
+        expected = expected.plus(4, "4");
+        assertEquals(expected, ATreeMap.of(1,"1", 2, "2", 3, "3", 4, "4"));
+
+        assertEquals (AMap.of(5, "5"), ATreeMap.from(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5"))));
+        assertEquals (AMap.of(5, "5"), ATreeMap.fromIterator(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5")).iterator()));
+
+        assertEquals (AMap.of(5, "5"), ATreeMap.ofEntries(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5"))));
+
+        assertEquals(expected, ATreeMap.fromMap(expected));
+
+        assertTrue(ATreeMap.empty(Comparator.naturalOrder().reversed()).isEmpty());
+        assertEquals(Comparator.naturalOrder().reversed(), ATreeMap.empty(Comparator.naturalOrder().reversed()).comparator());
+
+        assertEquals (AMap.of(5, "5"), ATreeMap.from(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5")), Comparator.<Integer>naturalOrder().reversed()));
+        assertEquals (AMap.of(5, "5"), ATreeMap.fromIterator(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5")).iterator(), Comparator.<Integer>naturalOrder().reversed()));
+        assertEquals (Comparator.naturalOrder().reversed(), ATreeMap.from(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5")), Comparator.<Integer>naturalOrder().reversed()).comparator());
+        assertEquals (Comparator.naturalOrder().reversed(), ATreeMap.fromIterator(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5")).iterator(), Comparator.<Integer>naturalOrder().reversed()).comparator());
+
+        assertEquals(expected, ATreeMap.fromMap(expected, Comparator.<Integer>naturalOrder().reversed()));
+        assertEquals(Comparator.naturalOrder().reversed(), ATreeMap.fromMap(expected, Comparator.<Integer>naturalOrder().reversed()).comparator());
     }
 
     @Override @Test public void testSerDeser () {

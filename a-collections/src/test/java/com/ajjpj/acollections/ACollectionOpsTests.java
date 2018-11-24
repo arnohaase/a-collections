@@ -2,6 +2,8 @@ package com.ajjpj.acollections;
 
 
 public interface ACollectionOpsTests {
+    void testStaticFactories();
+
     void testEquals();
     void testHashCode();
     void testSerDeser();

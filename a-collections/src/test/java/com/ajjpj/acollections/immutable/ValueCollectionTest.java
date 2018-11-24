@@ -11,6 +11,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class ValueCollectionTest implements ACollectionTests {
+    @Override @Test public void testStaticFactories() {
+        // nothing to be done - no static factories
+    }
+
     @Override @Test public void testEquals () {
         // value collections really are not supposed to be compared
     }

@@ -5,19 +5,49 @@ import com.ajjpj.acollections.AListTests;
 import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@SuppressWarnings("WeakerAccess")
 public class AVectorTest implements AListTests {
 
     @Override public Iterable<Variant> variants () {
         return Collections.singletonList(
                 new Variant(AVector::builder, AVector.of(1, 2, 3))
         );
+    }
+
+    @Override @Test public void testStaticFactories() {
+        assertTrue(AVector.empty().isEmpty());
+        assertTrue(AVector.of().isEmpty());
+        assertEquals("1", AVector.of(1).mkString(","));
+        assertEquals("1,2", AVector.of(1,2).mkString(","));
+        assertEquals("1,2,3", AVector.of(1,2,3).mkString(","));
+        assertEquals("1,2,3,4", AVector.of(1,2,3,4).mkString(","));
+        assertEquals("1,2,3,4,5", AVector.of(1,2,3,4,5).mkString(","));
+        assertEquals("1,2,3,4,5,6", AVector.of(1,2,3,4,5,6).mkString(","));
+
+        assertEquals(AVector.of(1, 2, 3), AVector.from(Arrays.asList(1, 2, 3)));
+        assertEquals(AVector.of(1, 2, 3), AVector.from(new Integer[] {1, 2, 3}));
+        assertEquals(AVector.of(1, 2, 3), AVector.fromIterator(Arrays.asList(1, 2, 3).iterator()));
+    }
+
+    @Test void testStaticFactoriesInAList() {
+        assertTrue(AList.empty().isEmpty());
+        assertTrue(AList.of().isEmpty());
+        assertEquals("1", AList.of(1).mkString(","));
+        assertEquals("1,2", AList.of(1,2).mkString(","));
+        assertEquals("1,2,3", AList.of(1,2,3).mkString(","));
+        assertEquals("1,2,3,4", AList.of(1,2,3,4).mkString(","));
+        assertEquals("1,2,3,4,5", AList.of(1,2,3,4,5).mkString(","));
+        assertEquals("1,2,3,4,5,6", AList.of(1,2,3,4,5,6).mkString(","));
+
+        assertEquals(AVector.of(1, 2, 3), AList.from(Arrays.asList(1, 2, 3)));
+        assertEquals(AVector.of(1, 2, 3), AList.from(new Integer[] {1, 2, 3}));
+        assertEquals(AVector.of(1, 2, 3), AList.fromIterator(Arrays.asList(1, 2, 3).iterator()));
     }
 
     @Override @Test public void testSerDeser () {
@@ -32,7 +62,7 @@ public class AVectorTest implements AListTests {
         });
     }
 
-    @Test public void testAppendSimple() {
+    @Test void testAppendSimple() {
         AVector<Integer> v = AVector.empty();
 
         final int numElements = 10_000_000;
@@ -47,7 +77,7 @@ public class AVectorTest implements AListTests {
         }
     }
 
-    @Test public void testPrependSimple() {
+    @Test void testPrependSimple() {
         AVector<Integer> v = AVector.empty();
 
         final int numElements = 10_000_000;
@@ -66,7 +96,7 @@ public class AVectorTest implements AListTests {
     }
 
 
-    @Test public void testBuilderAndRandomAccess() {
+    @Test void testBuilderAndRandomAccess() {
         final int numElements = 10_000_000;
 
         AVector.Builder<Integer> builder = AVector.builder();
@@ -84,7 +114,7 @@ public class AVectorTest implements AListTests {
         assertEquals(expected, result);
     }
 
-    @Test public void testSubList(){
+    @Override @Test public void testSubList(){
         AVector.Builder<Integer> builder = AVector.builder();
         for (int i=0; i<10; i++) {
             builder.add(i);

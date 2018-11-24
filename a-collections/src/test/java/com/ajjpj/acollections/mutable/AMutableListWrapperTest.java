@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class AMutableListWrapperTest implements AListTests {
@@ -23,8 +22,22 @@ public class AMutableListWrapperTest implements AListTests {
         );
     }
 
-    @Override @Test
-    public void testSerDeser () {
+    @Override @Test public void testStaticFactories() {
+        assertTrue(AMutableListWrapper.empty().isEmpty());
+        assertTrue(AMutableListWrapper.of().isEmpty());
+        assertEquals("1", AMutableListWrapper.of(1).mkString(","));
+        assertEquals("1,2", AMutableListWrapper.of(1,2).mkString(","));
+        assertEquals("1,2,3", AMutableListWrapper.of(1,2,3).mkString(","));
+        assertEquals("1,2,3,4", AMutableListWrapper.of(1,2,3,4).mkString(","));
+        assertEquals("1,2,3,4,5", AMutableListWrapper.of(1,2,3,4,5).mkString(","));
+        assertEquals("1,2,3,4,5,6", AMutableListWrapper.of(1,2,3,4,5,6).mkString(","));
+
+        assertEquals(AMutableListWrapper.of(1, 2, 3), AMutableListWrapper.from(Arrays.asList(1, 2, 3)));
+        assertEquals(AMutableListWrapper.of(1, 2, 3), AMutableListWrapper.from(new Integer[] {1, 2, 3}));
+        assertEquals(AMutableListWrapper.of(1, 2, 3), AMutableListWrapper.fromIterator(Arrays.asList(1, 2, 3).iterator()));
+    }
+
+    @Override @Test public void testSerDeser () {
         doTest(v -> {
             final AMutableListWrapper<Integer> orig = (AMutableListWrapper<Integer>) v.mkList(1);
             final AMutableListWrapper<Integer> serDeser = TestHelpers.serDeser(orig);

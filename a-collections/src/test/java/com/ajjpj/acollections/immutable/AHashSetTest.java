@@ -20,6 +20,36 @@ public class AHashSetTest implements ASetTests {
         );
     }
 
+    @Override @Test public void testStaticFactories() {
+        assertTrue(AHashSet.empty().isEmpty());
+        assertTrue(AHashSet.of().isEmpty());
+        assertEquals(new HashSet<>(Collections.singletonList(1)), AHashSet.of(1));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2)), AHashSet.of(1,2));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3)), AHashSet.of(1,2,3));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4)), AHashSet.of(1,2,3,4));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4, 5)), AHashSet.of(1,2,3,4,5));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6)), AHashSet.of(1,2,3,4,5,6));
+
+        assertEquals(AHashSet.of(1, 2, 3), AHashSet.from(Arrays.asList(1, 2, 3)));
+        assertEquals(AHashSet.of(1, 2, 3), AHashSet.from(new Integer[] {1, 2, 3}));
+        assertEquals(AHashSet.of(1, 2, 3), AHashSet.fromIterator(Arrays.asList(1, 2, 3).iterator()));
+    }
+    
+    @Test void testStaticFactoriesInASet() {
+        assertTrue(ASet.empty().isEmpty());
+        assertTrue(ASet.of().isEmpty());
+        assertEquals(new HashSet<>(Collections.singletonList(1)), ASet.of(1));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2)), ASet.of(1,2));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3)), ASet.of(1,2,3));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4)), ASet.of(1,2,3,4));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4, 5)), ASet.of(1,2,3,4,5));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6)), ASet.of(1,2,3,4,5,6));
+
+        assertEquals(AHashSet.of(1, 2, 3), ASet.from(Arrays.asList(1, 2, 3)));
+        assertEquals(AHashSet.of(1, 2, 3), ASet.from(new Integer[] {1, 2, 3}));
+        assertEquals(AHashSet.of(1, 2, 3), ASet.fromIterator(Arrays.asList(1, 2, 3).iterator()));
+    }
+
     @Override @Test public void testSerDeser () {
         assertEquals(AHashSet.empty(), TestHelpers.serDeser(AHashSet.empty()));
         assertEquals(AHashSet.empty().getClass(), TestHelpers.serDeser(AHashSet.empty()).getClass());

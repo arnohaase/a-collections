@@ -1,17 +1,58 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.ASetTests;
+import com.ajjpj.acollections.ASortedSet;
 import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class ATreeSetTest implements ASetTests  {
+    @Override @Test public void testStaticFactories() {
+        assertTrue(ATreeSet.empty().isEmpty());
+        assertTrue(ATreeSet.of().isEmpty());
+        assertEquals(new HashSet<>(Collections.singletonList(1)), ATreeSet.of(1));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2)), ATreeSet.of(1,2));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3)), ATreeSet.of(1,2,3));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4)), ATreeSet.of(1,2,3,4));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4, 5)), ATreeSet.of(1,2,3,4,5));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6)), ATreeSet.of(1,2,3,4,5,6));
+
+        assertEquals(AVector.of(1, 2, 3), ATreeSet.from(Arrays.asList(1, 2, 3)).toVector());
+        assertEquals(AVector.of(1, 2, 3), ATreeSet.from(new Integer[] {1, 2, 3}).toVector());
+        assertEquals(AVector.of(1, 2, 3), ATreeSet.fromIterator(Arrays.asList(1, 2, 3).iterator()).toVector());
+
+        assertTrue(ATreeSet.empty(Comparator.naturalOrder().reversed()).isEmpty());
+        assertEquals(Comparator.naturalOrder().reversed(), ATreeSet.empty(Comparator.naturalOrder().reversed()).comparator());
+        
+        assertEquals(AVector.of(3, 2, 1), ATreeSet.from(Arrays.asList(1, 2, 3), Comparator.<Integer>naturalOrder().reversed()).toVector());
+        assertEquals(AVector.of(3, 2, 1), ATreeSet.from(new Integer[] {1, 2, 3}, Comparator.<Integer>naturalOrder().reversed()).toVector());
+        assertEquals(AVector.of(3, 2, 1), ATreeSet.fromIterator(Arrays.asList(1, 2, 3).iterator(), Comparator.<Integer>naturalOrder().reversed()).toVector());
+    }
+    
+    @Test void testStaticFactoriesInASortedSet() {
+        assertTrue(ASortedSet.empty().isEmpty());
+        assertTrue(ASortedSet.of().isEmpty());
+        assertEquals(new HashSet<>(Collections.singletonList(1)), ASortedSet.of(1));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2)), ASortedSet.of(1,2));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3)), ASortedSet.of(1,2,3));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4)), ASortedSet.of(1,2,3,4));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4, 5)), ASortedSet.of(1,2,3,4,5));
+        assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6)), ASortedSet.of(1,2,3,4,5,6));
+
+        assertEquals(AVector.of(1, 2, 3), ASortedSet.from(Arrays.asList(1, 2, 3)).toVector());
+        assertEquals(AVector.of(1, 2, 3), ASortedSet.from(new Integer[] {1, 2, 3}).toVector());
+        assertEquals(AVector.of(1, 2, 3), ASortedSet.fromIterator(Arrays.asList(1, 2, 3).iterator()).toVector());
+
+        assertEquals(AVector.of(3, 2, 1), ASortedSet.from(Arrays.asList(1, 2, 3), Comparator.<Integer>naturalOrder().reversed()).toVector());
+        assertEquals(AVector.of(3, 2, 1), ASortedSet.from(new Integer[] {1, 2, 3}, Comparator.<Integer>naturalOrder().reversed()).toVector());
+        assertEquals(AVector.of(3, 2, 1), ASortedSet.fromIterator(Arrays.asList(1, 2, 3).iterator(), Comparator.<Integer>naturalOrder().reversed()).toVector());
+    }
+
     @Override @Test public void testSerDeser () {
         doTest(v -> {
             assertEquals(AHashSet.empty(), TestHelpers.serDeser(v.mkSet()));

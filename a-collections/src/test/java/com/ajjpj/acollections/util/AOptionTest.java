@@ -19,6 +19,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class AOptionTest implements ACollectionOpsTests {
+    @Override @Test public void testStaticFactories() {
+        // nothing to be done - no static factories
+    }
+
     @Override @Test public void testEquals () {
         assertSame(AOption.none(), AOption.none());
         assertNotEquals(AOption.none(), AOption.some(null));

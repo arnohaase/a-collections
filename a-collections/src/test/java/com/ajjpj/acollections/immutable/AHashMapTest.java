@@ -1,14 +1,14 @@
 package com.ajjpj.acollections.immutable;
 
+import com.ajjpj.acollections.AMap;
 import com.ajjpj.acollections.AMapTests;
 import com.ajjpj.acollections.TestHelpers;
+import com.ajjpj.acollections.mutable.AMutableMapWrapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class AHashMapTest implements AMapTests {
@@ -24,7 +24,51 @@ public class AHashMapTest implements AMapTests {
         );
     }
 
-    @Test public void testToMap() {
+    @Override @Test public void testStaticFactories() {
+        assertTrue(AHashMap.empty().isEmpty());
+
+        AMap<Integer,String> expected = AMap.empty();
+        assertEquals(expected, AHashMap.of());
+        expected = expected.plus(1, "1");
+        assertEquals(expected, AHashMap.of(1,"1"));
+        expected = expected.plus(2, "2");
+        assertEquals(expected, AHashMap.of(1,"1", 2, "2"));
+        expected = expected.plus(3, "3");
+        assertEquals(expected, AHashMap.of(1,"1", 2, "2", 3, "3"));
+        expected = expected.plus(4, "4");
+        assertEquals(expected, AHashMap.of(1,"1", 2, "2", 3, "3", 4, "4"));
+
+        assertEquals (AMap.of(5, "5"), AHashMap.from(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5"))));
+        assertEquals (AMap.of(5, "5"), AHashMap.fromIterator(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5")).iterator()));
+
+        assertEquals (AMap.of(5, "5"), AHashMap.ofEntries(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5"))));
+
+        assertEquals(expected, AHashMap.fromMap(expected));
+    }
+
+    @Test void testStaticFactoriesInAMap() {
+        assertTrue(AMap.empty().isEmpty());
+
+        AMap<Integer,String> expected = AMap.empty();
+        assertEquals(expected, AMap.of());
+        expected = expected.plus(1, "1");
+        assertEquals(expected, AMap.of(1,"1"));
+        expected = expected.plus(2, "2");
+        assertEquals(expected, AMap.of(1,"1", 2, "2"));
+        expected = expected.plus(3, "3");
+        assertEquals(expected, AMap.of(1,"1", 2, "2", 3, "3"));
+        expected = expected.plus(4, "4");
+        assertEquals(expected, AMap.of(1,"1", 2, "2", 3, "3", 4, "4"));
+
+        assertEquals (AMap.of(5, "5"), AMap.from(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5"))));
+        assertEquals (AMap.of(5, "5"), AMap.fromIterator(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5")).iterator()));
+
+        assertEquals (AMap.of(5, "5"), AMap.ofEntries(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5"))));
+
+        assertEquals(expected, AMap.fromMap(expected));
+    }
+
+    @Test void testToMap() {
         // this test is here rather than in ACollectionOpsTests because those tests work on collections of Integer, and the functionality
         //  is generic enough to be sufficiently tested by just using AVector
         assertEquals(AHashMap.empty(), AVector.empty().toMap());
@@ -69,7 +113,7 @@ public class AHashMapTest implements AMapTests {
         return result;
     }
 
-    @Test public void testAddRemove() {
+    @Test void testAddRemove() {
         final Map<Integer, Integer> juMap = createJu();
         final AHashMap<Integer, Integer> aMap = createA();
 
@@ -87,7 +131,7 @@ public class AHashMapTest implements AMapTests {
         assertEquals(juMap, juMap2);
     }
 
-    @Test public void testCollision() {
+    @Test void testCollision() {
         AHashMap<IntWithCollision, Integer> aMap = AHashMap.empty();
         for (int i=0; i<10; i++) {
             aMap = aMap.plus(new IntWithCollision(i), 2*i);

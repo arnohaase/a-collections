@@ -33,6 +33,19 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     private final Comparator<K> comparator;
 
     /**
+     * Convenience method for creating an empty {@link ATreeMap} with {@link Comparator#naturalOrder()}. This can later be modified by
+     *  calling {@link #plus(Object,Object)} or {@link #minus(Object)}. For creating a map with known elements, calling one of the
+     *  {@code of} factory methods is usually more concise.
+     *
+     * @param <K> the new map's key type
+     * @param <V> the new map's value type
+     * @return an empty {@link AHashMap}
+     */
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> empty() {
+        return new ATreeMap<>(null, Comparator.<K>naturalOrder());
+    }
+
+    /**
      * Convenience method for creating an empty {@link ATreeMap}. This can later be modified by calling {@link #plus(Object,Object)} or
      * {@link #minus(Object)}. For creating a map with known elements, calling one of the {@code of} factory methods is usually more concise.
      *
@@ -59,7 +72,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
      * @param <V> the map's value type
      * @return the new map
      */
-    public static <K extends Comparable<K>,V> ATreeMap<K,V> fromIterator(Iterator<Entry<K,V>> it) {
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> fromIterator(Iterator<? extends Entry<K,V>> it) {
         return fromIterator(it, Comparator.naturalOrder());
     }
 
@@ -73,7 +86,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
      * @param <V> the map's value type
      * @return the new map
      */
-    public static <K,V> ATreeMap<K,V> fromIterator(Iterator<Entry<K,V>> it, Comparator<K> comparator) {
+    public static <K,V> ATreeMap<K,V> fromIterator(Iterator<? extends Entry<K,V>> it, Comparator<K> comparator) {
         return ATreeMap.<K,V> builder(comparator).addAll(it).build();
     }
 
@@ -110,7 +123,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
      * @param <V> the map's value type
      * @return the new map
      */
-    public static <K extends Comparable<K>,V> ATreeMap<K,V> from(Iterable<Entry<K,V>> coll) {
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> from(Iterable<? extends Entry<K,V>> coll) {
         return from(coll, Comparator.naturalOrder());
     }
 
@@ -123,7 +136,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
      * @param <V> the map's value type
      * @return the new map
      */
-    public static <K,V> ATreeMap<K,V> from(Iterable<Entry<K,V>> it, Comparator<K> comparator) {
+    public static <K,V> ATreeMap<K,V> from(Iterable<? extends Entry<K,V>> it, Comparator<K> comparator) {
         return ATreeMap.<K,V> builder(comparator).addAll(it).build();
     }
 

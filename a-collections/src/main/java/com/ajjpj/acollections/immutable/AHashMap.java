@@ -66,7 +66,7 @@ public class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements ACollect
      * @param <V> the map's value type
      * @return the new map
      */
-    public static <K,V> AHashMap<K,V> from(Iterable<Map.Entry<K,V>> coll) {
+    public static <K,V> AHashMap<K,V> from(Iterable<? extends Map.Entry<K,V>> coll) {
         return AHashMap.<K,V>builder().addAll(coll).build();
     }
 
@@ -78,7 +78,7 @@ public class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements ACollect
      * @param <V> the map's value type
      * @return the new map
      */
-    public static <K,V> AHashMap<K,V> fromIterator(Iterator<Entry<K,V>> it) {
+    public static <K,V> AHashMap<K,V> fromIterator(Iterator<? extends Entry<K,V>> it) {
         return AHashMap.<K,V> builder().addAll(it).build();
     }
 

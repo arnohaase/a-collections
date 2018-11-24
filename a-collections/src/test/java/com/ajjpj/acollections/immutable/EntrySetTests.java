@@ -14,6 +14,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class EntrySetTests implements AEntryCollectionOpsTests {
+    @Override @Test public void testStaticFactories() {
+        // nothing to be done - no static factories
+    }
+
     @Override @Test public void testSerDeser () {
         doTest(v -> {
             assertEquals(v.mkColl(), TestHelpers.serDeser(v.mkColl()));

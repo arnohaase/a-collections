@@ -14,6 +14,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class SortedKeySetTest implements ASetTests {
+    @Override @Test public void testStaticFactories() {
+        // nothing to be done - no static factories
+    }
+
     @Override @Test public void testSerDeser () {
         doTest(v -> {
             assertEquals(v.mkSet(), TestHelpers.serDeser(v.mkSet()));
