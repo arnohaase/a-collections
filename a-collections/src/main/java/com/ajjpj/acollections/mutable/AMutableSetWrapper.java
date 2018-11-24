@@ -7,9 +7,8 @@ import com.ajjpj.acollections.internal.ASetDefaults;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 
@@ -335,6 +334,7 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
         return getClass().getSimpleName() + ":" + inner;
     }
 
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     @Override public boolean equals (Object obj) {
         return inner.equals(obj);
     }
@@ -343,6 +343,30 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
         return inner.hashCode();
     }
 
+    /**
+     * Returns a {@link Collector} to collect {@link java.util.stream.Stream} elements into an AMutableSetWrapper.
+     *
+     * @param <T> the stream's element type
+     * @return a {@link Collector} to collect a stream's elements into an AMutableSetWrapper
+     */
+    public static <T> Collector<T, Builder<T>, AMutableSetWrapper<T>> streamCollector() {
+        final Supplier<Builder<T>> supplier = AMutableSetWrapper::builder;
+        final BiConsumer<Builder<T>, T> accumulator = Builder::add;
+        final BinaryOperator<Builder<T>> combiner = (b1, b2) -> {
+            b1.addAll(b2.build());
+            return b1;
+        };
+        final Function<Builder<T>, AMutableSetWrapper<T>> finisher = Builder::build;
+
+        return Collector.of(supplier, accumulator, combiner, finisher);
+    }
+
+    /**
+     * Returns a new {@link ACollectionBuilder} for building an AMutableSetWrapper efficiently and in a generic manner.
+     *
+     * @param <T> the builder's element type
+     * @return an new {@link ACollectionBuilder}
+     */
     public static <T> Builder<T> builder() {
         return new Builder<>();
     }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,4 +44,11 @@ public class ALinkedListTest implements AListTests {
         assertEquals(ALinkedList.of(1, 2, 3), ALinkedList.from(new Integer[] {1, 2, 3}));
         assertEquals(ALinkedList.of(1, 2, 3), ALinkedList.fromIterator(Arrays.asList(1, 2, 3).iterator()));
     }
+
+    @Test void testCollector() {
+        assertEquals(AVector.of(1, 2, 3, 4), Stream.of(1, 2, 3, 4).collect(ALinkedList.streamCollector()));
+        assertEquals(AVector.empty(), Stream.of().collect(ALinkedList.streamCollector()));
+        assertEquals(ARange.create(0, 100000).toVector(), ARange.create(0, 100000).parallelStream().collect(ALinkedList.streamCollector()));
+    }
+
 }

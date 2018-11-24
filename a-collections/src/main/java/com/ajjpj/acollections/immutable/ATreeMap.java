@@ -230,9 +230,26 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     }
 
 
+    /**
+     * Returns a new {@link ACollectionBuilder} for building an ATreeMap efficiently and in a generic manner. The map uses
+     *  {@link Comparator#naturalOrder()} to sort keys.
+     *
+     * @param <K> the builder's key type
+     * @param <V> the builder's value type
+     * @return an new {@link ACollectionBuilder}
+     */
     public static <K extends Comparable<K>,V> Builder<K,V> builder() {
         return builder(Comparator.<K>naturalOrder());
     }
+
+    /**
+     * Returns a new {@link ACollectionBuilder} for building an ATreeMap efficiently and in a generic manner.
+     *
+     * @param comparator the map's key comparator
+     * @param <K> the builder's key type
+     * @param <V> the builder's value type
+     * @return an new {@link ACollectionBuilder}
+     */
     public static <K,V> Builder<K,V> builder(Comparator<K> comparator) {
         return new Builder<>(comparator);
     }

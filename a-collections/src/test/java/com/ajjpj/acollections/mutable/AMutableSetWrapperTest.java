@@ -1,13 +1,17 @@
 package com.ajjpj.acollections.mutable;
 
+import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.ASetTests;
 import com.ajjpj.acollections.TestHelpers;
 import com.ajjpj.acollections.immutable.AHashSet;
+import com.ajjpj.acollections.immutable.ARange;
+import com.ajjpj.acollections.immutable.AVector;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,4 +52,9 @@ public class AMutableSetWrapperTest implements ASetTests {
         });
     }
 
+    @Test void testCollector() {
+        assertEquals(ASet.of(1, 2, 3, 4), Stream.of(1, 2, 3, 4).collect(AMutableSetWrapper.streamCollector()));
+        assertEquals(ASet.empty(), Stream.of().collect(AMutableSetWrapper.streamCollector()));
+        assertEquals(ARange.create(0, 100000).toSet(), ARange.create(0, 100000).parallelStream().collect(AMutableSetWrapper.streamCollector()));
+    }
 }

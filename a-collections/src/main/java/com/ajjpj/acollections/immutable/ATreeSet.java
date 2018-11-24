@@ -9,8 +9,8 @@ import com.ajjpj.acollections.util.AOption;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 
 /**
@@ -243,16 +243,30 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return builder(comparator).addAll(it).build();
     }
 
-    public static <T extends Comparable<T>> Builder<T> builder() {
-        return builder(Comparator.<T>naturalOrder());
-    }
+    /**
+     * Returns a new {@link ACollectionBuilder} for building an ATreeSet efficiently and in a generic manner.
+     *
+     * @param comparator the builder's comparator
+     * @param <T> the builder's element type
+     * @return an new {@link ACollectionBuilder}
+     */
     public static <T> Builder<T> builder(Comparator<T> comparator) {
         return new Builder<>(comparator);
     }
-
     private ATreeSet (RedBlackTree.Tree<T, Object> root, Comparator<T> comparator) {
         this.root = root;
         this.comparator = comparator;
+    }
+
+    /**
+     * Returns a new {@link ACollectionBuilder} for building an ATreeSet efficiently and in a generic manner. The builder uses
+     *  {@link Comparator#naturalOrder()}.
+     *
+     * @param <T> the builder's element type
+     * @return an new {@link ACollectionBuilder}
+     */
+    public static <T extends Comparable<T>> Builder<T> builder() {
+        return builder(Comparator.<T>naturalOrder());
     }
 
     @Override public Comparator<T> comparator () {
@@ -404,6 +418,24 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
 
     @Override public boolean containsAll (Collection<?> c) {
         return ACollectionDefaults.super.containsAll(c);
+    }
+
+    /**
+     * Returns a {@link Collector} to collect {@link java.util.stream.Stream} elements into an ATreeSet.
+     *
+     * @param <T> the stream's element type
+     * @return a {@link Collector} to collect a stream's elements into an ATreeSet
+     */
+    public static <T extends Comparable<T>> Collector<T, Builder<T>, ATreeSet<T>> streamCollector() {
+        final Supplier<Builder<T>> supplier = ATreeSet::builder;
+        final BiConsumer<Builder<T>, T> accumulator = Builder::add;
+        final BinaryOperator<Builder<T>> combiner = (b1, b2) -> {
+            b1.addAll(b2.build());
+            return b1;
+        };
+        final Function<Builder<T>, ATreeSet<T>> finisher = Builder::build;
+
+        return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
     public static class Builder<T> implements ACollectionBuilder<T,ATreeSet<T>> {

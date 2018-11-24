@@ -2,10 +2,12 @@ package com.ajjpj.acollections.mutable;
 
 import com.ajjpj.acollections.AListTests;
 import com.ajjpj.acollections.TestHelpers;
+import com.ajjpj.acollections.immutable.ARange;
 import com.ajjpj.acollections.immutable.AVector;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,4 +49,9 @@ public class AMutableListWrapperTest implements AListTests {
         });
     }
 
+    @Test void testCollector() {
+        assertEquals(AVector.of(1, 2, 3, 4), Stream.of(1, 2, 3, 4).collect(AMutableListWrapper.streamCollector()));
+        assertEquals(AVector.empty(), Stream.of().collect(AMutableListWrapper.streamCollector()));
+        assertEquals(ARange.create(0, 100000).toVector(), ARange.create(0, 100000).parallelStream().collect(AMutableListWrapper.streamCollector()));
+    }
 }

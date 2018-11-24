@@ -6,6 +6,7 @@ import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -81,4 +82,9 @@ public class ATreeSetTest implements ASetTests  {
         // TODO ascending / descending assertEquals(ATreeSet.of(1, 2, 3, 4), v.mkColl(2, 1, 4, 3).toSortedSet());
     }
 
+    @Test void testCollector() {
+        assertEquals(ATreeSet.of(1, 2, 3, 4), Stream.of(1, 2, 3, 4).collect(ATreeSet.streamCollector()));
+        assertEquals(ATreeSet.empty(), Stream.<Integer>of().collect(ATreeSet.streamCollector()));
+        assertEquals(ARange.create(0, 100000).toSortedSet(), ARange.create(0, 100000).parallelStream().collect(ATreeSet.streamCollector()));
+    }
 }

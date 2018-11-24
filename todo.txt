@@ -6,8 +6,6 @@ todo
     * building etc.
   * package.java
 
-  * builders
-
   * Link auf github in jede (wichtige) Datei
 
 
@@ -16,7 +14,6 @@ todo
 * ASortedMap: upper bound for iterator methods
 
 * AIterator.flatMap
-* stream support: collectors for ACollection instances
 
 * ASortedSet.reverseIterator()
 

@@ -13,8 +13,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 
 /**
@@ -297,6 +297,31 @@ public class AHashSet<T> extends AbstractImmutableCollection<T> implements AColl
         return ACollectionDefaults.super.containsAll(c);
     }
 
+
+    /**
+     * Returns a {@link Collector} to collect {@link java.util.stream.Stream} elements into an AHashSet.
+     *
+     * @param <T> the stream's element type
+     * @return a {@link Collector} to collect a stream's elements into an AHashSet
+     */
+    public static <T> Collector<T, Builder<T>, AHashSet<T>> streamCollector() {
+        final Supplier<Builder<T>> supplier = AHashSet::builder;
+        final BiConsumer<Builder<T>, T> accumulator = Builder::add;
+        final BinaryOperator<Builder<T>> combiner = (b1, b2) -> {
+            b1.addAll(b2.build());
+            return b1;
+        };
+        final Function<Builder<T>, AHashSet<T>> finisher = Builder::build;
+
+        return Collector.of(supplier, accumulator, combiner, finisher);
+    }
+
+    /**
+     * Returns a new {@link ACollectionBuilder} for building an AHashSet efficiently and in a generic manner.
+     *
+     * @param <T> the builder's element type
+     * @return an new {@link ACollectionBuilder}
+     */
     public static <T> Builder<T> builder() {
         return new Builder<>();
     }

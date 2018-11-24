@@ -6,6 +6,7 @@ import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -158,5 +159,11 @@ public class AHashSetTest implements ASetTests {
         @Override public String toString () {
             return String.valueOf(i);
         }
+    }
+
+    @Test void testCollector() {
+        assertEquals(AHashSet.of(1, 2, 3, 4), Stream.of(1, 2, 3, 4).collect(AHashSet.streamCollector()));
+        assertEquals(AHashSet.empty(), Stream.of().collect(AHashSet.streamCollector()));
+        assertEquals(ARange.create(0, 100000).toSet(), ARange.create(0, 100000).parallelStream().collect(AHashSet.streamCollector()));
     }
 }

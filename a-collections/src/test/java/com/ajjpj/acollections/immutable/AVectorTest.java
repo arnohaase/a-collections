@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -114,7 +115,7 @@ public class AVectorTest implements AListTests {
         assertEquals(expected, result);
     }
 
-    @Override @Test public void testSubList(){
+    @Override @Test public void testSubList() {
         AVector.Builder<Integer> builder = AVector.builder();
         for (int i=0; i<10; i++) {
             builder.add(i);
@@ -132,5 +133,9 @@ public class AVectorTest implements AListTests {
         assertFalse(subList.hasNext());
     }
 
-
+    @Test void testCollector() {
+        assertEquals(AVector.of(1, 2, 3, 4), Stream.of(1, 2, 3, 4).collect(AVector.streamCollector()));
+        assertEquals(AVector.empty(), Stream.of().collect(AVector.streamCollector()));
+        assertEquals(ARange.create(0, 100000).toVector(), ARange.create(0, 100000).parallelStream().collect(AVector.streamCollector()));
+    }
 }

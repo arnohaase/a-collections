@@ -405,6 +405,13 @@ public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWr
         return getClass().getSimpleName() + "@" + inner;
     }
 
+    /**
+     * Returns a new {@link ACollectionBuilder} for building an AMutableMapWrapper efficiently and in a generic manner.
+     *
+     * @param <K> the builder's key type
+     * @param <V> the builder's value type
+     * @return an new {@link ACollectionBuilder}
+     */
     public static <K,V> Builder<K,V> builder() {
         return new Builder<>();
     }

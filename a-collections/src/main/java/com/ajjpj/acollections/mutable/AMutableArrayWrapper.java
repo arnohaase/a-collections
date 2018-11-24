@@ -9,8 +9,8 @@ import com.ajjpj.acollections.internal.AListDefaults;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 
 /**
@@ -462,6 +462,30 @@ public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMuta
         return result;
     }
 
+    /**
+     * Returns a {@link Collector} to collect {@link java.util.stream.Stream} elements into an AMutableArrayWrapper.
+     *
+     * @param <T> the stream's element type
+     * @return a {@link Collector} to collect a stream's elements into an AMutableArrayWrapper
+     */
+    public static <T> Collector<T, Builder<T>, AMutableArrayWrapper<T>> streamCollector() {
+        final Supplier<Builder<T>> supplier = AMutableArrayWrapper::builder;
+        final BiConsumer<Builder<T>, T> accumulator = AMutableArrayWrapper.Builder::add;
+        final BinaryOperator<Builder<T>> combiner = (b1, b2) -> {
+            b1.addAll(b2.build());
+            return b1;
+        };
+        final Function<Builder<T>, AMutableArrayWrapper<T>> finisher = Builder::build;
+
+        return Collector.of(supplier, accumulator, combiner, finisher);
+    }
+
+    /**
+     * Returns a new {@link ACollectionBuilder} for building an AMutableArrayWrapper efficiently and in a generic manner.
+     *
+     * @param <T> the builder's element type
+     * @return an new {@link ACollectionBuilder}
+     */
     public static <T> Builder<T> builder() {
         return new Builder<>();
     }

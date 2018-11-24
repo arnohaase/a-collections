@@ -7,8 +7,8 @@ import com.ajjpj.acollections.internal.AListSupport;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
+import java.util.stream.Collector;
 
 
 /**
@@ -1247,6 +1247,30 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
         }
     }
 
+    /**
+     * Returns a {@link Collector} to collect {@link java.util.stream.Stream} elements into an AVector.
+     *
+     * @param <T> the stream's element type
+     * @return a {@link Collector} to collect a stream's elements into an AVector
+     */
+    public static <T> Collector<T, Builder<T>, AVector<T>> streamCollector() {
+        final Supplier<Builder<T>> supplier = AVector::builder;
+        final BiConsumer<Builder<T>, T> accumulator = Builder::add;
+        final BinaryOperator<Builder<T>> combiner = (b1, b2) -> {
+            b1.addAll(b2.build());
+            return b1;
+        };
+        final Function<Builder<T>, AVector<T>> finisher = Builder::build;
+
+        return Collector.of(supplier, accumulator, combiner, finisher);
+    }
+
+    /**
+     * Returns a new {@link ACollectionBuilder} for building an AVector efficiently and in a generic manner.
+     *
+     * @param <T> the builder's element type
+     * @return an new {@link ACollectionBuilder}
+     */
     public static <T> Builder<T> builder() {
         return new Builder<>();
     }
