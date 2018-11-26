@@ -14,8 +14,6 @@ todo
 * ASortedMap should implement NavigableMap
 * ASortedMap: upper bound for iterator methods
 
-* AIterator.flatMap
-
 * ASortedSet.reverseIterator()
 
 * ASortedSet javadoc: comments with  T O D O  in them

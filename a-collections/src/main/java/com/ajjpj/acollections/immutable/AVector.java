@@ -774,6 +774,10 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
         @Override public AIterator<T> filter (Predicate<T> f) {
             return AbstractAIterator.filter(this, f);
         }
+
+        @Override public <U> AIterator<U> flatMap (Function<? super T, ? extends Iterator<? extends U>> f) {
+            return AbstractAIterator.flatMap(this, f);
+        }
     }
 
 

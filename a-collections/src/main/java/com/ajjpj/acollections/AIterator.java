@@ -185,6 +185,26 @@ public interface AIterator<T> extends Iterator<T> {
     }
 
     /**
+     * Applies a function to each of this iterator's elements, concatenating the returned iterators.
+     *
+     * <p> This method is for when each element in an iterator produces zero or more elements, and the resulting elements should be
+     *  treated as an iterator themselves. The following example turns an iterator of text snippets into an iterator of words by splitting
+     *  each text snippet into its comprising words:
+     *
+     * <pre>
+     * {@code Iterator<String> splitToWords(String s) {return AMutableArrayWrapper.wrap(s.split(" ")).iterator(); } }
+     * {@code ...}
+     * {@code AIterator<String> snippets = ...;}
+     * {@code AIterator<String> words = snippets.flatMap(this::splitToWords);}
+     * </pre>
+     *
+     * @param f   the extractor function providing the resulting elements for each of this iterator's elements
+     * @param <U> the resulting iterator's element type
+     * @return an iterator with the concatenated results of applying a function to each of this iterator's elements
+     */
+    <U> AIterator<U> flatMap(Function<? super T, ? extends Iterator<? extends U>> f);
+
+    /**
      * Returns an iterator that contains only those elements of this iterator which match a given predicate
      *
      * @param f the filtering predicate
@@ -483,7 +503,6 @@ public interface AIterator<T> extends Iterator<T> {
      * @return a new iterator with this iterator's elements followed by the other iterator's elements
      */
     default AIterator<T> concat(Iterator<? extends T> other) {
-        //noinspection unchecked
         return AIterator.concat(this, other);
     }
 
@@ -506,6 +525,6 @@ public interface AIterator<T> extends Iterator<T> {
      */
     @SafeVarargs
     static <T> AIterator<T> concat(Iterator<? extends T>... inner) {
-        return wrap(new AbstractAIterator.ConcatIterator<>(inner));
+        return new AbstractAIterator.ConcatIterator<>(inner);
     }
 }

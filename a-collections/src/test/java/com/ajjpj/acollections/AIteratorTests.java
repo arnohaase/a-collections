@@ -97,6 +97,12 @@ public interface AIteratorTests {
         }
     }
 
+    @Test default void testFlatMap() {
+        assertTrue(mkIterator().flatMap(n -> AVector.of(n, n-1, n+1).iterator()).toVector().isEmpty());
+        assertTrue(mkIterator(1, 2, 3).flatMap(n -> AIterator.empty()).toVector().isEmpty());
+        assertEquals(AVector.of(1, 2, 3), mkIterator(1, 2, 3).flatMap(AIterator::single).toVector());
+        assertEquals(AVector.of(1, 0, 2, 2, 1, 3, 3, 2, 4), mkIterator(1, 2, 3).flatMap(n -> AVector.of(n, n-1, n+1).iterator()).toVector());
+    }
     @Test default void testMap () {
         assertTrue(mkIterator().map(String::valueOf).toVector().isEmpty());
         assertEquals(AVector.of("1"), mkIterator(1).map(String::valueOf).toVector());
