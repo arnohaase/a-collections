@@ -24,6 +24,8 @@ public interface ACollectionOpsTests {
 
     void testHead();
     void testHeadOption();
+    void testFirst();
+    void testFirstOption();
 
     void testMap();
     void testFlatMap();

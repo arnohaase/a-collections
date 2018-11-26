@@ -79,13 +79,16 @@ public interface ACollectionOps<T> {
     }
 
     /**
-     * returns this collection's first element, or {@code null} if it is empty. 'First' element means first element in iteration order,
-     *  which differs a lot for different kinds of collections:
+     * returns this collection's first element, or {@code null} if this collection is empty.
+     *
+     * <p> 'First' element means first element in iteration order, which differs a lot for different kinds of collections:
      * <ul>
      *     <li> For an {@link AList}, it is the element at index 0.
      *     <li> For an {@link ASortedSet} or {@link ASortedMap}, it is the 'smallest' element (as defined by its sort order)
      *     <li> For an {@link AHashSet} or {@link AHashMap}, it can be any element.
      * </ul>
+     *
+     * {@code head()} is an alias for {@link #first()} reflecting functional programming naming conventions.
      *
      * @return this collection's first element, of {@code null} if it is empty.
      */
@@ -95,9 +98,38 @@ public interface ACollectionOps<T> {
      * This is the same as {@link #head()}, but returning {@link AOption#some(Object)} for non-empty collections and {@link AOption#none()}
      *  for empty collections.
      *
+     * <p> {@code headOption()} is an alias for {@link #firstOption()} reflecting functional programming naming conventions.
+     *
      * @return the first element, if any
      */
     AOption<T> headOption();
+
+    /**
+     * returns this collection's first element, or {@code null} if this collection is empty.
+     *
+     * <p> 'First' element means first element in iteration order, which differs a lot for different kinds of collections:
+     * <ul>
+     *     <li> For an {@link AList}, it is the element at index 0.
+     *     <li> For an {@link ASortedSet} or {@link ASortedMap}, it is the 'smallest' element (as defined by its sort order)
+     *     <li> For an {@link AHashSet} or {@link AHashMap}, it can be any element.
+     * </ul>
+     *
+     * @return this collection's first element, of {@code null} if it is empty.
+     */
+    default T first() {
+        return head();
+    }
+
+    /**
+     * This is the same as {@link #first()}, but returning {@link AOption#some(Object)} for non-empty collections and {@link AOption#none()}
+     *  for empty collections.
+     *
+     * @return the first element, if any
+     */
+    default AOption<T> firstOption() {
+        return headOption();
+    }
+
 
     /**
      * This is a convenience method to convert any collection into an {@link ALinkedList}. If the collection is an {@link ALinkedList}

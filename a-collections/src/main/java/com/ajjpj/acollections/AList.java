@@ -36,7 +36,7 @@ import java.util.function.Predicate;
  * {@code AList<Integer> l4 = l1.append(1).prepend(2);}
  * {@code System.out.println(l4); // 2, 1, 2, 3, 1}
  * </pre>
- * <p> There are methods {@link #tail()} and {@link #init()} to remove the first and last element, respectively:
+ * <p> There are methods {@link #tail()} and {@link #withoutLast()} to remove the first and last element, respectively:
  *
  * <pre>
  * {@code System.out.println(l1.tail()); // 2, 3}
@@ -288,10 +288,22 @@ public interface AList<T> extends ACollection<T>, List<T> {
      * @throws NoSuchElementException when called on an empty list
      * @return this list without the last element
      */
-    AList<T> init();
+    AList<T> withoutLast();
 
     /**
      * Returns this list without the first element, throwing {@code NoSuchElementException} if the list is empty.
+     * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
+     *
+     * @throws NoSuchElementException when called on an empty list
+     * @return this list without the first element
+     */
+    default AList<T> withoutFirst() {
+        return tail();
+    }
+
+    /**
+     * Returns this list without the first element, throwing {@code NoSuchElementException} if the list is empty.
+     * <p> This is an alias for {@link #withoutFirst()} reflecting function programming naming conventions.
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
      * @throws NoSuchElementException when called on an empty list

@@ -244,7 +244,7 @@ public abstract class ALinkedList<T> extends AbstractImmutableCollection<T> impl
         return l.head();
     }
 
-    @Override public ALinkedList<T> init () {
+    @Override public ALinkedList<T> withoutLast () {
         if(isEmpty()) throw new NoSuchElementException();
         return dropRight(1);
     }

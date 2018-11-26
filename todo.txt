@@ -3,6 +3,7 @@ todo
 * Documentation
   * README.md
     * introduction, persistent collections
+    * java.util.Collection (both mutable / immutable) etc. --> drop-in replacement for use with existing APIs
     * building etc.
   * package.java
 
@@ -19,16 +20,21 @@ todo
 
 * ASortedSet javadoc: comments with  T O D O  in them
 
+* ajjpj.com
+  * landing page
+  * redirect per project
+
 
 * unit tests
   * ASortedSet.countInRange,
   * ASortedSet.slice
   * ATreeSet methods in general
 
+---------------------------------------------------------------------------------------------------------------
+
 * AbstractImmutableSet
 
 * add mutable JU code to benchmarks
-
 
 * CHAMP algorithm
 * tuning of RedBlackTree

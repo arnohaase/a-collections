@@ -21,7 +21,7 @@ import java.util.stream.Collector;
  *  {@code boolean} or a previous element, but in order to "modify" an immutable collection, they would need to return the new collection
  *  instance.
  *
- * <p> So instances of this class rely on methods like {@link #prepend(Object)}, {@link #append(Object)}, {@link #tail()}, {@link #init()}
+ * <p> So instances of this class rely on methods like {@link #prepend(Object)}, {@link #append(Object)}, {@link #tail()}, {@link #withoutLast()}
  *  or {@link #updated(int, Object)} for adding / removing / modifying entries. For examples, see {@link AList}.
  *
  * <p> Implementation note: This class is ported from Scala's standard library 'Vector'. It is backed by a little

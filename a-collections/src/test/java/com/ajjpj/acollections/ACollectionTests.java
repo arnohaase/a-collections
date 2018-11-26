@@ -74,14 +74,12 @@ public interface ACollectionTests extends ACollectionOpsTests {
             AMutableListWrapper<Integer> trace = AMutableListWrapper.empty();
             //noinspection UseBulkOperation
             v.mkColl(1).forEach(trace::add);
-            //noinspection AssertEqualsBetweenInconvertibleTypes
             assertEquals (AVector.of(1), trace);
 
             trace.clear();
             //noinspection UseBulkOperation
             v.mkColl(1, 2, 3).forEach(trace::add);
             if (v.iterationOrder123() != null)
-                //noinspection AssertEqualsBetweenInconvertibleTypes
                 assertEquals(v.iterationOrder123(), trace);
             else
                 assertEquals(AHashSet.of(1, 2, 3), trace.toSet());
@@ -176,12 +174,34 @@ public interface ACollectionTests extends ACollectionOpsTests {
         });
     }
 
+    @Test @Override default void testFirst() {
+        doTest(v -> {
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().first());
+            assertEquals(1, v.mkColl(1).first().intValue());
+            if (v.iterationOrder123() != null)
+                assertEquals(v.mkColl(1, 2, 3).first(), v.iterationOrder123().first());
+            else {
+                assertTrue(AHashSet.of(1, 2, 3).contains(v.mkColl(1, 2, 3).first()));
+            }
+        });
+    }
+    @Test @Override default void testFirstOption() {
+        doTest(v -> {
+            assertTrue(v.mkColl().firstOption().isEmpty());
+            assertTrue(v.mkColl(1).firstOption().contains(1));
+            if (v.iterationOrder123() != null)
+                assertTrue(v.mkColl(1, 2, 3).firstOption().contains(v.iterationOrder123().first()));
+            else {
+                assertTrue(v.mkColl(1, 2, 3).toSet().contains(v.mkColl(1, 2, 3).firstOption().get()));
+            }
+        });
+    }
+
     @Test @Override default void testToLinkedList() {
         doTest(v -> {
             assertEquals(ALinkedList.empty(), v.mkColl().toLinkedList());
             assertEquals(ALinkedList.of(1), v.mkColl(1).toLinkedList());
             if (v.iterationOrder123() != null)
-                //noinspection AssertEqualsBetweenInconvertibleTypes
                 assertEquals(v.iterationOrder123(), v.mkColl(1, 2, 3).toLinkedList());
             else
                 assertEquals(AHashSet.of(1, 2, 3), v.mkColl(1, 2, 3).toLinkedList().toSet());
@@ -218,7 +238,6 @@ public interface ACollectionTests extends ACollectionOpsTests {
             assertEquals(AMutableListWrapper.empty(), v.mkColl().toMutableList());
             assertEquals(AMutableListWrapper.of(1), v.mkColl(1).toMutableList());
             if (v.iterationOrder123() != null)
-                //noinspection AssertEqualsBetweenInconvertibleTypes
                 assertEquals(v.iterationOrder123(), v.mkColl(1, 2, 3).toMutableList());
             else
                 assertEquals(AHashSet.of(1, 2, 3), v.mkColl(1, 2, 3).toMutableList().toSet());

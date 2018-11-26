@@ -153,6 +153,15 @@ public class AOptionTest implements ACollectionOpsTests {
         assertEquals(none(), none().headOption());
         assertEquals(some("a"), some("a").headOption());
     }
+    @Override @Test public void testFirst () {
+        assertThrows(NoSuchElementException.class, () -> none().first());
+        assertEquals(1, some(1).first().intValue());
+        assertEquals("a", some("a").first());
+    }
+    @Override @Test public void testFirstOption () {
+        assertEquals(none(), none().firstOption());
+        assertEquals(some("a"), some("a").firstOption());
+    }
 
     @Override @Test public void testMap () {
         assertEquals(none(), none().map(x -> "a"));

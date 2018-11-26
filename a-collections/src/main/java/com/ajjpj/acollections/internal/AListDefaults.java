@@ -50,7 +50,7 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
         if (isEmpty()) throw new NoSuchElementException();
         return get(size() - 1);
     }
-    @Override default C init() {
+    @Override default C withoutLast () {
         if (isEmpty()) throw new NoSuchElementException();
         return dropRight(1);
     }

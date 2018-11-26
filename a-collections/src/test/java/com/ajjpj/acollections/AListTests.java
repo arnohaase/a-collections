@@ -177,12 +177,20 @@ public interface AListTests extends ACollectionTests {
             assertTrue(v.mkList(1, 2).lastOption().contains(2));
         });
     }
-    @Test default void testInit() {
+    @Test default void testWithoutLast() {
         doTest(v -> {
-            assertThrows(NoSuchElementException.class, () -> v.mkList().init());
-            assertEquals(AVector.empty(), v.mkList(1).init());
-            assertEquals(AVector.of(1), v.mkList(1, 2).init());
-            assertEquals(AVector.of(1, 2), v.mkList(1, 2, 3).init());
+            assertThrows(NoSuchElementException.class, () -> v.mkList().withoutLast());
+            assertEquals(AVector.empty(), v.mkList(1).withoutLast());
+            assertEquals(AVector.of(1), v.mkList(1, 2).withoutLast());
+            assertEquals(AVector.of(1, 2), v.mkList(1, 2, 3).withoutLast());
+        });
+    }
+    @Test default void testWithoutFirst() {
+        doTest(v -> {
+            assertThrows(NoSuchElementException.class, () -> v.mkList().withoutFirst());
+            assertEquals(AVector.empty(), v.mkList(1).withoutFirst());
+            assertEquals(AVector.of(2), v.mkList(1, 2).withoutFirst());
+            assertEquals(AVector.of(2, 3), v.mkList(1, 2, 3).withoutFirst());
         });
     }
     @Test default void testTail() {
