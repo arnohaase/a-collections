@@ -34,7 +34,7 @@ public class ProbierenBenchmark {
 
     @Benchmark
     public void testModifyAColl(Blackhole bh) {
-        final Random rand = new Random(12345);
+        //final Random rand = new Random(12345);
         final Comparator<Integer> ordering = Comparator.naturalOrder();
 
         RedBlackTree.Tree<Integer,Integer> root = null;
@@ -48,7 +48,7 @@ public class ProbierenBenchmark {
 
     @Benchmark
     public void testModifyScala(Blackhole bh) {
-        final Random rand = new Random(12345);
+        // final Random rand = new Random(12345);
         final Ordering<Integer> ordering = new LowPriorityOrderingImplicits(){}.comparatorToOrdering(Comparator.<Integer>naturalOrder());
 
         scala.collection.immutable.RedBlackTree.Tree<Integer,Integer> root = null;
