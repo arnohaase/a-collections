@@ -7,26 +7,24 @@ todo
     * building etc.
   * package.java
 
-  * Link auf github in jede (wichtige) Datei
-
-
-
-* ASortedMap should implement NavigableMap
-* ASortedMap: upper bound for iterator methods
-
-* ASortedSet.reverseIterator()
-
-* ASortedSet javadoc: comments with  T O D O  in them
-
 * ajjpj.com
   * landing page
-  * redirect per project
 
 
-* unit tests
-  * ASortedSet.countInRange,
-  * ASortedSet.slice
-  * ATreeSet methods in general
+* ASortedMap
+  * ASortedMap should implement NavigableMap
+  * ASortedMap: upper bound for iterator methods
+  * ASortedMap.reverseIterator()
+
+* ASortedSet
+  * ASortedSet.reverseIterator()
+  * ASortedSet javadoc: comments with  T O D O  in them
+  * unit tests
+    * ASortedSet.countInRange,
+    * ASortedSet.slice
+    * ATreeSet methods in general
+
+* Benchmark: tuning of RedBlackTree
 
 ---------------------------------------------------------------------------------------------------------------
 
@@ -35,7 +33,6 @@ todo
 * add mutable JU code to benchmarks
 
 * CHAMP algorithm
-* tuning of RedBlackTree
 
 * API
   * ACollection: permutations, combinations
