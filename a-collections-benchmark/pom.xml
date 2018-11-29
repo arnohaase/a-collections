@@ -119,12 +119,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
                 </executions>
                 <configuration>
                     <args>
-                        <arg>-feature</arg>
-                        <arg>-deprecation</arg>
                         <arg>-encoding</arg>
                         <arg>UTF-8</arg>
                     </args>
-                    <recompileMode>incremental</recompileMode>
                 </configuration>
             </plugin>
             <plugin>

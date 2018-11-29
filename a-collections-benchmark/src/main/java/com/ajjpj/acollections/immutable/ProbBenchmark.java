@@ -22,12 +22,8 @@ public class ProbBenchmark {
     public void testModifyAColl(Blackhole bh) {
         final Comparator<Integer> ordering = Comparator.naturalOrder();
 
-        ProbJava.Tree<Integer,Integer> root = null;
-
-        for(int i=0; i<numIter; i++) {
-            final int key = 10; //rand.nextInt(size);
-            root = ProbJava.update(root, key, key, true, ordering);
-        }
+        ProbJava.Tree<Integer,Integer> root = ProbJava.update(null, 10, 10, true, ordering);
+        root = ProbJava.update(root, 10, 10, true, ordering);
         bh.consume(root);
     }
 
@@ -35,12 +31,8 @@ public class ProbBenchmark {
     public void testModifyScala(Blackhole bh) {
         final Ordering<Integer> ordering = new LowPriorityOrderingImplicits(){}.comparatorToOrdering(Comparator.<Integer>naturalOrder());
 
-        ProbScala.Tree<Integer,Integer> root = null;
-
-        for(int i=0; i<numIter; i++) {
-            final int key = 10; //rand.nextInt(size);
-            root = ProbScala.update(root, key, key, true, ordering);
-        }
+        ProbScala.Tree<Integer,Integer> root = ProbScala.update(null, 10, 10, true, ordering);
+        root = ProbScala.update(root, 10, 10, true, ordering);
         bh.consume(root);
     }
 }
