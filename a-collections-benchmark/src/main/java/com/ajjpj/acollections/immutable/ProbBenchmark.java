@@ -14,15 +14,22 @@ import java.util.concurrent.TimeUnit;
 public class ProbBenchmark {
 
     @Benchmark
-    public void testModifyAColl(Blackhole bh) {
-        ProbJava.Tree<Integer,Integer> root = ProbJava.update(null, 10, 10);
-        root = ProbJava.update(root, 10, 10);
+    public void testJava1(Blackhole bh) {
+        com.ajjpj.acollections.immutable.j.Tree<Integer,Integer> root = ProbJava1.update(null, 10, 10);
+        root = ProbJava1.update(root, 10, 10);
         bh.consume(root);
     }
 
     @Benchmark
-    public void testModifyScala(Blackhole bh) {
-        ProbScala.Tree<Integer,Integer> root = ProbScala.update(null, 10, 10);
+    public void testJava2(Blackhole bh) {
+        com.ajjpj.acollections.immutable.s.Tree<Integer,Integer> root = ProbJava2.update(null, 10, 10);
+        root = ProbJava2.update(root, 10, 10);
+        bh.consume(root);
+    }
+
+    @Benchmark
+    public void testScala(Blackhole bh) {
+        com.ajjpj.acollections.immutable.s.Tree<Integer,Integer> root = ProbScala.update(null, 10, 10);
         root = ProbScala.update(root, 10, 10);
         bh.consume(root);
     }
