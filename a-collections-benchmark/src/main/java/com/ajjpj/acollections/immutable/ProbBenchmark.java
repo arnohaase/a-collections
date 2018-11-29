@@ -29,7 +29,7 @@ public class ProbBenchmark {
 
     @Benchmark
     public void testModifyScala(Blackhole bh) {
-        final Ordering<Integer> ordering = new LowPriorityOrderingImplicits(){}.comparatorToOrdering(Comparator.<Integer>naturalOrder());
+        final Comparator<Integer> ordering = Comparator.naturalOrder();
 
         ProbScala.Tree<Integer,Integer> root = ProbScala.update(null, 10, 10, true, ordering);
         root = ProbScala.update(root, 10, 10, true, ordering);
