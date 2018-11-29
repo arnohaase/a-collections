@@ -1,31 +1,29 @@
 package com.ajjpj.acollections.immutable;
 
 import java.io.Serializable;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Comparator;
 import java.util.Objects;
 
 
 class ProbJava {
 
-    static <A, B> Tree<A, B> update (Tree<A, B> tree, A k, B v, boolean overwrite, Comparator<A> ordering) {
-        return upd(tree, k, v, overwrite, ordering);
+    static <A extends Comparable<A>, B> Tree<A, B> update (Tree<A, B> tree, A k, B v) {
+        return upd(tree, k, v);
     }
 
     private static boolean isBlackTree (Tree<?, ?> tree) {
         return tree instanceof BlackTree;
-    } //TODO polymorphic 'isBlack()'?
+    }
 
     private static <A, B> Tree<A, B> mkTree (boolean isBlack, A k, B v, Tree<A, B> l, Tree<A, B> r) {
         if (isBlack) return new BlackTree<>(k, v, l, r);
         else return new RedTree<>(k, v, l, r);
     }
 
-    private static <A, B> Tree<A, B> upd (Tree<A, B> tree, A k, B v, boolean overwrite, Comparator<A> ordering) {
+    private static <A extends Comparable<A>, B> Tree<A, B> upd (Tree<A, B> tree, A k, B v) {
         if (tree == null) return new RedTree<>(k, v, null, null);
-        final int cmp = ordering.compare(k, tree.key);
-        if (overwrite || !Objects.equals(k, tree.key)) return mkTree(isBlackTree(tree), k, v, tree.left, tree.right); //TODO the 'equals' comparison should be superfluous
+        final int cmp = Comparator.<A>naturalOrder().compare(k, tree.key);
+        if (Objects.equals(k, tree.key)) return mkTree(isBlackTree(tree), k, v, tree.left, tree.right);
         return tree;
     }
 

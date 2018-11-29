@@ -7,17 +7,17 @@ import scala.annotation.meta.getter
 
 object ProbScala {
 
-  def update[A, B, B1 >: B](tree: Tree[A, B], k: A, v: B1, overwrite: Boolean, ordering: Comparator[A]): Tree[A, B1] = upd(tree, k, v, overwrite, ordering)
+  def update[A <: Comparable[A], B, B1 >: B](tree: Tree[A, B], k: A, v: B1): Tree[A, B1] = upd(tree, k, v)
   private[this] def isBlackTree(tree: Tree[_, _]) = tree.isInstanceOf[BlackTree[_, _]]
 
   private[this] def mkTree[A, B](isBlack: Boolean, k: A, v: B, l: Tree[A, B], r: Tree[A, B]) =
     if (isBlack) BlackTree(k, v, l, r) else RedTree(k, v, l, r)
 
-  private[this] def upd[A, B, B1 >: B](tree: Tree[A, B], k: A, v: B1, overwrite: Boolean, ordering: Comparator[A]): Tree[A, B1] = if (tree eq null) {
+  private[this] def upd[A <: Comparable[A], B, B1 >: B](tree: Tree[A, B], k: A, v: B1): Tree[A, B1] = if (tree eq null) {
     RedTree(k, v, null, null)
   } else {
-    val cmp = ordering.compare(k, tree.key)
-    if (overwrite || k != tree.key) mkTree(isBlackTree(tree), k, v, tree.left, tree.right)
+    val cmp = Comparator.naturalOrder[A].compare(k, tree.key)
+    if (k == tree.key) mkTree(isBlackTree(tree), k, v, tree.left, tree.right)
     else tree
   }
 
