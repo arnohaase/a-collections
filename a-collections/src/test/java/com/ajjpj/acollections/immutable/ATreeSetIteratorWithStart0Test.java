@@ -12,7 +12,9 @@ class ATreeSetIteratorWithStart0Test implements AIteratorTests {
         return false;
     }
 
+    //TODO verify the validity / completeness in the presence of upper bounds
+
     @Override public AIterator<Integer> mkIterator (Integer... values) {
-        return ATreeSet.from(Arrays.asList(values)).iterator(AOption.some(0));
+        return ATreeSet.from(Arrays.asList(values)).iterator(AOption.some(0), AOption.none());
     }
 }

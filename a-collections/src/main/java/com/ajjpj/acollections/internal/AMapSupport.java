@@ -6,7 +6,8 @@ import com.ajjpj.acollections.util.AOption;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 
 public class AMapSupport {
@@ -358,10 +359,6 @@ public class AMapSupport {
             return map.take(n).keySet();
         }
 
-        @Override public ASortedSet<T> slice (int from, int until) {
-            return map.slice(from, until).keySet();
-        }
-
         @Override public AOption<T> smallest () {
             return map.smallest().map(Map.Entry::getKey);
         }
@@ -370,8 +367,8 @@ public class AMapSupport {
             return map.greatest().map(Map.Entry::getKey);
         }
 
-        @Override public AIterator<T> iterator (AOption<T> start) {
-            return map.keysIterator(start);
+        @Override public AIterator<T> iterator (AOption<T> from, AOption<T> until) {
+            return map.keysIterator(from, until);
         }
 
         @Override public AIterator<T> iterator () {
@@ -521,11 +518,6 @@ public class AMapSupport {
             return (ASortedSet<Map.Entry<K,V>>) map.take(n).entrySet();
         }
 
-        @Override public ASortedSet<Map.Entry<K,V>> slice (int from, int until) {
-            //noinspection unchecked
-            return (ASortedSet<Map.Entry<K,V>>) map.slice(from, until).entrySet();
-        }
-
         @Override public AOption<Map.Entry<K,V>> smallest () {
             //noinspection unchecked
             return (AOption<Map.Entry<K,V>>) map.smallest();
@@ -536,9 +528,9 @@ public class AMapSupport {
             return (AOption<Map.Entry<K,V>>) map.greatest();
         }
 
-        @Override public AIterator<Map.Entry<K,V>> iterator (AOption<Map.Entry<K,V>> start) {
+        @Override public AIterator<Map.Entry<K,V>> iterator (AOption<Map.Entry<K,V>> from, AOption<Map.Entry<K,V>> until) {
             //noinspection unchecked
-            return (AIterator<Map.Entry<K,V>>) map.iterator(start.map(Map.Entry::getKey));
+            return (AIterator<Map.Entry<K,V>>) map.iterator(from.map(Map.Entry::getKey), until.map(Map.Entry::getKey));
         }
 
         @Override public AIterator<Map.Entry<K,V>> iterator () {

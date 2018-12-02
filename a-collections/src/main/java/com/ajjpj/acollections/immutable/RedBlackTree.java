@@ -1,17 +1,15 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.AIterator;
-import com.ajjpj.acollections.AMap;
 import com.ajjpj.acollections.AbstractAIterator;
 import com.ajjpj.acollections.util.AOption;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 
+@SuppressWarnings("WeakerAccess")
 class RedBlackTree {
     static boolean isEmpty (Tree<?, ?> tree) {
         return tree == null;
@@ -120,53 +118,16 @@ class RedBlackTree {
         return result;
     }
 
-    static <A, B> void foreach (Tree<A, B> tree, BiConsumer<A, B> f) {
-        if (tree != null) _foreach(tree, f);
+    static <A, B> AIterator<Map.Entry<A, B>> iterator (Tree<A, B> tree, AOption<A> from, AOption<A> until, Comparator<A> ordering) {
+        return new EntriesIterator<>(tree, from, until, ordering);
     }
 
-    private static <A, B> void _foreach (Tree<A, B> tree, BiConsumer<A, B> f) {
-        if (tree.left != null) _foreach(tree.left, f);
-        f.accept(tree.key, tree.value);
-        if (tree.right != null) _foreach(tree.right, f);
+    static <A> AIterator<A> keysIterator (Tree<A, ?> tree, AOption<A> from, AOption<A> until, Comparator<A> ordering) {
+        return new KeysIterator<>(tree, from, until, ordering);
     }
 
-    static <A> void foreachKey (Tree<A, ?> tree, Consumer<A> f) {
-        if (tree != null) _foreachKey(tree, f);
-    }
-
-    private static <A> void _foreachKey (Tree<A, ?> tree, Consumer<A> f) {
-        if (tree.left != null) _foreachKey(tree.left, f);
-        f.accept(tree.key);
-        if (tree.right != null) _foreachKey(tree.right, f);
-    }
-
-    static <A, B> AIterator<Map.Entry<A, B>> iterator (Tree<A, B> tree, AOption<A> start, Comparator<A> ordering) {
-        return new EntriesIterator<>(tree, start, ordering);
-    }
-
-    static <A> AIterator<A> keysIterator (Tree<A, ?> tree, AOption<A> start, Comparator<A> ordering) {
-        return new KeysIterator<>(tree, start, ordering);
-    }
-
-    static <A, B> AIterator<B> valuesIterator (Tree<A, B> tree, AOption<A> start, Comparator<A> ordering) {
-        return new ValuesIterator<>(tree, start, ordering);
-    }
-
-    static <A, B> Tree<A, B> nth (Tree<A, B> tree, int n) {
-        int count;
-        while((count = count(tree.left)) != n) {
-            if (n < count)
-                tree = tree.left;
-            else {
-                tree = tree.right;
-                n -= count+1;
-            }
-        }
-        return tree;
-    }
-
-    static boolean isBlack (Tree<?, ?> tree) {
-        return tree == null || isBlackTree(tree);
+    static <A, B> AIterator<B> valuesIterator (Tree<A, B> tree, AOption<A> from, AOption<A> until, Comparator<A> ordering) {
+        return new ValuesIterator<>(tree, from, until, ordering);
     }
 
     private static boolean isRedTree (Tree<?, ?> tree) {
@@ -383,7 +344,7 @@ class RedBlackTree {
 
     // If the trees were balanced, returns an empty zipper
     private static <A, B> CompareDepthResult<A, B> compareDepth (Tree<A, B> left, Tree<A, B> right) {
-        return cd_unzipBoth(left, right, null, null, 0);
+        return cd_unzipBoth(left, right);
     }
 
     private static class CompareDepthResult<A, B> {
@@ -404,45 +365,49 @@ class RedBlackTree {
     private static <A, B> NList<Tree<A, B>> cd_unzip (NList<Tree<A, B>> zipper, boolean leftMost) {
         Tree<A, B> next;
         while ((next = leftMost ? zipper.head.left : zipper.head.right) != null) {
-            zipper = zipper.prepend(next);
+            zipper = new NList<>(next, zipper);
         }
         return zipper;
     }
 
     // Unzip left tree on the rightmost side and right tree on the leftmost side until one is
     // found to be deeper, or the bottom is reached
-    private static <A, B> CompareDepthResult<A, B> cd_unzipBoth (Tree<A, B> left, Tree<A, B> right, NList<Tree<A, B>> leftZipper, NList<Tree<A, B>> rightZipper, int smallerDepth) {
+    private static <A, B> CompareDepthResult<A, B> cd_unzipBoth (Tree<A, B> left, Tree<A, B> right) {
+        NList<Tree<A, B>> leftZipper = null;
+        NList<Tree<A, B>> rightZipper = null;
+        int smallerDepth = 0;
+
         while (true) {
             if (isBlackTree(left) && isBlackTree(right)) {
                 left = left.right;
                 right = right.left;
-                leftZipper = leftZipper.prepend(left);
-                rightZipper = rightZipper.prepend(right);
+                leftZipper = new NList<>(left, leftZipper);
+                rightZipper = new NList<>(right, rightZipper);
                 smallerDepth += 1;
             }
             else if (isRedTree(left) && isRedTree(right)) {
                 left = left.right;
                 right = right.left;
-                leftZipper = leftZipper.prepend(left);
-                rightZipper = rightZipper.prepend(right);
+                leftZipper = new NList<>(left, leftZipper);
+                rightZipper = new NList<>(right, rightZipper);
             }
             else if (isRedTree(right)) {
                 right = right.left;
-                rightZipper = rightZipper.prepend(right);
+                rightZipper = new NList<>(right, rightZipper);
             }
             else if (isRedTree(left)) { //TODO different structure in Scala bytecode
                 left = left.right;
-                leftZipper = leftZipper.prepend(left);
+                leftZipper = new NList<>(left, leftZipper);
             }
             else {
                 if (left == null && right == null) return new CompareDepthResult<>(null, true, false, smallerDepth);
                 if (left == null && isBlackTree(right)) {
                     final boolean leftMost = true;
-                    return new CompareDepthResult<>(cd_unzip(rightZipper.prepend(right), leftMost), false, leftMost, smallerDepth);
+                    return new CompareDepthResult<>(cd_unzip(new NList<>(right, rightZipper), leftMost), false, leftMost, smallerDepth);
                 }
                 if (isBlackTree(left) && right == null) {
                     final boolean leftMost = false;
-                    return new CompareDepthResult<>(cd_unzip(leftZipper.prepend(left), leftMost), false, leftMost, smallerDepth);
+                    return new CompareDepthResult<>(cd_unzip(new NList<>(left, leftZipper), leftMost), false, leftMost, smallerDepth);
                 }
                 throw new IllegalStateException("unmatched trees in unzip: " + left + ", " + right);
             }
@@ -492,10 +457,6 @@ class RedBlackTree {
         NList (A head, NList<A> tail) {
             this.head = head;
             this.tail = tail;
-        }
-
-        NList<A> prepend (A x) {
-            return new NList<>(x, this);
         }
 
         static <A, B> B foldLeft (NList<A> xs, B z, BiFunction<B, A, B> op) {
@@ -581,19 +542,15 @@ class RedBlackTree {
     }
 
     private static abstract class TreeIterator<A, B, R> extends AbstractAIterator<R> {
-        private final Tree<A, B> root;
-        private final AOption<A> start;
+        private final AOption<A> until;
         private final Comparator<A> ordering;
 
         private final Tree[] stackOfNexts; //TODO replace with ArrayDeque
         private int index = 0;
         private Tree<A, B> lookahead;
 
-
-
-        TreeIterator (Tree<A, B> root, AOption<A> start, Comparator<A> ordering) {
-            this.root = root;
-            this.start = start;
+        TreeIterator (Tree<A, B> root, AOption<A> from, AOption<A> until, Comparator<A> ordering) {
+            this.until = until;
             this.ordering = ordering;
 
             if (root == null) stackOfNexts = null;
@@ -611,21 +568,25 @@ class RedBlackTree {
                 stackOfNexts = new Tree[maximumHeight];
             }
 
-            this.lookahead = start.map(this::startFrom).orElseGet(() -> findLeftMostOrPopOnEmpty(root));
+            this.lookahead = checkUpperBoundForLookahead(from.map(f -> startFrom(root, f)).orElseGet(() -> findLeftMostOrPopOnEmpty(root)));
+        }
+
+        private Tree<A,B> checkUpperBoundForLookahead(Tree<A,B> newLookahead) {
+            if (until.isEmpty()) return newLookahead;
+            if (ordering.compare(newLookahead.key, until.get()) < 0) return newLookahead;
+            return null;
         }
 
         abstract R nextResult (Tree<A, B> tree);
 
-        @Override
-        public boolean hasNext () {
+        @Override public boolean hasNext () {
             return lookahead != null;
         }
 
-        @Override
-        public R next () {
+        @Override public R next () {
             if (lookahead == null) throw new NoSuchElementException("next on empty iterator");
             final Tree<A, B> oldLookahead = lookahead;
-            lookahead = findLeftMostOrPopOnEmpty(goRight(oldLookahead));
+            lookahead = checkUpperBoundForLookahead(findLeftMostOrPopOnEmpty(goRight(oldLookahead)));
             return nextResult(oldLookahead);
         }
 
@@ -656,7 +617,7 @@ class RedBlackTree {
          * to the ordering. Along the way build up the iterator's path stack so that "next"
          * functionality works.
          */
-        private Tree<A, B> startFrom (A key) {
+        private Tree<A, B> startFrom (Tree<A,B> root, A key) {
             if (root == null) return null;
 
             Tree<A, B> tree = root;
@@ -678,8 +639,8 @@ class RedBlackTree {
     }
 
     private static class EntriesIterator<A, B> extends TreeIterator<A, B, Map.Entry<A, B>> {
-        EntriesIterator (Tree<A, B> root, AOption<A> start, Comparator<A> ordering) {
-            super(root, start, ordering);
+        EntriesIterator (Tree<A, B> root, AOption<A> from, AOption<A> until, Comparator<A> ordering) {
+            super(root, from, until, ordering);
         }
 
         @Override  Map.Entry<A, B> nextResult (Tree<A, B> tree) {
@@ -688,8 +649,8 @@ class RedBlackTree {
     }
 
     private static class KeysIterator<A, B> extends TreeIterator<A, B, A> {
-        KeysIterator (Tree<A, B> root, AOption<A> start, Comparator<A> ordering) {
-            super(root, start, ordering);
+        KeysIterator (Tree<A, B> root, AOption<A> from, AOption<A> until, Comparator<A> ordering) {
+            super(root, from, until, ordering);
         }
 
         @Override A nextResult (Tree<A, B> tree) {
@@ -698,8 +659,8 @@ class RedBlackTree {
     }
 
     private static class ValuesIterator<A, B> extends TreeIterator<A, B, B> {
-        ValuesIterator (Tree<A, B> root, AOption<A> start, Comparator<A> ordering) {
-            super(root, start, ordering);
+        ValuesIterator (Tree<A, B> root, AOption<A> from, AOption<A> until, Comparator<A> ordering) {
+            super(root, from, until, ordering);
         }
 
         @Override B nextResult (Tree<A, B> tree) {

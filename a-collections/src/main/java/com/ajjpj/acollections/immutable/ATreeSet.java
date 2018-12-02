@@ -326,10 +326,6 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return new ATreeSet<>(RedBlackTree.take(root, n), comparator);
     }
 
-    @Override public ASortedSet<T> slice (int from, int until) {
-        return new ATreeSet<>(RedBlackTree.slice(root, from, until), comparator);
-    }
-
     /**
      * relative to *natural* order, which may or may not be the tree's order
      */
@@ -359,12 +355,12 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return raw == null ? AOption.none() : AOption.some(raw.key);
     }
 
-    @Override public AIterator<T> iterator (AOption<T> start) {
-        return RedBlackTree.keysIterator(root, start, comparator);
+    @Override public AIterator<T> iterator (AOption<T> from, AOption<T> until) {
+        return RedBlackTree.keysIterator(root, from, until, comparator);
     }
 
     @Override public AIterator<T> iterator () {
-        return RedBlackTree.keysIterator(root, AOption.none(), comparator);
+        return RedBlackTree.keysIterator(root, AOption.none(), AOption.none(), comparator);
     }
 
     @Override public <U> ACollectionBuilder<U, ATreeSet<U>> newBuilder () {
@@ -419,6 +415,19 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
     @Override public boolean containsAll (Collection<?> c) {
         return ACollectionDefaults.super.containsAll(c);
     }
+
+    @Override public ATreeSet<T> subSet (T fromElement, T toElement) { //TODO test this
+        return (ATreeSet<T>) ASortedSet.super.subSet(fromElement, toElement);
+    }
+
+    @Override public ATreeSet<T> headSet (T toElement) { //TODO test this
+        return (ATreeSet<T>) ASortedSet.super.headSet(toElement);
+    }
+
+    @Override public ATreeSet<T> tailSet (T fromElement) { //TODO test this
+        return (ATreeSet<T>) ASortedSet.super.tailSet(fromElement);
+    }
+
 
     /**
      * Returns a {@link Collector} to collect {@link java.util.stream.Stream} elements into an ATreeSet.

@@ -2,6 +2,7 @@ package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.ASetTests;
 import com.ajjpj.acollections.ASortedSet;
+import com.ajjpj.acollections.ASortedSetTests;
 import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class ATreeSetTest implements ASetTests  {
+public class ATreeSetTest implements ASortedSetTests {
     @Override @Test public void testStaticFactories() {
         assertTrue(ATreeSet.empty().isEmpty());
         assertTrue(ATreeSet.of().isEmpty());
@@ -86,5 +87,9 @@ public class ATreeSetTest implements ASetTests  {
         assertEquals(ATreeSet.of(1, 2, 3, 4), Stream.of(1, 2, 3, 4).collect(ATreeSet.streamCollector()));
         assertEquals(ATreeSet.empty(), Stream.<Integer>of().collect(ATreeSet.streamCollector()));
         assertEquals(ARange.create(0, 100000).toSortedSet(), ARange.create(0, 100000).parallelStream().collect(ATreeSet.streamCollector()));
+    }
+
+    @Test void testComparator() {
+        fail("todo");
     }
 }

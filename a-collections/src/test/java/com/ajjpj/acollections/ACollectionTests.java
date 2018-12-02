@@ -558,6 +558,9 @@ public interface ACollectionTests extends ACollectionOpsTests {
         public ASet<Integer> mkSet(Integer... values) {
             return (ASet<Integer>) mkColl(values);
         }
+        public ASet<Integer> mkSortedSet(Integer... values) {
+            return (ASortedSet<Integer>) mkColl(values);
+        }
 
         public AList<Integer> mkList(Integer... values) {
             return (AList<Integer>) mkColl(values);

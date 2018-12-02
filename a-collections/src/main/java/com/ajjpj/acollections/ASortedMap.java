@@ -89,13 +89,15 @@ public interface ASortedMap<K,V> extends AMap<K,V> { //TODO implements Navigable
     ASortedSet<K> keySet();
     ASortedSet<Map.Entry<K,V>> entrySet();
 
+
+    //TODO fix javadoc
     /**
      * Returns an iterator over this map's entries, starting at an optional lower bound
      *
      * @param start the lower bound for keys to iterate over
      * @return an iterator over this map's entries
      */
-    AIterator<Map.Entry<K,V>> iterator(AOption<K> start); //TODO upper bound?!
+    AIterator<Map.Entry<K,V>> iterator(AOption<K> from, AOption<K> until);
 
     /**
      * Returns an iterator over this map's keys, starting at an optional lower bound
@@ -103,7 +105,7 @@ public interface ASortedMap<K,V> extends AMap<K,V> { //TODO implements Navigable
      * @param start the lower bound for keys to iterate over
      * @return an iterator over this map's keys
      */
-    AIterator<K> keysIterator (AOption<K> start);
+    AIterator<K> keysIterator (AOption<K> from, AOption<K> until);
 
     /**
      * Returns an iterator over this map's values for which the corresponding keys are greater than or equal than an (optional) lower bound.
@@ -111,5 +113,5 @@ public interface ASortedMap<K,V> extends AMap<K,V> { //TODO implements Navigable
      * @param start the lower bound for keys to iterate over
      * @return an iterator over this map's values
      */
-    AIterator<V> valuesIterator (AOption<K> start);
+    AIterator<V> valuesIterator (AOption<K> from, AOption<K> until);
 }

@@ -273,7 +273,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
         return new ATreeMap<>(RedBlackTree.delete(root, key, comparator), comparator);
     }
     @Override public AIterator<Entry<K,V>> iterator() {
-        return RedBlackTree.iterator(root, AOption.none(), comparator);
+        return RedBlackTree.iterator(root, AOption.none(), AOption.none(), comparator);
     }
 
     @Override public int size() {
@@ -296,7 +296,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     }
 
     @Override public boolean containsValue (Object value) {
-        return RedBlackTree.valuesIterator(root, AOption.none(), comparator)
+        return RedBlackTree.valuesIterator(root, AOption.none(), AOption.none(), comparator)
                 .exists(v -> Objects.equals(v, value));
     }
 
@@ -382,20 +382,20 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     }
 
     @Override public AIterator<K> keysIterator () {
-        return keysIterator(AOption.none());
+        return keysIterator(AOption.none(), AOption.none());
     }
     @Override public AIterator<V> valuesIterator () {
-        return valuesIterator(AOption.none());
+        return valuesIterator(AOption.none(), AOption.none());
     }
 
-    @Override public AIterator<Entry<K, V>> iterator (AOption<K> start) {
-        return RedBlackTree.iterator(root, start, comparator);
+    @Override public AIterator<Entry<K, V>> iterator (AOption<K> from, AOption<K> until) {
+        return RedBlackTree.iterator(root, from, until, comparator);
     }
-    @Override public AIterator<K> keysIterator (AOption<K> start) {
-        return RedBlackTree.keysIterator(root, start, comparator);
+    @Override public AIterator<K> keysIterator (AOption<K> from, AOption<K> until) {
+        return RedBlackTree.keysIterator(root, from, until, comparator);
     }
-    @Override public AIterator<V> valuesIterator (AOption<K> start) {
-        return RedBlackTree.valuesIterator(root, start, comparator);
+    @Override public AIterator<V> valuesIterator (AOption<K> from, AOption<K> until) {
+        return RedBlackTree.valuesIterator(root, from, until, comparator);
     }
 
     @Override public <K1, V1> ACollectionBuilder<Entry<K1, V1>, ATreeMap<K1, V1>> newEntryBuilder () {

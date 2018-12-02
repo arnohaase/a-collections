@@ -3,9 +3,7 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.util.AOption;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 
 /**
@@ -15,7 +13,7 @@ import java.util.Set;
  *
  * @param <T> the set's element type
  */
-public interface ASortedSet<T> extends ASet<T> {
+public interface ASortedSet<T> extends ASet<T>, SortedSet<T> {
 
     /**
      * Creates an empty {@link ATreeSet} with {@link Comparator#naturalOrder()}.
@@ -247,19 +245,6 @@ public interface ASortedSet<T> extends ASet<T> {
     ASortedSet<T> take (int n);
 
     /**
-     * Returns a subset of this set, dropping the first {@code from} elements and then taking the next {@code until - from} elements.
-     *
-     * TODO exception, out of bounds, ...
-     *
-     * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
-     *
-     * @param from  the first index to take
-     * @param until the first index not to take
-     * @return a subset of this set with elements in the index from from {@code from} until {@code until}.
-     */
-    ASortedSet<T> slice (int from, int until);
-
-    /**
      * Returns this set's smallest element or {@link AOption#none()} if this set is empty.
      *
      * @return this set's smallest element
@@ -273,17 +258,41 @@ public interface ASortedSet<T> extends ASet<T> {
      */
     AOption<T> greatest();
 
+    //TODO test this
     /**
-     * Returns an {@link AIterator} starting at a lower bound. More precisely, the returned iterator starts at the smallest element
-     *  that is greater or equal to the lower bound. The lower bound is optional.
+     * Returns an {@link AIterator} starting at a lower bound and ending at an upper bound.
      *
-     * //TODO optional upper bound?
+     * <p> The lower bound is inclusive, the upper bound is exclusive. More precisely, the returned iterator starts at the smallest
+     *  element that is greater or equal to the lower bound, and ends at the greatest element smaller than the upper bound.
+     *  Both bounds are optional.
      *
-     * @param start the lower bound for the iterator
+     * @param from the lower bound for the iterator
+     * @param until the upper bound for the iterator
      * @return an iterator starting at a given lower bound
      */
-    AIterator<T> iterator(AOption<T> start);
+    AIterator<T> iterator(AOption<T> from, AOption<T> until);
 
     AIterator<? extends ASortedSet<T>> subsets ();
     AIterator<? extends ASortedSet<T>> subsets (int len);
+
+    @Override default T first () { //TODO test this
+        return head();
+    }
+
+    @Override default T last () {
+        return greatest().orElseThrow(NoSuchElementException::new); //TODO test this
+    }
+
+    @Override default ASortedSet<T> subSet (T fromElement, T toElement) { //TODO test this
+        return range(AOption.some(fromElement), AOption.some(toElement));
+    }
+
+    @Override default ASortedSet<T> headSet (T toElement) { //TODO test this
+        return range(AOption.none(), AOption.some(toElement));
+    }
+
+    @Override default ASortedSet<T> tailSet (T fromElement) { //TODO test this
+        return range(AOption.some(fromElement), AOption.none());
+    }
+
 }
