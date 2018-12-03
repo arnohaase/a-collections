@@ -12,6 +12,7 @@ todo
 
 * sorted set tests for ATreeMap.entries, ATreeMap.keys
 
+* shotgun tests with different seeds
 
 * ASortedMap
   * ASortedMap should implement NavigableMap
@@ -26,9 +27,16 @@ todo
     * ASortedSet.slice
     * ATreeSet methods in general
 
+* mutable wrapper for NavigableSet, NavigableMap
+* rename 'until' -> 'to'
+
+* countInRange: add 'inclusive' flags to signature
+
 * Benchmark: tuning of RedBlackTree
 
 ---------------------------------------------------------------------------------------------------------------
+
+* subMap / subSet etc. inherited from NavigableMap / NavigableSet: views instead of eager copy
 
 * AbstractImmutableSet
 

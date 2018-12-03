@@ -15,7 +15,6 @@ public class AMapSupport {
         Map<K1,ACollectionBuilder<Map.Entry<K,V>,? extends ACollectionOps<Map.Entry<K,V>>>> builders = new HashMap<>();
         //noinspection unchecked
         for(Map.Entry<K,V> o: (Iterable<Map.Entry<K,V>>) coll) {
-            //noinspection unchecked
             builders.computeIfAbsent(keyExtractor.apply(o), x -> coll.newEntryBuilder())
                     .add(o);
         }
@@ -240,8 +239,7 @@ public class AMapSupport {
         }
 
         @Override public AIterator<Map.Entry<K,V>> iterator () {
-            //noinspection unchecked
-            return (AIterator) map.iterator();
+            return map.iterator();
         }
 
         @Override public <U> ACollectionBuilder<U, AHashSet<U>> newBuilder () {
@@ -367,8 +365,8 @@ public class AMapSupport {
             return map.greatest().map(Map.Entry::getKey);
         }
 
-        @Override public AIterator<T> iterator (AOption<T> from, AOption<T> until) {
-            return map.keysIterator(from, until);
+        @Override public AIterator<T> iterator (AOption<T> from, boolean fromInclusive, AOption<T> to, boolean toInclusive) {
+            return map.keysIterator(from, fromInclusive, to, toInclusive);
         }
 
         @Override public AIterator<T> iterator () {
@@ -376,6 +374,7 @@ public class AMapSupport {
         }
 
         @Override public <U> ACollectionBuilder<U, ATreeSet<U>> newBuilder () {
+            //noinspection unchecked
             return ATreeSet.builder((Comparator) map.comparator()); //TODO this is somewhat hacky - better alternatives?
         }
 
@@ -411,6 +410,7 @@ public class AMapSupport {
         }
 
         @Override public boolean contains (Object o) {
+            //noinspection SuspiciousMethodCalls
             return map.containsKey(o);
         }
 
@@ -424,6 +424,52 @@ public class AMapSupport {
 
         @Override public AIterator<ATreeSet<T>> subsets (int len) {
             return ASetDefaults.super.subsets(len);
+        }
+
+        //TODO test these
+
+        @Override public T lower (T t) {
+            return map.lowerKey(t);
+        }
+
+        @Override public T floor (T t) {
+            return map.floorKey(t);
+        }
+
+        @Override public T ceiling (T t) {
+            return map.ceilingKey(t);
+        }
+
+        @Override public T higher (T t) {
+            return map.higherKey(t);
+        }
+
+        @Override public T pollFirst () {
+            throw new UnsupportedOperationException("mutable operation on an immutable collection");
+        }
+
+        @Override public T pollLast () {
+            throw new UnsupportedOperationException("mutable operation on an immutable collection");
+        }
+
+        @Override public ASortedSet<T> descendingSet () {
+            return map.descendingKeySet();
+        }
+
+        @Override public AIterator<T> descendingIterator () {
+            return null; //TODO implement this
+        }
+
+        @Override public NavigableSet<T> subSet (T fromElement, boolean fromInclusive, T toElement, boolean toInclusive) {
+            return map.subMap(fromElement, fromInclusive, toElement, toInclusive).keySet();
+        }
+
+        @Override public NavigableSet<T> headSet (T toElement, boolean inclusive) {
+            return map.headMap(toElement, inclusive).keySet();
+        }
+
+        @Override public NavigableSet<T> tailSet (T fromElement, boolean inclusive) {
+            return map.tailMap(fromElement, inclusive).keySet();
         }
 
         @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
@@ -447,7 +493,6 @@ public class AMapSupport {
         }
 
         @Override public Comparator<Map.Entry<K,V>> comparator() {
-            //noinspection unchecked
             return Map.Entry.comparingByKey(map.comparator());
         }
 
@@ -504,38 +549,31 @@ public class AMapSupport {
         }
 
         @Override public ASortedSet<Map.Entry<K,V>> range (AOption<Map.Entry<K,V>> from, AOption<Map.Entry<K,V>> until) {
-            //noinspection unchecked
-            return (ASortedSet<Map.Entry<K,V>>) map.range(from.map(Map.Entry::getKey), until.map(Map.Entry::getKey)).entrySet();
+            return map.range(from.map(Map.Entry::getKey), until.map(Map.Entry::getKey)).entrySet();
         }
 
         @Override public ASortedSet<Map.Entry<K,V>> drop (int n) {
-            //noinspection unchecked
-            return (ASortedSet<Map.Entry<K,V>>) map.drop(n).entrySet();
+            return map.drop(n).entrySet();
         }
 
         @Override public ASortedSet<Map.Entry<K,V>> take (int n) {
-            //noinspection unchecked
-            return (ASortedSet<Map.Entry<K,V>>) map.take(n).entrySet();
+            return map.take(n).entrySet();
         }
 
         @Override public AOption<Map.Entry<K,V>> smallest () {
-            //noinspection unchecked
-            return (AOption<Map.Entry<K,V>>) map.smallest();
+            return map.smallest();
         }
 
         @Override public AOption<Map.Entry<K,V>> greatest () {
-            //noinspection unchecked
-            return (AOption<Map.Entry<K,V>>) map.greatest();
+            return map.greatest();
         }
 
-        @Override public AIterator<Map.Entry<K,V>> iterator (AOption<Map.Entry<K,V>> from, AOption<Map.Entry<K,V>> until) {
-            //noinspection unchecked
-            return (AIterator<Map.Entry<K,V>>) map.iterator(from.map(Map.Entry::getKey), until.map(Map.Entry::getKey));
+        @Override public AIterator<Map.Entry<K,V>> iterator (AOption<Map.Entry<K,V>> from, boolean fromInclusive, AOption<Map.Entry<K,V>> to, boolean toInclusive) {
+            return map.iterator(from.map(Map.Entry::getKey), fromInclusive, to.map(Map.Entry::getKey), toInclusive);
         }
 
         @Override public AIterator<Map.Entry<K,V>> iterator () {
-            //noinspection unchecked
-            return (AIterator<Map.Entry<K,V>>) map.iterator();
+            return map.iterator();
         }
 
         @Override public <U> ACollectionBuilder<U, ATreeSet<U>> newBuilder () {
@@ -565,10 +603,8 @@ public class AMapSupport {
         }
 
         @Override public ATreeSet<Map.Entry<K,V>> filter (Predicate<Map.Entry<K,V>> f) {
-            //noinspection unchecked
-            final ACollectionBuilder<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>> builder = (ACollectionBuilder) ATreeSet.builder(new EntryComparator<>(map.comparator()));
+            final ACollectionBuilder<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>> builder = ATreeSet.builder(new EntryComparator<>(map.comparator()));
             for (Map.Entry<K,V> o: this) if (f.test(o)) builder.add(o);
-            //noinspection unchecked
             return builder.build();
         }
         @Override public ATreeSet<Map.Entry<K,V>> filterNot (Predicate<Map.Entry<K,V>> f) {
@@ -594,6 +630,52 @@ public class AMapSupport {
 
         @Override public AIterator<ATreeSet<Map.Entry<K,V>>> subsets (int len) {
             return ASetDefaults.super.subsets(len);
+        }
+
+        //TODO test these
+
+        @Override public Map.Entry<K, V> lower (Map.Entry<K, V> kvEntry) {
+            return map.lowerEntry(kvEntry.getKey());
+        }
+
+        @Override public Map.Entry<K, V> floor (Map.Entry<K, V> kvEntry) {
+            return map.floorEntry(kvEntry.getKey());
+        }
+
+        @Override public Map.Entry<K, V> ceiling (Map.Entry<K, V> kvEntry) {
+            return map.ceilingEntry(kvEntry.getKey());
+        }
+
+        @Override public Map.Entry<K, V> higher (Map.Entry<K, V> kvEntry) {
+            return map.higherEntry(kvEntry.getKey());
+        }
+
+        @Override public Map.Entry<K, V> pollFirst () {
+            throw new UnsupportedOperationException("mutable operation on an immutable collection");
+        }
+
+        @Override public Map.Entry<K, V> pollLast () {
+            throw new UnsupportedOperationException("mutable operation on an immutable collection");
+        }
+
+        @Override public ASortedSet<Map.Entry<K, V>> descendingSet () {
+            return map.descendingMap().entrySet();
+        }
+
+        @Override public AIterator<Map.Entry<K, V>> descendingIterator () {
+            return null; //TODO implement this
+        }
+
+        @Override public NavigableSet<Map.Entry<K, V>> subSet (Map.Entry<K, V> fromElement, boolean fromInclusive, Map.Entry<K, V> toElement, boolean toInclusive) {
+            return map.subMap(fromElement.getKey(), fromInclusive, toElement.getKey(), toInclusive).entrySet();
+        }
+
+        @Override public NavigableSet<Map.Entry<K, V>> headSet (Map.Entry<K, V> toElement, boolean inclusive) {
+            return map.headMap(toElement.getKey(), inclusive).entrySet();
+        }
+
+        @Override public NavigableSet<Map.Entry<K, V>> tailSet (Map.Entry<K, V> fromElement, boolean inclusive) {
+            return map.tailMap(fromElement.getKey(), inclusive).entrySet();
         }
 
         @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")

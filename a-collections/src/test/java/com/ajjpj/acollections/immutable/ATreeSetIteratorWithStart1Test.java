@@ -13,6 +13,6 @@ class ATreeSetIteratorWithStart1Test implements AIteratorTests {
 
     //TODO verify the validity / completeness in the presence of upper bounds
     @Override public AIterator<Integer> mkIterator (Integer... values) {
-        return AMutableArrayWrapper.wrap(values).prepend(0).toSortedSet().iterator(AOption.some(1), AOption.none());
+        return AMutableArrayWrapper.wrap(values).prepend(0).toSortedSet().iterator(AOption.some(1), true, AOption.none(), false);
     }
 }

@@ -2,8 +2,7 @@ package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.util.AOption;
 
-import java.util.Comparator;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -16,7 +15,7 @@ import java.util.Map;
  * @param <K> The AMap's key type
  * @param <V> The AMap's value type
  */
-public interface ASortedMap<K,V> extends AMap<K,V> { //TODO implements NavigableMap
+public interface ASortedMap<K,V> extends AMap<K,V>, NavigableMap<K,V> {
     /**
      * Returns the comparator used to compare keys to determine element ordering and equality
      *
@@ -89,29 +88,51 @@ public interface ASortedMap<K,V> extends AMap<K,V> { //TODO implements Navigable
     ASortedSet<K> keySet();
     ASortedSet<Map.Entry<K,V>> entrySet();
 
-
-    //TODO fix javadoc
     /**
-     * Returns an iterator over this map's entries, starting at an optional lower bound
+     * Returns an iterator over this map's entries, starting at an optional lower bound and ending at an optional upper bound. The
+     *  lower bound is inclusive, the upper bound is exclusive
      *
-     * @param start the lower bound for keys to iterate over
+     * @param from the lower bound for keys to iterate over
+     * @param until the upper bound for keys to iterate over
      * @return an iterator over this map's entries
      */
-    AIterator<Map.Entry<K,V>> iterator(AOption<K> from, AOption<K> until);
+    AIterator<Map.Entry<K,V>> iterator(AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive); //TODO document flags
 
     /**
-     * Returns an iterator over this map's keys, starting at an optional lower bound
+     * Returns an iterator over this map's keys, starting at an optional lower bound and ending at an optional upper bound. The
+     *  lower bound is inclusive, the upper bound is exclusive
      *
-     * @param start the lower bound for keys to iterate over
+     * @param from the lower bound for keys to iterate over
+     * @param until the upper bound for keys to iterate over
      * @return an iterator over this map's keys
      */
-    AIterator<K> keysIterator (AOption<K> from, AOption<K> until);
+    AIterator<K> keysIterator (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive);
 
     /**
-     * Returns an iterator over this map's values for which the corresponding keys are greater than or equal than an (optional) lower bound.
+     * Returns an iterator over this map's values for which the corresponding keys are greater than or equal than an (optional) lower bound
+     *  and smaller than an (optional) upper bound.
      *
-     * @param start the lower bound for keys to iterate over
+     * @param from the lower bound for keys to iterate over
+     * @param until the upper bound for keys to iterate over
      * @return an iterator over this map's values
      */
-    AIterator<V> valuesIterator (AOption<K> from, AOption<K> until);
+    AIterator<V> valuesIterator (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive);
+
+    @Override ASortedMap<K, V> descendingMap ();
+
+    @Override ASortedSet<K> navigableKeySet ();
+
+    @Override ASortedSet<K> descendingKeySet ();
+
+    @Override ASortedMap<K, V> subMap (K fromKey, boolean fromInclusive, K toKey, boolean toInclusive);
+
+    @Override ASortedMap<K, V> headMap (K toKey, boolean inclusive);
+
+    @Override ASortedMap<K, V> tailMap (K fromKey, boolean inclusive);
+
+    @Override ASortedMap<K, V> subMap (K fromKey, K toKey);
+
+    @Override ASortedMap<K, V> headMap (K toKey);
+
+    @Override ASortedMap<K, V> tailMap (K fromKey);
 }

@@ -15,6 +15,6 @@ class ATreeSetIteratorWithStart0Test implements AIteratorTests {
     //TODO verify the validity / completeness in the presence of upper bounds
 
     @Override public AIterator<Integer> mkIterator (Integer... values) {
-        return ATreeSet.from(Arrays.asList(values)).iterator(AOption.some(0), AOption.none());
+        return ATreeSet.from(Arrays.asList(values)).iterator(AOption.some(0), true, AOption.none(), false);
     }
 }

@@ -7,13 +7,13 @@ import java.util.*;
 
 
 /**
- * This interface represents a {@link java.util.SortedSet} with additional API (mostly inherited from {@link ASet}). Every ASortedSet
+ * This interface represents a {@link java.util.NavigableSet} with additional API (mostly inherited from {@link ASet}). Every ASortedSet
  *  has in inherent {@link Comparator} defining an ordering (and equality); this is exposed via {@link #comparator()}. ASortedSet has some
  *  methods in addition to {@link ASet} which are based on the ordering defined by the comparator.
  *
  * @param <T> the set's element type
  */
-public interface ASortedSet<T> extends ASet<T>, SortedSet<T> {
+public interface ASortedSet<T> extends ASet<T>, NavigableSet<T> {
 
     /**
      * Creates an empty {@link ATreeSet} with {@link Comparator#naturalOrder()}.
@@ -216,11 +216,11 @@ public interface ASortedSet<T> extends ASet<T>, SortedSet<T> {
      *
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
-     * @param from  the optional lower bound
-     * @param until the optional upper bound
+     * @param from  the optional lower bound (inclusive)
+     * @param to the optional upper bound (exclusive)
      * @return the subset of elements between the two bounds
      */
-    ASortedSet<T> range (AOption<T> from, AOption<T> until);
+    ASortedSet<T> range (AOption<T> from, AOption<T> to);
 
     /**
      * Returns this set without the {@code n} smallest elements.
@@ -270,7 +270,12 @@ public interface ASortedSet<T> extends ASet<T>, SortedSet<T> {
      * @param until the upper bound for the iterator
      * @return an iterator starting at a given lower bound
      */
-    AIterator<T> iterator(AOption<T> from, AOption<T> until);
+    AIterator<T> iterator(AOption<T> from, boolean fromInclusive, AOption<T> to, boolean toInclusive); //TODO document flags
+
+    //TODO javadoc
+    default AIterator<T> reverseIterator() {
+        return descendingIterator();
+    }
 
     AIterator<? extends ASortedSet<T>> subsets ();
     AIterator<? extends ASortedSet<T>> subsets (int len);
@@ -295,4 +300,7 @@ public interface ASortedSet<T> extends ASet<T>, SortedSet<T> {
         return range(AOption.some(fromElement), AOption.none());
     }
 
+    @Override ASortedSet<T> descendingSet ();
+
+    @Override AIterator<T> descendingIterator ();
 }

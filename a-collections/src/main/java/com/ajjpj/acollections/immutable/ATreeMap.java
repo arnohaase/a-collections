@@ -273,7 +273,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
         return new ATreeMap<>(RedBlackTree.delete(root, key, comparator), comparator);
     }
     @Override public AIterator<Entry<K,V>> iterator() {
-        return RedBlackTree.iterator(root, AOption.none(), AOption.none(), comparator);
+        return RedBlackTree.iterator(root, AOption.none(), true, AOption.none(), false, comparator);
     }
 
     @Override public int size() {
@@ -296,7 +296,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     }
 
     @Override public boolean containsValue (Object value) {
-        return RedBlackTree.valuesIterator(root, AOption.none(), AOption.none(), comparator)
+        return RedBlackTree.valuesIterator(root, AOption.none(), true, AOption.none(), false, comparator)
                 .exists(v -> Objects.equals(v, value));
     }
 
@@ -355,8 +355,8 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
         return RedBlackTree.countInRange(root, from, to, comparator);
     }
 
-    @Override public ATreeMap<K, V> range (AOption<K> from, AOption<K> until) {
-        return new ATreeMap<>(RedBlackTree.rangeImpl(root, from, until, comparator), comparator);
+    @Override public ATreeMap<K, V> range (AOption<K> from, AOption<K> to) {
+        return new ATreeMap<>(RedBlackTree.rangeImpl(root, from, true, to, false, comparator), comparator);
     }
 
     @Override public ATreeMap<K, V> drop (int n) {
@@ -382,21 +382,125 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     }
 
     @Override public AIterator<K> keysIterator () {
-        return keysIterator(AOption.none(), AOption.none());
+        return keysIterator(AOption.none(), true, AOption.none(), false);
     }
     @Override public AIterator<V> valuesIterator () {
-        return valuesIterator(AOption.none(), AOption.none());
+        return valuesIterator(AOption.none(), true, AOption.none(), false);
     }
 
-    @Override public AIterator<Entry<K, V>> iterator (AOption<K> from, AOption<K> until) {
-        return RedBlackTree.iterator(root, from, until, comparator);
+    @Override public AIterator<Entry<K, V>> iterator (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive) {
+        return RedBlackTree.iterator(root, from, fromInclusive, to, toInclusive, comparator);
     }
-    @Override public AIterator<K> keysIterator (AOption<K> from, AOption<K> until) {
-        return RedBlackTree.keysIterator(root, from, until, comparator);
+    @Override public AIterator<K> keysIterator (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive) {
+        return RedBlackTree.keysIterator(root, from, fromInclusive, to, toInclusive, comparator);
     }
-    @Override public AIterator<V> valuesIterator (AOption<K> from, AOption<K> until) {
-        return RedBlackTree.valuesIterator(root, from, until, comparator);
+    @Override public AIterator<V> valuesIterator (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive) {
+        return RedBlackTree.valuesIterator(root, from, fromInclusive, to, toInclusive, comparator);
     }
+
+    //TODO test all these
+    @Override public Entry<K, V> lowerEntry (K key) {
+        final AIterator<Map.Entry<K,V>> it = RedBlackTree.reverseIterator(root, AOption.some(key), false, AOption.none(), false, comparator);
+        return it.hasNext() ? it.next() : null;
+    }
+
+    @Override public K lowerKey (K key) {
+        final AIterator<K> it = RedBlackTree.reverseKeysIterator(root, AOption.some(key), false, AOption.none(), false, comparator);
+        return it.hasNext() ? it.next() : null;
+    }
+
+    @Override public Entry<K, V> floorEntry (K key) {
+        final AIterator<Map.Entry<K,V>> it = RedBlackTree.reverseIterator(root, AOption.some(key), true, AOption.none(), false, comparator);
+        return it.hasNext() ? it.next() : null;
+    }
+
+    @Override public K floorKey (K key) {
+        final AIterator<K> it = RedBlackTree.reverseKeysIterator(root, AOption.some(key), true, AOption.none(), false, comparator);
+        return it.hasNext() ? it.next() : null;
+    }
+
+    @Override public Entry<K, V> ceilingEntry (K key) {
+        final AIterator<Entry<K,V>> it = iterator(AOption.some(key), true, AOption.none(), false);
+        return it.hasNext() ? it.next() : null;
+    }
+
+    @Override public K ceilingKey (K key) {
+        final AIterator<K> it = keysIterator(AOption.some(key), true, AOption.none(), false);
+        return it.hasNext() ? it.next() : null;
+    }
+
+    @Override public Entry<K, V> higherEntry (K key) {
+        final AIterator<Entry<K,V>> it = iterator(AOption.some(key), false, AOption.none(), false);
+        return it.hasNext() ? it.next() : null;
+    }
+
+    @Override public K higherKey (K key) {
+        final AIterator<K> it = keysIterator(AOption.some(key), false, AOption.none(), false);
+        return it.hasNext() ? it.next() : null;
+    }
+
+    @Override public Entry<K, V> firstEntry () {
+        return first();
+    }
+
+    @Override public Entry<K, V> lastEntry () {
+        return greatest().orNull();
+    }
+
+    @Override public Entry<K, V> pollFirstEntry () {
+        throw new UnsupportedOperationException("mutable operation not supported for immutable collection");
+    }
+
+    @Override public Entry<K, V> pollLastEntry () {
+        throw new UnsupportedOperationException("mutable operation not supported for immutable collection");
+    }
+
+    @Override public ATreeMap<K, V> descendingMap () {
+        return ATreeMap.from(this, comparator.reversed());
+    }
+
+    @Override public ASortedSet<K> navigableKeySet () {
+        return keySet();
+    }
+
+    @Override public ASortedSet<K> descendingKeySet () {
+        return descendingMap().keySet();
+    }
+
+    @Override public ASortedMap<K, V> subMap (K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
+        return new ATreeMap<>(RedBlackTree.range(root, fromKey, fromInclusive, toKey, toInclusive, comparator), comparator);
+    }
+
+    @Override public ASortedMap<K, V> headMap (K toKey, boolean inclusive) {
+        return new ATreeMap<>(RedBlackTree.to(root, toKey, inclusive, comparator), comparator);
+    }
+
+    @Override public ASortedMap<K, V> tailMap (K fromKey, boolean inclusive) {
+        return new ATreeMap<>(RedBlackTree.from(root, fromKey, inclusive, comparator), comparator);
+    }
+
+    @Override public ASortedMap<K, V> subMap (K fromKey, K toKey) {
+        return subMap(fromKey, true, toKey, false);
+    }
+
+    @Override public ASortedMap<K, V> headMap (K toKey) {
+        return headMap(toKey, true);
+    }
+
+    @Override public ASortedMap<K, V> tailMap (K fromKey) {
+        return tailMap(fromKey, true);
+    }
+
+    @Override public K firstKey () {
+        return smallest().get().getKey();
+    }
+
+    @Override public K lastKey () {
+        return greatest().get().getKey();
+    }
+
+    //TODO -----------------
+
 
     @Override public <K1, V1> ACollectionBuilder<Entry<K1, V1>, ATreeMap<K1, V1>> newEntryBuilder () {
         //noinspection unchecked

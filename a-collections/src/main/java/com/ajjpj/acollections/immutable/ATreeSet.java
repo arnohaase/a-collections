@@ -273,6 +273,7 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return comparator;
     }
 
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     @Override public boolean equals (Object o) {
         return ASetSupport.equals(this, o);
     }
@@ -314,8 +315,8 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return RedBlackTree.countInRange(root, from, to, comparator);
     }
 
-    @Override public ATreeSet<T> range (AOption<T> from, AOption<T> until) {
-        return new ATreeSet<>(RedBlackTree.rangeImpl(root, from, until, comparator), comparator);
+    @Override public ATreeSet<T> range (AOption<T> from, AOption<T> to) {
+        return new ATreeSet<>(RedBlackTree.rangeImpl(root, from, true, to, false, comparator), comparator);
     }
 
     @Override public ASortedSet<T> drop (int n) {
@@ -355,15 +356,16 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return raw == null ? AOption.none() : AOption.some(raw.key);
     }
 
-    @Override public AIterator<T> iterator (AOption<T> from, AOption<T> until) {
-        return RedBlackTree.keysIterator(root, from, until, comparator);
+    @Override public AIterator<T> iterator (AOption<T> from, boolean fromInclusive, AOption<T> to, boolean toInclusive) {
+        return RedBlackTree.keysIterator(root, from, fromInclusive, to, toInclusive, comparator);
     }
 
     @Override public AIterator<T> iterator () {
-        return RedBlackTree.keysIterator(root, AOption.none(), AOption.none(), comparator);
+        return RedBlackTree.keysIterator(root, AOption.none(), true, AOption.none(), false, comparator);
     }
 
     @Override public <U> ACollectionBuilder<U, ATreeSet<U>> newBuilder () {
+        //noinspection unchecked
         return new Builder<U>((Comparator) comparator); //TODO this is somewhat hacky - better way?
     }
 
@@ -428,6 +430,56 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return (ATreeSet<T>) ASortedSet.super.tailSet(fromElement);
     }
 
+    //TODO test these
+    @Override public T lower (T t) {
+        final AIterator<T> it = RedBlackTree.reverseKeysIterator(root, AOption.some(t), false, AOption.none(), false, comparator);
+        return it.hasNext() ? it.next() : null;
+    }
+
+    @Override public T floor (T t) {
+        final AIterator<T> it = RedBlackTree.reverseKeysIterator(root, AOption.some(t), true, AOption.none(), false, comparator);
+        return it.hasNext() ? it.next() : null;
+    }
+
+    @Override public T ceiling (T t) {
+        final AIterator<T> it = iterator(AOption.some(t), true, AOption.none(), false);
+        if (it.hasNext()) return it.next();
+        return null;
+    }
+
+    @Override public T higher (T t) {
+        final AIterator<T> it = iterator(AOption.some(t), false, AOption.none(), false);
+        if (it.hasNext()) return it.next();
+        return null;
+    }
+
+    @Override public T pollFirst () {
+        throw new UnsupportedOperationException("mutable operation on an immutable collection");
+    }
+
+    @Override public T pollLast () {
+        throw new UnsupportedOperationException("mutable operation on an immutable collection");
+    }
+
+    @Override public ASortedSet<T> descendingSet () {
+        return ATreeSet.from(this, comparator.reversed());
+    }
+
+    @Override public AIterator<T> descendingIterator () {
+        return RedBlackTree.reverseKeysIterator(root, AOption.none(), true, AOption.none(), false, comparator);
+    }
+
+    @Override public NavigableSet<T> subSet (T fromElement, boolean fromInclusive, T toElement, boolean toInclusive) {
+        return new ATreeSet<>(RedBlackTree.range(root, fromElement, fromInclusive, toElement, toInclusive, comparator), comparator);
+    }
+
+    @Override public NavigableSet<T> headSet (T toElement, boolean inclusive) {
+        return new ATreeSet<>(RedBlackTree.to(root, toElement, inclusive, comparator), comparator);
+    }
+
+    @Override public NavigableSet<T> tailSet (T fromElement, boolean inclusive) {
+        return new ATreeSet<>(RedBlackTree.from(root, fromElement, inclusive, comparator), comparator);
+    }
 
     /**
      * Returns a {@link Collector} to collect {@link java.util.stream.Stream} elements into an ATreeSet.
