@@ -32,9 +32,10 @@ import java.util.function.Predicate;
  *  <a href="https://en.wikipedia.org/wiki/Persistent_data_structure">https://en.wikipedia.org/wiki/Persistent_data_structure</a>),
  *  i.e. they do have methods to add, remove or otherwise modify the collection, but these methods return a new instance, leaving the
  *  original alone. This requires some copying, but the underlying algorithms are pretty efficient and minimize the overhead.
- * <p> Immutable collection classes inherit all mutator methods from {@link java.util.Collection} etc., but there is no way for them to
- *  implement them in a meaningful way - they do not return the modified collection, which is necessary for modifications of "persistent"
- *  collection classes. So the immutable collection classes throw {@link UnsupportedOperationException} for inherited mutator methods.
+ * <p> For convenient interoperability reasons (using a common interface) immutable collection classes also inherit all mutator methods
+ *  from {@link java.util.Collection} etc.,but there is no way to implement them in a meaningful way,
+ *  because they do not return the modified collection, which is necessary for modifications of "persistent" collection classes.
+ *  So the immutable collection classes throw {@link UnsupportedOperationException} for these inherited mutator methods.
  *
  * @param <T> This collection's element type
  */

@@ -32,8 +32,8 @@ public interface ACollectionOps<T> {
     AIterator<T> iterator ();
 
     /**
-     * Returns a builder for a collection of the same type (and with the same configuration, e.g. comparator in case of sorted
-     *  collections).
+     * Returns a builder for a collection of the same type and with the same configuration,
+     *  e.g. comparator in case of sorted collections.
      *
      * <p> This is public API, but it was added largely for internal use: Having this method allows generically implementing transformation
      *  methods like {@link #map(Function)}.
@@ -56,21 +56,21 @@ public interface ACollectionOps<T> {
     }
 
     /**
-     * returns the number of elements in this collection.
+     * Returns the number of elements in this collection.
      *
      * @return the number of elements in this collection.
      */
     int size();
 
     /**
-     * returns true if and only if this collection has no elements.
+     * Returns true if and only if this collection has no elements.
      *
      * @return true if and only if this collection has no elements
      */
     boolean isEmpty();
 
     /**
-     * returns true if and only if this collection has at least one element
+     * Returns true if and only if this collection has at least one element
      *
      * @return true if and only if this collection has at least one element
      */
@@ -79,7 +79,7 @@ public interface ACollectionOps<T> {
     }
 
     /**
-     * returns this collection's first element, or {@code null} if this collection is empty.
+     * Returns this collection's first element, or {@code null} if this collection is empty.
      *
      * <p> 'First' element means first element in iteration order, which differs a lot for different kinds of collections:
      * <ul>
@@ -105,7 +105,7 @@ public interface ACollectionOps<T> {
     AOption<T> headOption();
 
     /**
-     * returns this collection's first element, or {@code null} if this collection is empty.
+     * Returns this collection's first element, or {@code null} if this collection is empty.
      *
      * <p> 'First' element means first element in iteration order, which differs a lot for different kinds of collections:
      * <ul>
@@ -130,21 +130,22 @@ public interface ACollectionOps<T> {
         return headOption();
     }
 
-
     /**
-     * This is a convenience method to convert any collection into an {@link ALinkedList}. If the collection is an {@link ALinkedList}
+     * This is a convenience method to convert any collection into an {@link ALinkedList}. If the collection is already an {@link ALinkedList}
      *  already, this is a no-op, otherwise a new instance is created.
      *
      * @return an {@link ALinkedList} containing this collection's elements in iteration order
      */
     ALinkedList<T> toLinkedList();
+
     /**
-     * This is a convenience method to convert any collection into an {@link AVector}. If the collection is an {@link AVector}
+     * This is a convenience method to convert any collection into an {@link AVector}. If the collection is already an {@link AVector}
      *  already, this is a no-op, otherwise a new instance is created.
      *
      * @return an {@link AVector} containing this collection's elements in iteration order
      */
     AVector<T> toVector();
+
     /**
      * This is a convenience method to convert any collection into an {@link AHashSet}. If the collection is an {@link AHashSet}
      *  already, this is a no-op, otherwise a new instance is created.
@@ -152,9 +153,10 @@ public interface ACollectionOps<T> {
      * @return an {@link AHashSet} containing this collection's elements
      */
     AHashSet<T> toSet();
+
     /**
      * This is the same as {@link #toSortedSet(Comparator)}, but using {@link Comparator#naturalOrder()} implicitly. This method relies
-     *  on the collection's elements implementing {@link Comparable}, throwing a {@link ClassCastException} if they don't.
+     *  on the collection's elements implementing {@link Comparable} (throwing a {@link ClassCastException} if they don't)
      *
      * @return an {@link ATreeSet} with this collection's elements
      */
@@ -174,7 +176,7 @@ public interface ACollectionOps<T> {
 
     /**
      * This is a convenience method converting this collection into an immutable {@link AMap}. It expects the collection to consist of
-     *  {@link Map.Entry}, throwing a {@link ClassCastException} otherwise.
+     *  {@link Map.Entry} (throwing a {@link ClassCastException} otherwise)
      *
      * @param <K> the new map's key type (usually needs to be explicitly provided by the caller)
      * @param <V> the new map's value type (usually needs to be explicitly provided by the caller)
@@ -189,6 +191,7 @@ public interface ACollectionOps<T> {
      * @return an {@link AMutableListWrapper} containing this collection's elements
      */
     AMutableListWrapper<T> toMutableList();
+
     /**
      * This is a convenience method to convert any collection into a mutable {@link ASet} (more specifically, an {@link AMutableSetWrapper}
      *  around a {@link java.util.HashSet}) with this collection's elements.
@@ -199,7 +202,7 @@ public interface ACollectionOps<T> {
     //TODO toMutableMap
 
     /**
-     * creates a new collection of the same collection type by applying a function to each element. The new collection's element type
+     * Creates a new collection of the same collection type by applying a function to each element. The new collection's element type
      *  does not have to be the same as this collection's.
      *
      * <p>Examples:
@@ -215,7 +218,7 @@ public interface ACollectionOps<T> {
     <U> ACollection<U> map(Function<T,U> f);
 
     /**
-     * creates a new collection of the same collection type by applying a function to each element. The difference to {@link #map(Function)}
+     * Creates a new collection of the same collection type by applying a function to each element. The difference to {@link #map(Function)}
      *  is that for flatMap(Function), the function returns an {@link Iterable} which is then unwrapped, i.e. the function returns a
      *  collection of new elements for each element which is then flattened into a single collection.
      *
@@ -227,6 +230,7 @@ public interface ACollectionOps<T> {
      *       an {@link ASet} with all orders for a given group of customers:
      *       <p>{@code ASet<Customer> customers = ...;}
      *       <p>{@code ASet<Order> orders = customers.flatMap(c -> ordersFor(c);}
+     *
      * <li> {@link AOption} is iterable, and using flatMap() with a function returning {@link AOption} can be a concise way of filtering
      *       and transforming the contents of a collection.
      *       <p> Let us assume there is a method {@code AOption<LocalDate> birthdayOf(String person)} that returns a person's birthday
@@ -300,9 +304,11 @@ public interface ACollectionOps<T> {
     AOption<T> find(Predicate<T> f);
 
     /**
-     * Returns true if and only if all elements fulfil a given condition (though shortcut evaluation is in order: if one element fails the test,
-     *  implementations are not required to test other elements). This is sort of a counterpart to {@link #exists(Predicate)}.
-     * <p> This method name is somewhat to {@link Collection#forEach(Consumer)} which does something entirely different. This similarity is
+     * Returns true if and only if all elements fulfil a given condition
+     *
+     * <p> Though shortcut evaluation is in order: if one element fails the test, implementations are not required to test other elements.
+     *  This is sort of a counterpart to {@link #exists(Predicate)}.
+     * <p> This method name sounds similar to {@link Collection#forEach(Consumer)} which does something entirely different. This similarity is
      *  somewhat unfortunate, but both names are so well established that living with the similarity seemed a viable trade-off.
      *
      * @param f the condition the elements are checked against
@@ -339,8 +345,8 @@ public interface ACollectionOps<T> {
     boolean contains(Object o);
 
     /**
-     * "reduces" the elements of this collection to a single value of the same type using a function that takes two values of the same type
-     *  and returns their "combination".
+     * "Reduces" the elements of this collection to a single value of the same type using a function.
+     *  That function takes two values of the same type and returns their "combination".
      *
      * <p> One simple example is summing up the numbers in a collection: {@code AVector.of(1, 2, 3).reduce((a,b) -> a+b)} first creates the
      *      sum of two of the numbers (first call of the reducing function), and then calls the function again with the result of the first
@@ -372,8 +378,7 @@ public interface ACollectionOps<T> {
 
     /**
      * Reduces the elements of this collection to a single value of the same type using a reduction function. This method is similar to
-     *  {@link #reduce(BiFunction)}, the only exception being that reduceLeft guarantees the function being applied in iteration order (which
-     *  often does not make any difference).
+     *  {@link #reduce(BiFunction)}, the only exception being that reduceLeft guarantees the function being applied in iteration order.
      *
      * @throws java.util.NoSuchElementException if the collection is empty
      * @param f the reduction function
@@ -494,3 +499,5 @@ public interface ACollectionOps<T> {
      */
     String mkString(String prefix, String infix, String suffix);
 }
+
+// TODO method flatMap, 3rd example: Please describe it in a different way (or simply remove this 3rd example). The first sentence makes no sense to me (roman)

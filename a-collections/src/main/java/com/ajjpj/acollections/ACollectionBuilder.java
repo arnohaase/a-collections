@@ -12,20 +12,20 @@ import java.util.Iterator;
  */
 public interface ACollectionBuilder<T, R extends ACollectionOps<T>> {
     /**
-     * adds an element
+     * Adds an element
      * @param el the added element
      * @return this builder with the added element
      */
     ACollectionBuilder<T,R> add(T el);
 
     /**
-     * builds the resulting collection from this builder
+     * Builds the resulting collection from this builder
      * @return the collection
      */
     R build();
 
     /**
-     * adds all of an Iterator's elements
+     * Adds all of an Iterator's elements
      * @param it the iterator being added
      * @return this builder with the added elements
      */
@@ -34,7 +34,7 @@ public interface ACollectionBuilder<T, R extends ACollectionOps<T>> {
         return this;
     }
     /**
-     * adds all of an Iterable's elements
+     * Adds all of an Iterable's elements
      * @param coll the Iterable being added
      * @return this builder with the added elements
      */
@@ -42,7 +42,7 @@ public interface ACollectionBuilder<T, R extends ACollectionOps<T>> {
         return addAll(coll.iterator());
     }
     /**
-     * adds all of an array's elements
+     * Adds all of an array's elements
      * @param coll the array being added
      * @return this builder with the added elements
      */
