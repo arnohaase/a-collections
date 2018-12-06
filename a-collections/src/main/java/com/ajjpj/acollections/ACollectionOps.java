@@ -234,7 +234,7 @@ public interface ACollectionOps<T> {
      * <li> {@link AOption} is iterable, and using flatMap() with a function returning {@link AOption} can be a concise way of filtering
      *       and transforming the contents of a collection.
      *       <p> Let us assume there is a method {@code AOption<LocalDate> birthdayOf(String person)} that returns a person's birthday
-     *       if it is known. Then the following code will provide all birthdays for a given group of persons:
+     *       if it is known. Then the following code will provide all known birthdays for a given group of persons:
      *       <p> {@code ASet<String> persons = ...;}
      *       <p> {@code ASet<LocalDate> birthdays = persons.flatMap(p -> birthdayOf(p);}
      * </ul>
@@ -499,5 +499,3 @@ public interface ACollectionOps<T> {
      */
     String mkString(String prefix, String infix, String suffix);
 }
-
-// TODO method flatMap, 3rd example: Please describe it in a different way (or simply remove this 3rd example). The first sentence makes no sense to me (roman)
