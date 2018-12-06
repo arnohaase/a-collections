@@ -1,16 +1,17 @@
 package com.ajjpj.acollections.immutable;
 
-import com.ajjpj.acollections.ASetTests;
 import com.ajjpj.acollections.ASortedSet;
 import com.ajjpj.acollections.ASortedSetTests;
 import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class ATreeSetTest implements ASortedSetTests {
@@ -66,21 +67,11 @@ public class ATreeSetTest implements ASortedSetTests {
         });
     }
 
-    @Override public Iterable<Variant> variants () {
-        return Arrays.asList(
-                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
-                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
-        );
-    }
-
-
     @Test @Override public void testToSortedSet() {
         doTest(v -> {
             assertEquals(v.mkColl(), v.mkColl().toSortedSet());
             assertEquals(v.mkColl(1), v.mkColl(1).toSortedSet());
         });
-
-        // TODO ascending / descending assertEquals(ATreeSet.of(1, 2, 3, 4), v.mkColl(2, 1, 4, 3).toSortedSet());
     }
 
     @Test void testCollector() {
@@ -89,7 +80,19 @@ public class ATreeSetTest implements ASortedSetTests {
         assertEquals(ARange.create(0, 100000).toSortedSet(), ARange.create(0, 100000).parallelStream().collect(ATreeSet.streamCollector()));
     }
 
-    @Test void testComparator() {
-        fail("todo");
+    @Test @Override  public void testComparator() {
+        assertTrue (ATreeSet.of(1, 2, 3).comparator().compare(1, 2) < 0);
+        assertTrue(ATreeSet.<Integer> empty().comparator().compare(1, 2) < 0);
+
+        assertTrue(ATreeSet.empty(Comparator.<Integer>naturalOrder()).comparator().compare(1, 2) < 0);
+        assertTrue(ATreeSet.empty(Comparator.<Integer>naturalOrder().reversed()).comparator().compare(1, 2) > 0);
     }
+
+    @Override public Iterable<Variant> variants () {
+        return Arrays.asList(
+                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
+                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
+        );
+    }
+
 }

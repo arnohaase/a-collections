@@ -485,9 +485,16 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
         public AMap<Integer,Integer> mkMap(Integer... values) {
             return (AMap<Integer,Integer>) mkColl(values);
         }
+        public ASortedMap<Integer,Integer> mkSortedMap(Integer... values) {
+            return (ASortedMap<Integer,Integer>) mkColl(values);
+        }
 
         AVector<Map.Entry<Integer,Integer>> iterationOrder123() {
             return this.iterationOrder123 != null ? iterationOrder123.map(AEntryCollectionOpsTests::entryOf) : null;
+        }
+
+        public boolean isAscending() {
+            return AVector.of(1, 2, 3).equals (iterationOrder123);
         }
     }
 }

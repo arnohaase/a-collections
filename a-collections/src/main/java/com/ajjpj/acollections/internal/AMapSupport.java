@@ -341,12 +341,12 @@ public class AMapSupport {
             return ATreeSet.fromIterator(iterator().filterNot(that::contains), map.comparator());
         }
 
-        @Override public int countInRange (AOption<T> from, AOption<T> to) {
-            return map.countInRange(from, to);
+        @Override public int countInRange (AOption<T> from, boolean fromInclusive, AOption<T> to, boolean toInclusive) {
+            return map.countInRange(from, fromInclusive, to, toInclusive);
         }
 
-        @Override public ASortedSet<T> range (AOption<T> from, AOption<T> until) {
-            return map.range(from, until).keySet();
+        @Override public ASortedSet<T> range (AOption<T> from, boolean fromInclusive, AOption<T> to, boolean toInclusive) {
+            return map.range(from, fromInclusive, to, toInclusive).keySet();
         }
 
         @Override public ASortedSet<T> drop (int n) {
@@ -457,18 +457,18 @@ public class AMapSupport {
         }
 
         @Override public AIterator<T> descendingIterator () {
-            return null; //TODO implement this
+            return map.descendingMap().keysIterator(); //TODO optimize this
         }
 
-        @Override public NavigableSet<T> subSet (T fromElement, boolean fromInclusive, T toElement, boolean toInclusive) {
+        @Override public ASortedSet<T> subSet (T fromElement, boolean fromInclusive, T toElement, boolean toInclusive) {
             return map.subMap(fromElement, fromInclusive, toElement, toInclusive).keySet();
         }
 
-        @Override public NavigableSet<T> headSet (T toElement, boolean inclusive) {
+        @Override public ASortedSet<T> headSet (T toElement, boolean inclusive) {
             return map.headMap(toElement, inclusive).keySet();
         }
 
-        @Override public NavigableSet<T> tailSet (T fromElement, boolean inclusive) {
+        @Override public ASortedSet<T> tailSet (T fromElement, boolean inclusive) {
             return map.tailMap(fromElement, inclusive).keySet();
         }
 
@@ -544,12 +544,12 @@ public class AMapSupport {
             return ATreeSet.fromIterator(iterator().filterNot(that::contains), comparator());
         }
 
-        @Override public int countInRange (AOption<Map.Entry<K,V>> from, AOption<Map.Entry<K,V>> to) {
-            return map.countInRange(from.map(Map.Entry::getKey), to.map(Map.Entry::getKey));
+        @Override public int countInRange (AOption<Map.Entry<K,V>> from, boolean fromInclusive, AOption<Map.Entry<K,V>> to, boolean toInclusive) {
+            return map.countInRange(from.map(Map.Entry::getKey), fromInclusive, to.map(Map.Entry::getKey), toInclusive);
         }
 
-        @Override public ASortedSet<Map.Entry<K,V>> range (AOption<Map.Entry<K,V>> from, AOption<Map.Entry<K,V>> until) {
-            return map.range(from.map(Map.Entry::getKey), until.map(Map.Entry::getKey)).entrySet();
+        @Override public ASortedSet<Map.Entry<K,V>> range (AOption<Map.Entry<K,V>> from, boolean fromInclusive, AOption<Map.Entry<K,V>> to, boolean toInclusive) {
+            return map.range(from.map(Map.Entry::getKey), fromInclusive, to.map(Map.Entry::getKey), toInclusive).entrySet();
         }
 
         @Override public ASortedSet<Map.Entry<K,V>> drop (int n) {
@@ -663,18 +663,18 @@ public class AMapSupport {
         }
 
         @Override public AIterator<Map.Entry<K, V>> descendingIterator () {
-            return null; //TODO implement this
+            return map.descendingMap().iterator(); //TODO optimize this
         }
 
-        @Override public NavigableSet<Map.Entry<K, V>> subSet (Map.Entry<K, V> fromElement, boolean fromInclusive, Map.Entry<K, V> toElement, boolean toInclusive) {
+        @Override public ASortedSet<Map.Entry<K, V>> subSet (Map.Entry<K, V> fromElement, boolean fromInclusive, Map.Entry<K, V> toElement, boolean toInclusive) {
             return map.subMap(fromElement.getKey(), fromInclusive, toElement.getKey(), toInclusive).entrySet();
         }
 
-        @Override public NavigableSet<Map.Entry<K, V>> headSet (Map.Entry<K, V> toElement, boolean inclusive) {
+        @Override public ASortedSet<Map.Entry<K, V>> headSet (Map.Entry<K, V> toElement, boolean inclusive) {
             return map.headMap(toElement.getKey(), inclusive).entrySet();
         }
 
-        @Override public NavigableSet<Map.Entry<K, V>> tailSet (Map.Entry<K, V> fromElement, boolean inclusive) {
+        @Override public ASortedSet<Map.Entry<K, V>> tailSet (Map.Entry<K, V> fromElement, boolean inclusive) {
             return map.tailMap(fromElement.getKey(), inclusive).entrySet();
         }
 

@@ -1,7 +1,7 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.AMap;
-import com.ajjpj.acollections.AMapTests;
+import com.ajjpj.acollections.ASortedMapTests;
 import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
@@ -10,12 +10,20 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class ATreeMapTest implements AMapTests {
+public class ATreeMapTest implements ASortedMapTests {
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
                 new Variant(() -> ATreeMap.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
                 new Variant(() -> ATreeMap.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
         );
+    }
+
+    @Override @Test public void testComparator() {
+        assertTrue (ATreeMap.of(9, "a").comparator().compare(1, 2) < 0);
+        assertTrue(ATreeMap.<Integer, String> empty().comparator().compare(1, 2) < 0);
+
+        assertTrue(ATreeMap.<Integer,String>empty(Comparator.naturalOrder()).comparator().compare(1, 2) < 0);
+        assertTrue(ATreeMap.<Integer,String>empty(Comparator.<Integer>naturalOrder().reversed()).comparator().compare(1, 2) > 0);
     }
 
     @Override @Test public void testStaticFactories() {

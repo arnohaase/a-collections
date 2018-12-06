@@ -351,12 +351,12 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
         return comparator;
     }
 
-    @Override public int countInRange (AOption<K> from, AOption<K> to) {
-        return RedBlackTree.countInRange(root, from, to, comparator);
+    @Override public int countInRange (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive) {
+        return RedBlackTree.countInRange(root, from, fromInclusive, to, toInclusive, comparator);
     }
 
-    @Override public ATreeMap<K, V> range (AOption<K> from, AOption<K> to) {
-        return new ATreeMap<>(RedBlackTree.rangeImpl(root, from, true, to, false, comparator), comparator);
+    @Override public ATreeMap<K, V> range (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive) {
+        return new ATreeMap<>(RedBlackTree.rangeImpl(root, from, fromInclusive, to, toInclusive, comparator), comparator);
     }
 
     @Override public ATreeMap<K, V> drop (int n) {
@@ -398,7 +398,6 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
         return RedBlackTree.valuesIterator(root, from, fromInclusive, to, toInclusive, comparator);
     }
 
-    //TODO test all these
     @Override public Entry<K, V> lowerEntry (K key) {
         final AIterator<Map.Entry<K,V>> it = RedBlackTree.reverseIterator(root, AOption.some(key), false, AOption.none(), false, comparator);
         return it.hasNext() ? it.next() : null;
@@ -444,7 +443,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     }
 
     @Override public Entry<K, V> lastEntry () {
-        return greatest().orNull();
+        return greatest().orElseThrow(NoSuchElementException::new);
     }
 
     @Override public Entry<K, V> pollFirstEntry () {
@@ -484,7 +483,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     }
 
     @Override public ASortedMap<K, V> headMap (K toKey) {
-        return headMap(toKey, true);
+        return headMap(toKey, false);
     }
 
     @Override public ASortedMap<K, V> tailMap (K fromKey) {

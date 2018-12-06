@@ -311,12 +311,12 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return result;
     }
 
-    @Override public int countInRange (AOption<T> from, AOption<T> to) {
-        return RedBlackTree.countInRange(root, from, to, comparator);
+    @Override public int countInRange (AOption<T> from, boolean fromInclusive, AOption<T> to, boolean toInclusive) {
+        return RedBlackTree.countInRange(root, from, fromInclusive, to, toInclusive, comparator);
     }
 
-    @Override public ATreeSet<T> range (AOption<T> from, AOption<T> to) {
-        return new ATreeSet<>(RedBlackTree.rangeImpl(root, from, true, to, false, comparator), comparator);
+    @Override public ATreeSet<T> range (AOption<T> from, boolean fromInclusive, AOption<T> to, boolean toInclusive) {
+        return new ATreeSet<>(RedBlackTree.rangeImpl(root, from, fromInclusive, to, toInclusive, comparator), comparator);
     }
 
     @Override public ASortedSet<T> drop (int n) {
@@ -418,11 +418,11 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return ACollectionDefaults.super.containsAll(c);
     }
 
-    @Override public ATreeSet<T> subSet (T fromElement, T toElement) { //TODO test this
+    @Override public ATreeSet<T> subSet (T fromElement, T toElement) {
         return (ATreeSet<T>) ASortedSet.super.subSet(fromElement, toElement);
     }
 
-    @Override public ATreeSet<T> headSet (T toElement) { //TODO test this
+    @Override public ATreeSet<T> headSet (T toElement) {
         return (ATreeSet<T>) ASortedSet.super.headSet(toElement);
     }
 
@@ -469,15 +469,15 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return RedBlackTree.reverseKeysIterator(root, AOption.none(), true, AOption.none(), false, comparator);
     }
 
-    @Override public NavigableSet<T> subSet (T fromElement, boolean fromInclusive, T toElement, boolean toInclusive) {
+    @Override public ASortedSet<T> subSet (T fromElement, boolean fromInclusive, T toElement, boolean toInclusive) {
         return new ATreeSet<>(RedBlackTree.range(root, fromElement, fromInclusive, toElement, toInclusive, comparator), comparator);
     }
 
-    @Override public NavigableSet<T> headSet (T toElement, boolean inclusive) {
+    @Override public ASortedSet<T> headSet (T toElement, boolean inclusive) {
         return new ATreeSet<>(RedBlackTree.to(root, toElement, inclusive, comparator), comparator);
     }
 
-    @Override public NavigableSet<T> tailSet (T fromElement, boolean inclusive) {
+    @Override public ASortedSet<T> tailSet (T fromElement, boolean inclusive) {
         return new ATreeSet<>(RedBlackTree.from(root, fromElement, inclusive, comparator), comparator);
     }
 

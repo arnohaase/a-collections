@@ -10,33 +10,19 @@ todo
 * ajjpj.com
   * landing page
 
-* sorted set tests for ATreeMap.entries, ATreeMap.keys
-
 * shotgun tests with different seeds
 
-* ASortedMap
-  * ASortedMap should implement NavigableMap
-  * ASortedMap: upper bound for iterator methods
-  * ASortedMap.reverseIterator()
-
-* ASortedSet
-  * ASortedSet.reverseIterator()
-  * ASortedSet javadoc: comments with  T O D O  in them
-  * unit tests
-    * ASortedSet.countInRange,
-    * ASortedSet.slice
-    * ATreeSet methods in general
-
 * mutable wrapper for NavigableSet, NavigableMap
-* rename 'until' -> 'to'
 
-* countInRange: add 'inclusive' flags to signature
-
-* Benchmark: tuning of RedBlackTree
 
 ---------------------------------------------------------------------------------------------------------------
 
+* Benchmark: tuning of RedBlackTree
+
+* sorted set tests for ATreeMap.entries, ATreeMap.keys
+
 * subMap / subSet etc. inherited from NavigableMap / NavigableSet: views instead of eager copy
+* ASortedMap: reverseIterator()
 
 * AbstractImmutableSet
 

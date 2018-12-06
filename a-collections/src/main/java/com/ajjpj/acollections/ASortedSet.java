@@ -208,23 +208,40 @@ public interface ASortedSet<T> extends ASet<T>, NavigableSet<T> {
      * @param to   the optional upper bound
      * @return the number of elements in the given range
      */
-    int countInRange (AOption<T> from, AOption<T> to);
+    default int countInRange (AOption<T> from, AOption<T> to) {
+        return countInRange(from, true, to, false);
+    }
 
     /**
-     * Returns a subset containing the elements greater than or equal to a lower bound and less than an upper bound. Both bounds are optional.
-     * TODO exception, out of bounds, ...
+     * Counts all the elements between a lower and upper bound. Flags explicitly control whether the bounds are inclusive or
+     *  exclusive. Both bounds are optional.
+     *
+     * @param from          the optional lower bound
+     * @param fromInclusive controls if the lower bound is inclusive or not
+     * @param to            the optional upper bound
+     * @param toInclusive   controls if the upper bound is inclusive or not
+     * @return the number of elements in the given range
+     */
+    int countInRange (AOption<T> from, boolean fromInclusive, AOption<T> to, boolean toInclusive);
+
+    /**
+     * Returns a subset containing the elements between a lower and upper bound.
+     *
+     * <p> Flags control whether the bounds are inclusive or exclusive. Both bounds are optional.
      *
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
-     * @param from  the optional lower bound (inclusive)
-     * @param to the optional upper bound (exclusive)
+     * @param from          the optional lower bound
+     * @param fromInclusive controls whether the lower bound is inclusive or exclusive
+     * @param to            the optional upper bound
+     * @param toInclusive   controls whether the upper bound is inclusive or exclusive
      * @return the subset of elements between the two bounds
      */
-    ASortedSet<T> range (AOption<T> from, AOption<T> to);
+    ASortedSet<T> range (AOption<T> from, boolean fromInclusive, AOption<T> to, boolean toInclusive);
 
     /**
-     * Returns this set without the {@code n} smallest elements.
-     * TODO exception, out of bounds, ...
+     * Returns this set without the {@code n} smallest elements. Dropping a negative number of elements is valid and returns
+     *  the original set. Dropping more than {@code this.size()} elements is valid and returns an empty set.
      *
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
@@ -234,8 +251,8 @@ public interface ASortedSet<T> extends ASet<T>, NavigableSet<T> {
     ASortedSet<T> drop (int n);
 
     /**
-     * Returns a subset of this set containing the {@code n} smallest elements.
-     * TODO exception, out of bounds, ...
+     * Returns a subset of this set containing the {@code n} smallest elements. Taking a negative number is valid and returns
+     *  an empty set; taking more than {@code this.size()} elements is valid and returns the entire set.
      *
      * <p> For mutable collections, this operation modifies the collection, for immutable collections it returns a modified copy.
      *
@@ -258,21 +275,25 @@ public interface ASortedSet<T> extends ASet<T>, NavigableSet<T> {
      */
     AOption<T> greatest();
 
-    //TODO test this
     /**
      * Returns an {@link AIterator} starting at a lower bound and ending at an upper bound.
      *
-     * <p> The lower bound is inclusive, the upper bound is exclusive. More precisely, the returned iterator starts at the smallest
-     *  element that is greater or equal to the lower bound, and ends at the greatest element smaller than the upper bound.
-     *  Both bounds are optional.
+     * <p> Flags control whether the bounds are inclusive or exclusive, i.e. whether an element exactly equals to a bound
+     *      is included in the returned iterator or not. Both bounds are optional.
      *
-     * @param from the lower bound for the iterator
-     * @param until the upper bound for the iterator
+     * @param from          the lower bound for the iterator
+     * @param fromInclusive controls whether the lower bound is inclusive or exclusive
+     * @param to            the upper bound for the iterator
+     * @param toInclusive   controls whether the upper bound is inclusive or exclusive
      * @return an iterator starting at a given lower bound
      */
-    AIterator<T> iterator(AOption<T> from, boolean fromInclusive, AOption<T> to, boolean toInclusive); //TODO document flags
+    AIterator<T> iterator(AOption<T> from, boolean fromInclusive, AOption<T> to, boolean toInclusive);
 
-    //TODO javadoc
+    /**
+     * Returns an {@link AIterator} iterating over this set in reverse order.
+     *
+     * @return an iterator in reverse element order
+     */
     default AIterator<T> reverseIterator() {
         return descendingIterator();
     }
@@ -280,25 +301,39 @@ public interface ASortedSet<T> extends ASet<T>, NavigableSet<T> {
     AIterator<? extends ASortedSet<T>> subsets ();
     AIterator<? extends ASortedSet<T>> subsets (int len);
 
-    @Override default T first () { //TODO test this
+    /**
+     * Returns the first element in iteration order (i.e. the smallest element).
+     * @throws NoSuchElementException if this set is empty
+     * @return the first / smallest element
+     */
+    @Override default T first () {
         return head();
     }
 
+    /**
+     * Returns the last element in iteration order (i.e. the greatest element).
+     * @throws NoSuchElementException if this set is empty
+     * @return the last / greatest element
+     */
     @Override default T last () {
-        return greatest().orElseThrow(NoSuchElementException::new); //TODO test this
+        return greatest().orElseThrow(NoSuchElementException::new);
     }
 
-    @Override default ASortedSet<T> subSet (T fromElement, T toElement) { //TODO test this
-        return range(AOption.some(fromElement), AOption.some(toElement));
+    @Override default ASortedSet<T> subSet (T fromElement, T toElement) {
+        return range(AOption.some(fromElement), true, AOption.some(toElement), false);
     }
 
-    @Override default ASortedSet<T> headSet (T toElement) { //TODO test this
-        return range(AOption.none(), AOption.some(toElement));
+    @Override default ASortedSet<T> headSet (T toElement) {
+        return range(AOption.none(), true, AOption.some(toElement), false);
     }
 
-    @Override default ASortedSet<T> tailSet (T fromElement) { //TODO test this
-        return range(AOption.some(fromElement), AOption.none());
+    @Override default ASortedSet<T> tailSet (T fromElement) {
+        return range(AOption.some(fromElement), true, AOption.none(), false);
     }
+
+    @Override ASortedSet<T> subSet(T fromElement, boolean fromInclusive, T toElement, boolean toInclusive);
+    @Override ASortedSet<T> headSet(T toElement, boolean toInclusive);
+    @Override ASortedSet<T> tailSet(T fromElement, boolean fromInclusive);
 
     @Override ASortedSet<T> descendingSet ();
 

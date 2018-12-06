@@ -40,22 +40,24 @@ class RedBlackTree {
      * Count all the nodes with keys greater than or equal to the lower bound and less than the upper bound.
      * The two bounds are optional.
      */
-    static <A> int countInRange (Tree<A, ?> tree, AOption<A> from, AOption<A> to, Comparator<A> ordering) {
+    static <A> int countInRange (Tree<A, ?> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
         if (tree == null) return 0;
 
         // with no bounds use this node's count
         if (from.isEmpty() && to.isEmpty()) return tree.count;
 
         // if node is less than the lower bound, try the tree on the right, it might be in range
-        if (from.isDefined() && ordering.compare(tree.key, from.get()) < 0) return countInRange(tree.right, from, to, ordering);
+        if (fromInclusive && from.isDefined() && ordering.compare(tree.key, from.get()) < 0) return countInRange(tree.right, from, fromInclusive, to, toInclusive, ordering);
+        if (!fromInclusive && from.isDefined() && ordering.compare(tree.key, from.get()) <= 0) return countInRange(tree.right, from, fromInclusive, to, toInclusive, ordering);
 
         // if node is greater than or equal to the upper bound, try the tree on the left, it might be in range
-        if (to.isDefined() && ordering.compare(tree.key, to.get()) >= 0) return countInRange(tree.left, from, to, ordering);
+        if (toInclusive && to.isDefined() && ordering.compare(tree.key, to.get()) > 0) return countInRange(tree.left, from, fromInclusive, to, toInclusive, ordering);
+        if (!toInclusive && to.isDefined() && ordering.compare(tree.key, to.get()) >= 0) return countInRange(tree.left, from, fromInclusive, to, toInclusive, ordering);
 
         // node is in range so the tree on the left will all be less than the upper bound and the tree on the
         // right will all be greater than or equal to the lower bound. So 1 for this node plus
         // count the subtrees by stripping off the bounds that we don't need any more
-        return 1 + countInRange(tree.left, from, AOption.none(), ordering) + countInRange(tree.right, AOption.none(), to, ordering);
+        return 1 + countInRange(tree.left, from, fromInclusive, AOption.none(), toInclusive, ordering) + countInRange(tree.right, AOption.none(), fromInclusive, to, toInclusive, ordering);
     }
 
     static <A, B> Tree<A, B> update (Tree<A, B> tree, A k, B v, boolean overwrite, Comparator<A> ordering) {
@@ -98,14 +100,14 @@ class RedBlackTree {
     }
 
     static <A, B> Tree<A, B> smallest (Tree<A, B> tree) {
-        if (tree == null) throw new NoSuchElementException("empty map");
+        if (tree == null) return null;
         Tree<A, B> result = tree;
         while (result.left != null) result = result.left;
         return result;
     }
 
     static <A, B> Tree<A, B> greatest (Tree<A, B> tree) {
-        if (tree == null) throw new NoSuchElementException("empty map");
+        if (tree == null) return null;
         Tree<A, B> result = tree;
         while (result.right != null) result = result.right;
         return result;
@@ -553,7 +555,7 @@ class RedBlackTree {
         }
 
         private Tree<A,B> checkUpperBoundForLookahead(Tree<A,B> newLookahead) {
-            if (to.isEmpty()) return newLookahead;
+            if (to.isEmpty() || newLookahead == null) return newLookahead;
             final int cmp = ordering.compare(newLookahead.key, to.get());
             if (toInclusive && cmp <= 0) return newLookahead;
             if (!toInclusive && cmp < 0) return newLookahead;

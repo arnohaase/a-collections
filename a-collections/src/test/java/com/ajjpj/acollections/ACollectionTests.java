@@ -558,7 +558,7 @@ public interface ACollectionTests extends ACollectionOpsTests {
         public ASet<Integer> mkSet(Integer... values) {
             return (ASet<Integer>) mkColl(values);
         }
-        public ASet<Integer> mkSortedSet(Integer... values) {
+        public ASortedSet<Integer> mkSortedSet(Integer... values) {
             return (ASortedSet<Integer>) mkColl(values);
         }
 
@@ -568,6 +568,10 @@ public interface ACollectionTests extends ACollectionOpsTests {
 
         public AVector<Integer> iterationOrder123() {
             return this.iterationOrder123;
+        }
+
+        public boolean isAscending() {
+            return mkColl(1, 2, 3).toVector().equals(AVector.of(1, 2, 3));
         }
     }
 }

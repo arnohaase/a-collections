@@ -30,17 +30,34 @@ public interface ASortedMap<K,V> extends AMap<K,V>, NavigableMap<K,V> {
      * @param to   the upper bound
      * @return the number of entries in the given key range
      */
-    int countInRange (AOption<K> from, AOption<K> to);
+    default int countInRange (AOption<K> from, AOption<K> to) {
+        return countInRange(from, true, to, false);
+    }
 
     /**
-     * Returns a map containing only entries with keys greater than or equal to a lower bound and less than an upper bound. Both bounds
-     *  are optional.
+     * Counts all the nodes with keys between a lower and upper bound. Flags control whether the bounds are inclusive or exclusive.
+     *  Both bounds are optional.
      *
-     * @param from  the lower bound
-     * @param until the upper bound
+     * @param from          the lower bound
+     * @param fromInclusive controls if the lower bound is inclusive or not
+     * @param to            the upper bound
+     * @param toInclusive   controls if the upper bound is inclusive or not
+     * @return the number of entries in the given key range
+     */
+    int countInRange (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive);
+
+    /**
+     * Returns a map containing only entries with between a lower and an upper bound.
+     *
+     * <p> Flags control whether the bounds are inclusive or exclusive. Both bounds are optional.
+     *
+     * @param from         the lower bound
+     * @param fromInclusive controls whether the lower bound is inclusive or exclusive
+     * @param to            the upper bound
+     * @param toInclusive   controls whether the lower bound is inclusive or exclusive
      * @return the map with keys in the given range
      */
-    ASortedMap<K,V> range (AOption<K> from, AOption<K> until);
+    ASortedMap<K,V> range (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive);
 
     /**
      * Returns a map containing the same entries as this map, but without the first (i.e. smallest key) {@code n} entries, or an empty
@@ -89,21 +106,27 @@ public interface ASortedMap<K,V> extends AMap<K,V>, NavigableMap<K,V> {
     ASortedSet<Map.Entry<K,V>> entrySet();
 
     /**
-     * Returns an iterator over this map's entries, starting at an optional lower bound and ending at an optional upper bound. The
-     *  lower bound is inclusive, the upper bound is exclusive
+     * Returns an iterator over this map's entries with keys between a lower and an upper bound.
      *
-     * @param from the lower bound for keys to iterate over
-     * @param until the upper bound for keys to iterate over
+     * <p> Flags control whether the bounds are inclusive or exclusive. Both bounds are optional.
+     *
+     * @param from          the lower bound for keys to iterate over
+     * @param fromInclusive controls whether the lower bound is inclusive or exclusive
+     * @param to            the upper bound for keys to iterate over
+     * @param toInclusive   controls whether the upper bound is inclusive or exclusive
      * @return an iterator over this map's entries
      */
-    AIterator<Map.Entry<K,V>> iterator(AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive); //TODO document flags
+    AIterator<Map.Entry<K,V>> iterator(AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive);
 
     /**
-     * Returns an iterator over this map's keys, starting at an optional lower bound and ending at an optional upper bound. The
-     *  lower bound is inclusive, the upper bound is exclusive
+     * Returns an iterator over this map's keys between a lower and an upper bound.
      *
-     * @param from the lower bound for keys to iterate over
-     * @param until the upper bound for keys to iterate over
+     * <p> Flags control whether the bounds are inclusive or exclusive. Both bounds are optional.
+     *
+     * @param from          the lower bound for keys to iterate over
+     * @param fromInclusive controls whether the lower bound is inclusive or exclusive
+     * @param to            the upper bound for keys to iterate over
+     * @param toInclusive   controls whether the upper bound is inclusive or exclusive
      * @return an iterator over this map's keys
      */
     AIterator<K> keysIterator (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive);
@@ -113,7 +136,7 @@ public interface ASortedMap<K,V> extends AMap<K,V>, NavigableMap<K,V> {
      *  and smaller than an (optional) upper bound.
      *
      * @param from the lower bound for keys to iterate over
-     * @param until the upper bound for keys to iterate over
+     * @param to the upper bound for keys to iterate over
      * @return an iterator over this map's values
      */
     AIterator<V> valuesIterator (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive);
