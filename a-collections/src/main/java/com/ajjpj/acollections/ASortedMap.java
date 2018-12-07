@@ -79,16 +79,21 @@ public interface ASortedMap<K,V> extends AMap<K,V>, NavigableMap<K,V> {
     ASortedMap<K,V> take (int n);
 
     /**
-     * Figuratively speaking, this method returns a map with entries starting with 'index' {@code from} up to 'index' {@code until}
+     * This method returns a map with entries starting with 'index' {@code from} up to 'index' {@code until}
      *  (exclusively). More formally, this method is equivalent to
      *
-     * <p> {@code this.drop(from).take(until - from)}
+     * <pre>
+     * {@code this.drop(from).take(to - from)}
+     * </pre>
+     *
+     * <p> {@code from} may be negative and {@code to} may be greater than {@code this.size()}, in which case they
+     *  are treated as {@code 0} and {@code this.size()}, respectively.
      *
      * @param from  the first 'index' to keep
-     * @param until the upper bound (exclusive) of 'indices' to keep
-     * @return a map with elements from {@code from} up to {@code until}
+     * @param to the upper bound (exclusive) of 'indices' to keep
+     * @return a map with elements from {@code from} up to {@code to}
      */
-    ASortedMap<K,V> slice (int from, int until);
+    ASortedMap<K,V> slice (int from, int to);
 
     /**
      * Returns the smallest element (if any) or {@link AOption#none()} if this map is empty

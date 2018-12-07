@@ -379,10 +379,6 @@ public class AVector<T> extends AbstractImmutableCollection<T> implements AListD
         return get(0);
     }
 
-    private AVector<T> slice(int from, int until) {
-        return take(until).drop(from);
-    }
-
     @Override public AVector<T> updated(int index, T elem) {
         final int idx = checkRangeConvert(index);
         final AVector<T> s = new AVector<>(startIndex, endIndex, idx);

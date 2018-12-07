@@ -4,6 +4,7 @@ import com.ajjpj.acollections.immutable.AVector;
 import com.ajjpj.acollections.util.AOption;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import static com.ajjpj.acollections.AEntryCollectionOpsTests.entryOf;
@@ -292,7 +293,24 @@ public interface ASortedMapTests extends AMapTests {
     }
 
     @Test default void testSlice() {
-        fail("todo");
+        doTest(v -> {
+            assertTrue (v.mkSortedMap().slice(0, 0).isEmpty());
+            assertTrue (v.mkSortedMap().slice(0, 10).isEmpty());
+            assertTrue (v.mkSortedMap().slice(-10, 10).isEmpty());
+
+            assertEquals (v.mkSortedMap(1), v.mkSortedMap(1).slice(0, 1));
+            assertEquals (v.mkSortedMap(), v.mkSortedMap(1).slice(0, 0));
+            assertEquals (v.mkSortedMap(), v.mkSortedMap(1).slice(1, 1));
+            assertEquals (v.mkSortedMap(1), v.mkSortedMap(1).slice(0, 10));
+            assertEquals (v.mkSortedMap(), v.mkSortedMap(1).slice(-10, 0));
+            assertEquals (v.mkSortedMap(1), v.mkSortedMap(1).slice(-10, 10));
+
+            assertEquals (v.iterationOrder123(), v.mkSortedMap(1, 2, 3).slice(0, 3).toVector());
+            assertEquals (v.iterationOrder123().slice(0, 1), v.mkSortedMap(1, 2, 3).slice(0, 1).toVector());
+            assertEquals (v.iterationOrder123().slice(0, 2), v.mkSortedMap(1, 2, 3).slice(0, 2).toVector());
+            assertEquals (v.iterationOrder123().slice(1, 2), v.mkSortedMap(1, 2, 3).slice(1, 2).toVector());
+            assertEquals (v.iterationOrder123().slice(1, 3), v.mkSortedMap(1, 2, 3).slice(1, 3).toVector());
+        });
     }
 
     @Test default void testSmallest() {
@@ -324,15 +342,177 @@ public interface ASortedMapTests extends AMapTests {
     }
 
     @Test default void testIteratorWithRange() {
-        fail("todo");
+        doTest(v -> {
+            assertTrue (v.mkSortedMap().iterator(AOption.none(), true, AOption.none(), false).toVector().isEmpty());
+
+            assertEquals (AVector.of(entryOf(4)), v.mkSortedMap(2, 4, 6).iterator(AOption.some(4), true, AOption.some(4), true).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).iterator(AOption.some(4), true, AOption.some(4), false).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).iterator(AOption.some(4), false, AOption.some(4), true).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).iterator(AOption.some(4), false, AOption.some(4), false).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).iterator(AOption.some(3), true, AOption.some(3), true).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).iterator(AOption.some(3), true, AOption.some(3), false).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).iterator(AOption.some(3), false, AOption.some(3), true).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).iterator(AOption.some(3), false, AOption.some(3), false).toVector());
+
+            if (v.isAscending()) {
+                assertEquals (AVector.of(entryOf(2), entryOf(4), entryOf(6)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), true, AOption.none(), true).toVector());
+                assertEquals (AVector.of(entryOf(2), entryOf(4), entryOf(6)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(entryOf(2), entryOf(4), entryOf(6)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), false, AOption.none(), true).toVector());
+                assertEquals (AVector.of(entryOf(2), entryOf(4), entryOf(6)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), false, AOption.none(), false).toVector());
+
+                assertEquals (AVector.of(entryOf(2), entryOf(4), entryOf(6)), v.mkSortedMap(2, 4, 6).iterator(AOption.some(1), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(entryOf(2), entryOf(4), entryOf(6)), v.mkSortedMap(2, 4, 6).iterator(AOption.some(1), false, AOption.none(), false).toVector());
+                assertEquals (AVector.of(entryOf(2), entryOf(4), entryOf(6)), v.mkSortedMap(2, 4, 6).iterator(AOption.some(2), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(entryOf(4), entryOf(6)),               v.mkSortedMap(2, 4, 6).iterator(AOption.some(2), false, AOption.none(), false).toVector());
+
+                assertEquals (AVector.of(entryOf(2), entryOf(4), entryOf(6)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), false, AOption.some(7), true).toVector());
+                assertEquals (AVector.of(entryOf(2), entryOf(4), entryOf(6)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), false, AOption.some(7), false).toVector());
+                assertEquals (AVector.of(entryOf(2), entryOf(4), entryOf(6)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), false, AOption.some(6), true).toVector());
+                assertEquals (AVector.of(entryOf(2), entryOf(4)),               v.mkSortedMap(2, 4, 6).iterator(AOption.none(), false, AOption.some(6), false).toVector());
+
+                assertEquals (AVector.of(entryOf(2), entryOf(4), entryOf(6)), v.mkSortedMap(2, 4, 6).iterator(AOption.some(2), true, AOption.some(6), true).toVector());
+                assertEquals (AVector.of(entryOf(2), entryOf(4)),               v.mkSortedMap(2, 4, 6).iterator(AOption.some(2), true, AOption.some(6), false).toVector());
+                assertEquals (AVector.of(entryOf(4), entryOf(6)),               v.mkSortedMap(2, 4, 6).iterator(AOption.some(2), false, AOption.some(6), true).toVector());
+                assertEquals (AVector.of(entryOf(4)),                             v.mkSortedMap(2, 4, 6).iterator(AOption.some(2), false, AOption.some(6), false).toVector());
+            }
+            else {
+                assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), true, AOption.none(), true).toVector());
+                assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), false, AOption.none(), true).toVector());
+                assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), false, AOption.none(), false).toVector());
+
+                assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).iterator(AOption.some(7), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).iterator(AOption.some(7), false, AOption.none(), false).toVector());
+                assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).iterator(AOption.some(6), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(entryOf(4), entryOf(2)),               v.mkSortedMap(2, 4, 6).iterator(AOption.some(6), false, AOption.none(), false).toVector());
+
+                assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), false, AOption.some(1), true).toVector());
+                assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), false, AOption.some(1), false).toVector());
+                assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).iterator(AOption.none(), false, AOption.some(2), true).toVector());
+                assertEquals (AVector.of(entryOf(6), entryOf(4)),               v.mkSortedMap(2, 4, 6).iterator(AOption.none(), false, AOption.some(2), false).toVector());
+
+                assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).iterator(AOption.some(6), true, AOption.some(2), true).toVector());
+                assertEquals (AVector.of(entryOf(6), entryOf(4)),               v.mkSortedMap(2, 4, 6).iterator(AOption.some(6), true, AOption.some(2), false).toVector());
+                assertEquals (AVector.of(entryOf(4), entryOf(2)),               v.mkSortedMap(2, 4, 6).iterator(AOption.some(6), false, AOption.some(2), true).toVector());
+                assertEquals (AVector.of(entryOf(4)),                             v.mkSortedMap(2, 4, 6).iterator(AOption.some(6), false, AOption.some(2), false).toVector());
+            }
+        });
     }
 
     @Test default void testKeysIteratorWithRange() {
-        fail("todo");
+        doTest(v -> {
+            assertTrue (v.mkSortedMap().keysIterator(AOption.none(), true, AOption.none(), false).toVector().isEmpty());
+
+            assertEquals (AVector.of(4), v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(4), true, AOption.some(4), true).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(4), true, AOption.some(4), false).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(4), false, AOption.some(4), true).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(4), false, AOption.some(4), false).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(3), true, AOption.some(3), true).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(3), true, AOption.some(3), false).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(3), false, AOption.some(3), true).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(3), false, AOption.some(3), false).toVector());
+
+            if (v.isAscending()) {
+                assertEquals (AVector.of(2, 4, 6), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), true, AOption.none(), true).toVector());
+                assertEquals (AVector.of(2, 4, 6), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(2, 4, 6), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), false, AOption.none(), true).toVector());
+                assertEquals (AVector.of(2, 4, 6), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), false, AOption.none(), false).toVector());
+
+                assertEquals (AVector.of(2, 4, 6), v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(1), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(2, 4, 6), v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(1), false, AOption.none(), false).toVector());
+                assertEquals (AVector.of(2, 4, 6), v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(2), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(4, 6),    v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(2), false, AOption.none(), false).toVector());
+
+                assertEquals (AVector.of(2, 4, 6), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), false, AOption.some(7), true).toVector());
+                assertEquals (AVector.of(2, 4, 6), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), false, AOption.some(7), false).toVector());
+                assertEquals (AVector.of(2, 4, 6), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), false, AOption.some(6), true).toVector());
+                assertEquals (AVector.of(2, 4),    v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), false, AOption.some(6), false).toVector());
+
+                assertEquals (AVector.of(2, 4, 6), v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(2), true, AOption.some(6), true).toVector());
+                assertEquals (AVector.of(2, 4),    v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(2), true, AOption.some(6), false).toVector());
+                assertEquals (AVector.of(4, 6),    v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(2), false, AOption.some(6), true).toVector());
+                assertEquals (AVector.of(4),       v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(2), false, AOption.some(6), false).toVector());
+            }
+            else {
+                assertEquals (AVector.of(6, 4, 2), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), true, AOption.none(), true).toVector());
+                assertEquals (AVector.of(6, 4, 2), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(6, 4, 2), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), false, AOption.none(), true).toVector());
+                assertEquals (AVector.of(6, 4, 2), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), false, AOption.none(), false).toVector());
+
+                assertEquals (AVector.of(6, 4, 2), v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(7), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(6, 4, 2), v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(7), false, AOption.none(), false).toVector());
+                assertEquals (AVector.of(6, 4, 2), v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(6), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(4, 2),    v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(6), false, AOption.none(), false).toVector());
+
+                assertEquals (AVector.of(6, 4, 2), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), false, AOption.some(1), true).toVector());
+                assertEquals (AVector.of(6, 4, 2), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), false, AOption.some(1), false).toVector());
+                assertEquals (AVector.of(6, 4, 2), v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), false, AOption.some(2), true).toVector());
+                assertEquals (AVector.of(6, 4),    v.mkSortedMap(2, 4, 6).keysIterator(AOption.none(), false, AOption.some(2), false).toVector());
+
+                assertEquals (AVector.of(6, 4, 2), v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(6), true, AOption.some(2), true).toVector());
+                assertEquals (AVector.of(6, 4),    v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(6), true, AOption.some(2), false).toVector());
+                assertEquals (AVector.of(4, 2),    v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(6), false, AOption.some(2), true).toVector());
+                assertEquals (AVector.of(4),       v.mkSortedMap(2, 4, 6).keysIterator(AOption.some(6), false, AOption.some(2), false).toVector());
+            }
+        });
     }
 
     @Test default void testValuesIteratorWithRange() {
-        fail("todo");
+        doTest(v -> {
+            assertTrue (v.mkSortedMap().valuesIterator(AOption.none(), true, AOption.none(), false).toVector().isEmpty());
+
+            assertEquals (AVector.of(9), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(4), true, AOption.some(4), true).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(4), true, AOption.some(4), false).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(4), false, AOption.some(4), true).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(4), false, AOption.some(4), false).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(3), true, AOption.some(3), true).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(3), true, AOption.some(3), false).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(3), false, AOption.some(3), true).toVector());
+            assertEquals (AVector.of(),  v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(3), false, AOption.some(3), false).toVector());
+
+            if (v.isAscending()) {
+                assertEquals (AVector.of(5, 9, 13), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), true, AOption.none(), true).toVector());
+                assertEquals (AVector.of(5, 9, 13), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(5, 9, 13), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), false, AOption.none(), true).toVector());
+                assertEquals (AVector.of(5, 9, 13), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), false, AOption.none(), false).toVector());
+
+                assertEquals (AVector.of(5, 9, 13), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(1), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(5, 9, 13), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(1), false, AOption.none(), false).toVector());
+                assertEquals (AVector.of(5, 9, 13), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(2), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(9, 13),    v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(2), false, AOption.none(), false).toVector());
+
+                assertEquals (AVector.of(5, 9, 13), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), false, AOption.some(7), true).toVector());
+                assertEquals (AVector.of(5, 9, 13), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), false, AOption.some(7), false).toVector());
+                assertEquals (AVector.of(5, 9, 13), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), false, AOption.some(6), true).toVector());
+                assertEquals (AVector.of(5, 9),     v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), false, AOption.some(6), false).toVector());
+
+                assertEquals (AVector.of(5, 9, 13), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(2), true, AOption.some(6), true).toVector());
+                assertEquals (AVector.of(5, 9),     v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(2), true, AOption.some(6), false).toVector());
+                assertEquals (AVector.of(9, 13),    v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(2), false, AOption.some(6), true).toVector());
+                assertEquals (AVector.of(9),        v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(2), false, AOption.some(6), false).toVector());
+            }
+            else {
+                assertEquals (AVector.of(13, 9, 5), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), true, AOption.none(), true).toVector());
+                assertEquals (AVector.of(13, 9, 5), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(13, 9, 5), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), false, AOption.none(), true).toVector());
+                assertEquals (AVector.of(13, 9, 5), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), false, AOption.none(), false).toVector());
+
+                assertEquals (AVector.of(13, 9, 5), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(7), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(13, 9, 5), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(7), false, AOption.none(), false).toVector());
+                assertEquals (AVector.of(13, 9, 5), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(6), true, AOption.none(), false).toVector());
+                assertEquals (AVector.of(9, 5),     v.mkSortedMap(2, 4, 13).valuesIterator(AOption.some(6), false, AOption.none(), false).toVector());
+
+                assertEquals (AVector.of(13, 9, 5), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), false, AOption.some(1), true).toVector());
+                assertEquals (AVector.of(13, 9, 5), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), false, AOption.some(1), false).toVector());
+                assertEquals (AVector.of(13, 9, 5), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), false, AOption.some(2), true).toVector());
+                assertEquals (AVector.of(13, 9),    v.mkSortedMap(2, 4, 6).valuesIterator(AOption.none(), false, AOption.some(2), false).toVector());
+
+                assertEquals (AVector.of(13, 9, 5), v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(6), true, AOption.some(2), true).toVector());
+                assertEquals (AVector.of(13, 9),    v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(6), true, AOption.some(2), false).toVector());
+                assertEquals (AVector.of(9, 5),     v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(6), false, AOption.some(2), true).toVector());
+                assertEquals (AVector.of(9),        v.mkSortedMap(2, 4, 6).valuesIterator(AOption.some(6), false, AOption.some(2), false).toVector());
+            }
+        });
     }
 
     @Test default void testLowerEntry() {
@@ -595,15 +775,45 @@ public interface ASortedMapTests extends AMapTests {
     }
 
     @Test default void testDescendingMap() {
-        fail("todo");
+        doTest(v -> {
+            assertTrue(v.mkSortedMap().descendingMap().isEmpty());
+            assertEquals(v.mkSortedMap().comparator().compare(1, 2), -v.mkSortedMap().descendingMap().comparator().compare(1, 2));
+            assertEquals(v.mkSortedMap().comparator().compare(1, 2), v.mkSortedMap().descendingMap().descendingMap().comparator().compare(1, 2));
+
+            assertEquals(v.mkSortedMap(1), v.mkSortedMap(1).descendingMap());
+            assertEquals(v.mkSortedMap(1).comparator().compare(1, 2), -v.mkSortedMap(1).descendingMap().comparator().compare(1, 2));
+            assertEquals(v.mkSortedMap(1).comparator().compare(1, 2), v.mkSortedMap(1).descendingMap().descendingMap().comparator().compare(1, 2));
+
+            assertEquals(v.iterationOrder123().reverse(), v.mkSortedMap(1, 2, 3).descendingMap().toVector());
+            assertEquals(v.mkSortedMap(1, 2, 3).comparator().compare(1, 2), -v.mkSortedMap(1, 2, 3).descendingMap().comparator().compare(1, 2));
+            assertEquals(v.mkSortedMap(1, 2, 3).comparator().compare(1, 2), v.mkSortedMap(1, 2, 3).descendingMap().descendingMap().comparator().compare(1, 2));
+        });
     }
 
     @Test default void testNavigableKeySet() {
-        fail("todo");
+        doTest(v -> {
+            assertTrue(v.mkSortedMap().navigableKeySet().isEmpty());
+            assertEquals(v.mkSortedMap().comparator(), v.mkSortedMap().navigableKeySet().comparator());
+
+            assertEquals(ASortedSet.of(1), v.mkSortedMap(1).navigableKeySet());
+            assertEquals(v.mkSortedMap(1).comparator(), v.mkSortedMap(1).navigableKeySet().comparator());
+
+            assertEquals(v.iterationOrder123().map(Map.Entry::getKey), v.mkSortedMap(1, 2, 3).navigableKeySet().toVector());
+            assertEquals(v.mkSortedMap(1, 2, 3).comparator(), v.mkSortedMap(1, 2, 3).navigableKeySet().comparator());
+        });
     }
 
     @Test default void testDescendingKeySet() {
-        fail("todo");
+        doTest(v -> {
+            assertTrue(v.mkSortedMap().descendingKeySet().isEmpty());
+            assertEquals(v.mkSortedMap().comparator().compare(1, 2), -v.mkSortedMap().descendingKeySet().comparator().compare(1, 2));
+
+            assertEquals(ASortedSet.of(1), v.mkSortedMap(1).descendingKeySet());
+            assertEquals(v.mkSortedMap(1).comparator().compare(1, 2), -v.mkSortedMap(1).descendingKeySet().comparator().compare(1, 2));
+
+            assertEquals(v.iterationOrder123().map(Map.Entry::getKey).reverse(), v.mkSortedMap(1, 2, 3).descendingKeySet().toVector());
+            assertEquals(v.mkSortedMap(1, 2, 3).comparator().compare(1, 2), -v.mkSortedMap(1, 2, 3).descendingKeySet().comparator().compare(1, 2));
+        });
     }
 
     @Test default void testSubMapWithFlags() {

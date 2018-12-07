@@ -32,6 +32,24 @@ public interface AIteratorTests {
 
     //-------------------------------------------------------------------------------
 
+    @Test default void testExhausted() {
+        assertFalse(mkIterator().hasNext());
+        assertThrows(NoSuchElementException.class, () -> mkIterator().next());
+
+        {
+            AIterator<Integer> it = mkIterator(1);
+            assertEquals(1, it.next().intValue());
+            assertThrows (NoSuchElementException.class, it::next);
+        }
+        {
+            AIterator<Integer> it = mkIterator(1, 2, 3);
+            assertEquals(1, it.next().intValue());
+            assertEquals(2, it.next().intValue());
+            assertEquals(3, it.next().intValue());
+            assertThrows (NoSuchElementException.class, it::next);
+        }
+    }
+
     @Test default void testToVector () {
         assertTrue(mkIterator().toVector().isEmpty());
         assertEquals(AVector.of(1), mkIterator(1).toVector());
@@ -149,19 +167,19 @@ public interface AIteratorTests {
     @Test default void testDrop() {
         assertFalse(mkIterator().drop(-1).hasNext());
         assertFalse(mkIterator().drop(0).hasNext());
-        assertThrows(NoSuchElementException.class, () -> mkIterator().drop(1));
+        assertFalse(mkIterator().drop(1).hasNext());
 
         assertEquals(AVector.of(1), mkIterator(1).drop(-1).toVector());
         assertEquals(AVector.of(1), mkIterator(1).drop(0).toVector());
         assertEquals(AVector.empty(), mkIterator(1).drop(1).toVector());
-        assertThrows(NoSuchElementException.class, () -> mkIterator(1).drop(2));
+        assertFalse(mkIterator(1).drop(2).hasNext());
 
         assertEquals(AVector.of(1, 2, 3), mkIterator(1, 2, 3).drop(-1).toVector());
         assertEquals(AVector.of(1, 2, 3), mkIterator(1, 2, 3).drop(0).toVector());
         assertEquals(AVector.of(2, 3), mkIterator(1, 2, 3).drop(1).toVector());
         assertEquals(AVector.of(3), mkIterator(1, 2, 3).drop(2).toVector());
         assertEquals(AVector.empty(), mkIterator(1, 2, 3).drop(3).toVector());
-        assertThrows(NoSuchElementException.class, () -> mkIterator(1, 2, 3).drop(4));
+        assertFalse(mkIterator(1, 2, 3).drop(4).hasNext());
     }
 
     @Test default void testFind() {

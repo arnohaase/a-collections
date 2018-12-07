@@ -6,7 +6,6 @@ import com.ajjpj.acollections.AList;
 import com.ajjpj.acollections.AMap;
 import com.ajjpj.acollections.util.AOption;
 
-import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
@@ -78,6 +77,19 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
             if (go) builder.add(o);
         }
         return builder.build();
+    }
+
+    default C slice(int from, int to) {
+        final AIterator<T> it = iterator().drop(from);
+        final ACollectionBuilder<T, ? extends AList<T>> builder = this.newBuilder();
+
+        for (int i=Math.max(from, 0); i<to; i++) {
+            if (!it.hasNext()) break;
+            builder.add(it.next());
+        }
+
+        //noinspection unchecked
+        return (C) builder.build();
     }
 
     default C reverse() {

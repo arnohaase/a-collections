@@ -367,8 +367,8 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
         return new ATreeMap<>(RedBlackTree.take(root, n), comparator);
     }
 
-    @Override public ATreeMap<K, V> slice (int from, int until) {
-        return new ATreeMap<>(RedBlackTree.slice(root, from, until), comparator);
+    @Override public ATreeMap<K, V> slice (int from, int to) {
+        return new ATreeMap<>(RedBlackTree.slice(root, from, to), comparator);
     }
 
     @Override public AOption<Entry<K, V>> smallest () {

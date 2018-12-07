@@ -285,6 +285,29 @@ public interface AListTests extends ACollectionTests {
         });
     }
 
+    @Test default void testSlice() {
+        doTest(v -> {
+            assertTrue(v.mkList().slice(0,0).isEmpty());
+            assertTrue(v.mkList().slice(0,10).isEmpty());
+            assertTrue(v.mkList().slice(10,0).isEmpty());
+            assertTrue(v.mkList().slice(-10,10).isEmpty());
+
+            assertEquals(AVector.of(1), v.mkList(1).slice(0,1));
+            assertEquals(AVector.of(1), v.mkList(1).slice(0,10));
+            assertEquals(AVector.of(1), v.mkList(1).slice(-10,10));
+            assertEquals(AVector.of(1), v.mkList(1).slice(-10,1));
+            assertEquals(AVector.of(), v.mkList(1).slice(-10,0));
+
+            assertEquals(AVector.of(1, 2, 3), v.mkList(1, 2, 3).slice(0, 3));
+            assertEquals(AVector.of(1, 2, 3), v.mkList(1, 2, 3).slice(-10, 3));
+            assertEquals(AVector.of(2, 3), v.mkList(1, 2, 3).slice(1, 3));
+            assertEquals(AVector.of(3), v.mkList(1, 2, 3).slice(2, 3));
+            assertEquals(AVector.of(2), v.mkList(1, 2, 3).slice(1, 2));
+            assertEquals(AVector.of( 2, 3), v.mkList(1, 2, 3).slice(1, 5));
+            assertEquals(AVector.of(), v.mkList(1, 2, 3).slice(2, 2));
+        });
+    }
+
     @Test default void testReverse() {
         doTest(v -> {
             assertEquals(AVector.empty(), v.mkList().reverse());

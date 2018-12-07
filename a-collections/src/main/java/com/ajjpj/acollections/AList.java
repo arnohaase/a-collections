@@ -383,6 +383,23 @@ public interface AList<T> extends ACollection<T>, List<T> {
     AList<T> dropWhile(Predicate<T> f);
 
     /**
+     * This method returns a list with entries starting with 'index' {@code from} up to 'index' {@code until}
+     *  (exclusively). More formally, this method is equivalent to
+     *
+     * <pre>
+     * {@code this.drop(from).take(to - from)}
+     * </pre>
+     *
+     * <p> {@code from} may be negative and {@code to} may be greater than {@code this.size()}, in which case they
+     *  are treated as {@code 0} and {@code this.size()}, respectively.
+     *
+     * @param from  the first 'index' to keep
+     * @param to the upper bound (exclusive) of indices to keep
+     * @return a öost with elements from {@code from} up to {@code to}
+     */
+    AList<T> slice(int from, int to);
+
+    /**
      * Returns this list, but with reversed element order, i.e. first elements last and last elements first.
      *
      * <p> For example:

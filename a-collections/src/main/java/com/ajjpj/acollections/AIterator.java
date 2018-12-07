@@ -258,14 +258,17 @@ public interface AIterator<T> extends Iterator<T> {
     /**
      * Skips the next {@code n} elements of this iterator.
      *
+     * <p> If the iterator has fewer than {@code n} elements, that is silently ignored without throwing an exception.
+     *
      * @param n the number of elements to drop
-     * @throws NoSuchElementException if this iterator holds fewer than {@code n} elements
      * @return this iterator without its next {@code n} elements
      * @see AList#drop(int)
      */
     default AIterator<T> drop(int n) {
-        for (int i=0; i<n; i++)
+        for (int i=0; i<n; i++) {
+            if (!hasNext()) break;
             next();
+        }
         return this;
     }
 

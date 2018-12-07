@@ -159,12 +159,12 @@ public interface AEntryIteratorTests {
     @Test default void testDrop () {
         assertFalse(mkIterator().drop(-1).hasNext());
         assertFalse(mkIterator().drop(0).hasNext());
-        assertThrows(NoSuchElementException.class, () -> mkIterator().drop(1));
+        assertFalse(mkIterator().drop(1).hasNext());
 
         assertEquals(AVector.of(entryOf(1)), mkIterator(1).drop(-1).toVector());
         assertEquals(AVector.of(entryOf(1)), mkIterator(1).drop(0).toVector());
         assertEquals(AVector.empty(), mkIterator(1).drop(1).toVector());
-        assertThrows(NoSuchElementException.class, () -> mkIterator(1).drop(2));
+        assertFalse(mkIterator(1).drop(2).hasNext());
 
         assertEquals(v123(), mkIterator(1, 2, 3).drop(-1).toVector());
         assertEquals(v123(), mkIterator(1, 2, 3).drop(0).toVector());
@@ -173,7 +173,7 @@ public interface AEntryIteratorTests {
         assertEquals(isAscending() ? AVector.of(entryOf(3)) : AVector.of(entryOf(1)),
                 mkIterator(1, 2, 3).drop(2).toVector());
         assertEquals(AVector.empty(), mkIterator(1, 2, 3).drop(3).toVector());
-        assertThrows(NoSuchElementException.class, () -> mkIterator(1, 2, 3).drop(4));
+        assertFalse(mkIterator(1, 2, 3).drop(4).hasNext());
     }
 
     @Test default void testFind () {
