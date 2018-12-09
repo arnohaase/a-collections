@@ -231,8 +231,8 @@ public interface ACollectionOps<T> {
      *       <p>{@code ASet<Customer> customers = ...;}
      *       <p>{@code ASet<Order> orders = customers.flatMap(c -> ordersFor(c);}
      *
-     * <li> {@link AOption} is iterable, and using flatMap() with a function returning {@link AOption} can be a concise way of filtering
-     *       and transforming the contents of a collection.
+     * <li> {@code flatMap()} also works with a function returning an {@link AOption}. This is useful for filtering and transforming the
+     *       contents of a collection at the same time.
      *       <p> Let us assume there is a method {@code AOption<LocalDate> birthdayOf(String person)} that returns a person's birthday
      *       if it is known. Then the following code will provide all known birthdays for a given group of persons:
      *       <p> {@code ASet<String> persons = ...;}
