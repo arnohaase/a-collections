@@ -21,7 +21,7 @@ public interface ASortedMap<K,V> extends AMap<K,V>, NavigableMap<K,V> {
      *
      * @return the comparator used by this map
      */
-    Comparator<K> comparator();
+    Comparator<? super K> comparator();
 
     /**
      * Counts all the nodes with keys greater than or equal to a lower bound and less than an upper bound. Both bounds are optional.

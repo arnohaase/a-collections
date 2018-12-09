@@ -30,7 +30,7 @@ import java.util.function.Predicate;
  */
 public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.Entry<K,V>, ATreeMap<K,V>>, AMapDefaults<K,V,ATreeMap<K,V>>, Serializable {
     private final RedBlackTree.Tree<K,V> root;
-    private final Comparator<K> comparator;
+    private final Comparator<? super K> comparator;
 
     /**
      * Convenience method for creating an empty {@link ATreeMap} with {@link Comparator#naturalOrder()}. This can later be modified by
@@ -55,11 +55,11 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
      * @param <V> the new map's value type
      * @return an empty {@link AHashMap}
      */
-    public static <K,V> ATreeMap<K,V> empty(Comparator<K> comparator) {
+    public static <K,V> ATreeMap<K,V> empty(Comparator<? super K> comparator) {
         return new ATreeMap<>(null, comparator);
     }
 
-    private ATreeMap (RedBlackTree.Tree<K,V> root, Comparator<K> comparator) {
+    private ATreeMap (RedBlackTree.Tree<K,V> root, Comparator<? super K> comparator) {
         this.root = root;
         this.comparator = comparator;
     }
@@ -86,7 +86,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
      * @param <V> the map's value type
      * @return the new map
      */
-    public static <K,V> ATreeMap<K,V> fromIterator(Iterator<? extends Entry<K,V>> it, Comparator<K> comparator) {
+    public static <K,V> ATreeMap<K,V> fromIterator(Iterator<? extends Entry<K,V>> it, Comparator<? super K> comparator) {
         return ATreeMap.<K,V> builder(comparator).addAll(it).build();
     }
 
@@ -111,7 +111,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
      * @param <V> the map's value type
      * @return the new map
      */
-    public static <K extends Comparable<K>,V> ATreeMap<K,V> fromMap(Map<K,V> m, Comparator<K> comparator) {
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> fromMap(Map<K,V> m, Comparator<? super K> comparator) {
         return from(m.entrySet(), comparator);
     }
 
@@ -136,7 +136,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
      * @param <V> the map's value type
      * @return the new map
      */
-    public static <K,V> ATreeMap<K,V> from(Iterable<? extends Entry<K,V>> it, Comparator<K> comparator) {
+    public static <K,V> ATreeMap<K,V> from(Iterable<? extends Entry<K,V>> it, Comparator<? super K> comparator) {
         return ATreeMap.<K,V> builder(comparator).addAll(it).build();
     }
 
@@ -250,8 +250,8 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
      * @param <V> the builder's value type
      * @return an new {@link ACollectionBuilder}
      */
-    public static <K,V> Builder<K,V> builder(Comparator<K> comparator) {
-        return new Builder<>(comparator);
+    public static <K,V> Builder<K,V> builder(Comparator<? super K> comparator) {
+        return new Builder<K,V>(comparator);
     }
 
     @Override public V get(Object key) {
@@ -347,7 +347,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
         return new AMapSupport.SortedEntrySet<>(this);
     }
 
-    @Override public Comparator<K> comparator () {
+    @Override public Comparator<? super K> comparator () {
         return comparator;
     }
 
@@ -509,7 +509,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     public static class Builder<K,V> implements ACollectionBuilder<Map.Entry<K,V>, ATreeMap<K,V>> {
         private ATreeMap<K,V> result;
 
-        Builder (Comparator<K> comparator) {
+        Builder (Comparator<? super K> comparator) {
             this.result = ATreeMap.empty(comparator);
         }
 

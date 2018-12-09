@@ -310,7 +310,7 @@ public class AMapSupport {
             this.map = map;
         }
 
-        @Override public Comparator<T> comparator () {
+        @Override public Comparator<? super T> comparator () {
             return map.comparator();
         }
 
@@ -327,7 +327,7 @@ public class AMapSupport {
         }
 
         @Override public ATreeSet<T> union (Iterable<? extends T> that) {
-            return ATreeSet.builder(map.comparator())
+            return ATreeSet.<T>builder(map.comparator())
                     .addAll(this)
                     .addAll(that)
                     .build();
@@ -603,7 +603,7 @@ public class AMapSupport {
         }
 
         @Override public ATreeSet<Map.Entry<K,V>> filter (Predicate<Map.Entry<K,V>> f) {
-            final ACollectionBuilder<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>> builder = ATreeSet.builder(new EntryComparator<>(map.comparator()));
+            final ACollectionBuilder<Map.Entry<K,V>, ATreeSet<Map.Entry<K,V>>> builder = ATreeSet.<Map.Entry<K,V>>builder(new EntryComparator<K,V>(map.comparator()));
             for (Map.Entry<K,V> o: this) if (f.test(o)) builder.add(o);
             return builder.build();
         }
@@ -692,9 +692,9 @@ public class AMapSupport {
     }
 
     public static class EntryComparator<K,V> implements Comparator<Map.Entry<K,V>> { //TODO replace with Map.Entry.comparingByKey
-        private final Comparator<K> keyComparator;
+        private final Comparator<? super K> keyComparator;
 
-        public EntryComparator (Comparator<K> keyComparator) {
+        public EntryComparator (Comparator<? super K> keyComparator) {
             this.keyComparator = keyComparator;
         }
 

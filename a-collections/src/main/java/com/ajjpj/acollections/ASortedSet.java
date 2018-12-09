@@ -36,7 +36,7 @@ public interface ASortedSet<T> extends ASet<T>, NavigableSet<T> {
      * @param <T> the new set's element type
      * @return an empty {@link ATreeSet}
      */
-    static <T> ATreeSet<T> empty(Comparator<T> comparator) {
+    static <T> ATreeSet<T> empty(Comparator<? super T> comparator) {
         return ATreeSet.empty(comparator);
     }
 
@@ -136,7 +136,7 @@ public interface ASortedSet<T> extends ASet<T>, NavigableSet<T> {
      * @param <T> the set's element type
      * @return the new set
      */
-    static <T> ATreeSet<T> from(T[] that, Comparator<T> comparator) {
+    static <T> ATreeSet<T> from(T[] that, Comparator<? super T> comparator) {
         return ATreeSet.from(that, comparator);
     }
 
@@ -159,7 +159,7 @@ public interface ASortedSet<T> extends ASet<T>, NavigableSet<T> {
      * @param <T> the set's element type
      * @return the new set
      */
-    static <T> ATreeSet<T> from(Iterable<T> that, Comparator<T> comparator) {
+    static <T> ATreeSet<T> from(Iterable<T> that, Comparator<? super T> comparator) {
         return ATreeSet.from(that, comparator);
     }
 
@@ -182,7 +182,7 @@ public interface ASortedSet<T> extends ASet<T>, NavigableSet<T> {
      * @param <T> the set's element type
      * @return the new set
      */
-    static <T> ATreeSet<T> fromIterator(Iterator<T> it, Comparator<T> comparator) {
+    static <T> ATreeSet<T> fromIterator(Iterator<T> it, Comparator<? super T> comparator) {
         return ATreeSet.fromIterator(it, comparator);
     }
 
@@ -192,7 +192,7 @@ public interface ASortedSet<T> extends ASet<T>, NavigableSet<T> {
      *
      * @return this set's comparator
      */
-    Comparator<T> comparator();
+    Comparator<? super T> comparator();
 
     ASortedSet<T> plus (T o);
     ASortedSet<T> minus (T o);
