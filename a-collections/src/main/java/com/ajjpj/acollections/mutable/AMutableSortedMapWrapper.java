@@ -10,6 +10,7 @@ import com.ajjpj.acollections.util.AOption;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -24,7 +25,7 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V> {
     private final NavigableMap<K,V> inner;
 
     public AMutableSortedMapWrapper (NavigableMap<K, V> inner) {
-        this.inner = inner;
+        this.inner = Objects.requireNonNull(inner);
     }
 
     @Override public Comparator<? super K> comparator () {

@@ -190,7 +190,7 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
     }
 
     private AMutableSetWrapper (Set<T> inner) {
-        this.inner = inner;
+        this.inner = Objects.requireNonNull(inner);
     }
 
     /**

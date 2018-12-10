@@ -195,7 +195,7 @@ public class AMutableArrayWrapper<T> implements AList<T>, AListDefaults<T, AMuta
     }
 
     private AMutableArrayWrapper (T[] inner) {
-        this.inner = inner;
+        this.inner = Objects.requireNonNull(inner);
     }
 
     @Override public <U> ACollectionBuilder<U, AMutableArrayWrapper<U>> newBuilder () {

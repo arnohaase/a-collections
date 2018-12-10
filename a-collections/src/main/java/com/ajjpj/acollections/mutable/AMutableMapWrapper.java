@@ -204,7 +204,7 @@ public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWr
     }
 
     private AMutableMapWrapper (Map<K, V> inner) {
-        this.inner = inner;
+        this.inner = Objects.requireNonNull(inner);
     }
 
     /**

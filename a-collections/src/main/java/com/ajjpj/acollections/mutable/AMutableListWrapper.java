@@ -49,7 +49,7 @@ public class AMutableListWrapper<T> implements AListDefaults<T, AMutableListWrap
     }
 
     private AMutableListWrapper (List<T> inner) {
-        this.inner = inner;
+        this.inner = Objects.requireNonNull(inner);
     }
 
     /**
