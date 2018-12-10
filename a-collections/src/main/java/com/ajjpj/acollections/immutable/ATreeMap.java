@@ -343,7 +343,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
         return new AMapSupport.ValuesCollection<>(this);
     }
 
-    @Override public ASortedSet<Entry<K, V>> entrySet () { //TODO ASortedSet
+    @Override public ASortedSet<Entry<K, V>> entrySet () {
         return new AMapSupport.SortedEntrySet<>(this);
     }
 
@@ -497,8 +497,6 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     @Override public K lastKey () {
         return greatest().get().getKey();
     }
-
-    //TODO -----------------
 
 
     @Override public <K1, V1> ACollectionBuilder<Entry<K1, V1>, ATreeMap<K1, V1>> newEntryBuilder () {
