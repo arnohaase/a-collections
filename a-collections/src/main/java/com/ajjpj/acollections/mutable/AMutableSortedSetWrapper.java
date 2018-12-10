@@ -13,7 +13,6 @@ import com.ajjpj.acollections.internal.ASetSupport;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.NavigableSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -189,7 +188,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
     }
 
     private AMutableSortedSetWrapper (NavigableSet<T> inner) {
-        this.inner = Objects.requireNonNull(inner);
+        this.inner = inner;
     }
 
     @Override
