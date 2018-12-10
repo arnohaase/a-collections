@@ -14,15 +14,15 @@ class RedBlackTree {
         return tree == null;
     }
 
-    static <A> boolean contains (Tree<A, ?> tree, A x, Comparator<A> ordering) {
+    static <A> boolean contains (Tree<A, ?> tree, A x, Comparator<? super A> ordering) {
         return lookup(tree, x, ordering) != null;
     }
 
-    static <A, B> AOption<B> get (Tree<A, B> tree, A x, Comparator<A> ordering) {
+    static <A, B> AOption<B> get (Tree<A, B> tree, A x, Comparator<? super A> ordering) {
         return AOption.of(lookup(tree, x, ordering)).map(raw -> raw.value);
     }
 
-    static <A, B> Tree<A, B> lookup (Tree<A, B> tree, A x, Comparator<A> ordering) {
+    static <A, B> Tree<A, B> lookup (Tree<A, B> tree, A x, Comparator<? super A> ordering) {
         int cmp;
         while (tree != null && (cmp = ordering.compare(x, tree.key)) != 0) {
             if (cmp < 0) tree = tree.left;
@@ -40,7 +40,7 @@ class RedBlackTree {
      * Count all the nodes with keys greater than or equal to the lower bound and less than the upper bound.
      * The two bounds are optional.
      */
-    static <A> int countInRange (Tree<A, ?> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+    static <A> int countInRange (Tree<A, ?> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
         if (tree == null) return 0;
 
         // with no bounds use this node's count
@@ -60,30 +60,30 @@ class RedBlackTree {
         return 1 + countInRange(tree.left, from, fromInclusive, AOption.none(), toInclusive, ordering) + countInRange(tree.right, AOption.none(), fromInclusive, to, toInclusive, ordering);
     }
 
-    static <A, B> Tree<A, B> update (Tree<A, B> tree, A k, B v, boolean overwrite, Comparator<A> ordering) {
+    static <A, B> Tree<A, B> update (Tree<A, B> tree, A k, B v, boolean overwrite, Comparator<? super A> ordering) {
         return blacken(upd(tree, k, v, overwrite, ordering));
     }
 
-    static <A, B> Tree<A, B> delete (Tree<A, B> tree, A k, Comparator<A> ordering) {
+    static <A, B> Tree<A, B> delete (Tree<A, B> tree, A k, Comparator<? super A> ordering) {
         return blacken(del(tree, k, ordering));
     }
 
-    static <A, B> Tree<A, B> rangeImpl (Tree<A, B> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+    static <A, B> Tree<A, B> rangeImpl (Tree<A, B> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
         if (from.isEmpty() && to.isEmpty()) return tree;
         if (from.isDefined() && to.isDefined()) return range(tree, from.get(), fromInclusive, to.get(), toInclusive, ordering);
         if (from.isDefined()) return from(tree, from.get(), fromInclusive, ordering);
         return to(tree, to.get(), toInclusive, ordering);
     }
 
-    static <A, B> Tree<A, B> range (Tree<A, B> tree, A from, boolean fromInclusive, A to, boolean toInclusive, Comparator<A> ordering) {
+    static <A, B> Tree<A, B> range (Tree<A, B> tree, A from, boolean fromInclusive, A to, boolean toInclusive, Comparator<? super A> ordering) {
         return blacken(doRange(tree, from, fromInclusive, to, toInclusive, ordering));
     }
 
-    static <A, B> Tree<A, B> from (Tree<A, B> tree, A from, boolean fromInclusive, Comparator<A> ordering) {
+    static <A, B> Tree<A, B> from (Tree<A, B> tree, A from, boolean fromInclusive, Comparator<? super A> ordering) {
         return blacken(doFrom(tree, from, fromInclusive, ordering));
     }
 
-    static <A, B> Tree<A, B> to (Tree<A, B> tree, A to, boolean toInclusive, Comparator<A> ordering) {
+    static <A, B> Tree<A, B> to (Tree<A, B> tree, A to, boolean toInclusive, Comparator<? super A> ordering) {
         return blacken(doTo(tree, to, toInclusive, ordering));
     }
 
@@ -113,23 +113,23 @@ class RedBlackTree {
         return result;
     }
 
-    static <A, B> AIterator<Map.Entry<A, B>> iterator (Tree<A, B> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+    static <A, B> AIterator<Map.Entry<A, B>> iterator (Tree<A, B> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
         return new EntriesIterator<>(tree, from, fromInclusive, to, toInclusive, ordering);
     }
 
-    static <A> AIterator<A> keysIterator (Tree<A, ?> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+    static <A> AIterator<A> keysIterator (Tree<A, ?> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
         return new KeysIterator<>(tree, from, fromInclusive, to, toInclusive, ordering);
     }
 
-    static <A, B> AIterator<B> valuesIterator (Tree<A, B> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+    static <A, B> AIterator<B> valuesIterator (Tree<A, B> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
         return new ValuesIterator<>(tree, from, fromInclusive, to, toInclusive, ordering);
     }
 
-    static <A, B> AIterator<Map.Entry<A, B>> reverseIterator (Tree<A, B> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+    static <A, B> AIterator<Map.Entry<A, B>> reverseIterator (Tree<A, B> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
         return new ReverseEntriesIterator<>(tree, from, fromInclusive, to, toInclusive, ordering);
     }
 
-    static <A, B> AIterator<A> reverseKeysIterator (Tree<A, B> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+    static <A, B> AIterator<A> reverseKeysIterator (Tree<A, B> tree, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
         return new ReverseKeysIterator<>(tree, from, fromInclusive, to, toInclusive, ordering);
     }
 
@@ -167,7 +167,7 @@ class RedBlackTree {
         return mkTree(isBlack, x, xv, a, r);
     }
 
-    private static <A, B> Tree<A, B> upd (Tree<A, B> tree, A k, B v, boolean overwrite, Comparator<A> ordering) {
+    private static <A, B> Tree<A, B> upd (Tree<A, B> tree, A k, B v, boolean overwrite, Comparator<? super A> ordering) {
         if (tree == null) return new RedTree<>(k, v, null, null);
         final int cmp = ordering.compare(k, tree.key);
         if (cmp < 0) return balanceLeft(isBlackTree(tree), tree.key, tree.value, upd(tree.left, k, v, overwrite, ordering), tree.right);
@@ -248,7 +248,7 @@ class RedBlackTree {
         throw new IllegalStateException("unmatched tree on append: " + tl + ", " + tr);
     }
 
-    private static <A, B> Tree<A, B> del (Tree<A, B> tree, A k, Comparator<A> ordering) {
+    private static <A, B> Tree<A, B> del (Tree<A, B> tree, A k, Comparator<? super A> ordering) {
         if (tree == null) return null;
 
         final int cmp = ordering.compare(k, tree.key);
@@ -263,7 +263,7 @@ class RedBlackTree {
         return del_append(tree.left, tree.right);
     }
 
-    private static <A, B> Tree<A, B> doFrom (Tree<A, B> tree, A from, boolean fromInclusive, Comparator<A> ordering) {
+    private static <A, B> Tree<A, B> doFrom (Tree<A, B> tree, A from, boolean fromInclusive, Comparator<? super A> ordering) {
         if (tree == null) return null;
         if ( fromInclusive && ordering.compare(tree.key, from) <  0) return doFrom(tree.right, from, fromInclusive, ordering);
         if (!fromInclusive && ordering.compare(tree.key, from) <= 0) return doFrom(tree.right, from, fromInclusive, ordering);
@@ -273,7 +273,7 @@ class RedBlackTree {
         return rebalance(tree, newLeft, tree.right);
     }
 
-    private static <A, B> Tree<A, B> doTo (Tree<A, B> tree, A to, boolean toInclusive, Comparator<A> ordering) {
+    private static <A, B> Tree<A, B> doTo (Tree<A, B> tree, A to, boolean toInclusive, Comparator<? super A> ordering) {
         if (tree == null) return null;
         if ( toInclusive && ordering.compare(to, tree.key) <  0) return doTo(tree.left, to, toInclusive, ordering);
         if (!toInclusive && ordering.compare(to, tree.key) <= 0) return doTo(tree.left, to, toInclusive, ordering);
@@ -283,7 +283,7 @@ class RedBlackTree {
         return rebalance(tree, tree.left, newRight);
     }
 
-    private static <A, B> Tree<A, B> doRange (Tree<A, B> tree, A from, boolean fromInclusive, A to, boolean toInclusive, Comparator<A> ordering) {
+    private static <A, B> Tree<A, B> doRange (Tree<A, B> tree, A from, boolean fromInclusive, A to, boolean toInclusive, Comparator<? super A> ordering) {
         if (tree == null) return null;
         if ( fromInclusive && ordering.compare(tree.key, from) <  0) return doRange(tree.right, from, fromInclusive, to, toInclusive, ordering);
         if (!fromInclusive && ordering.compare(tree.key, from) <= 0) return doRange(tree.right, from, fromInclusive, to, toInclusive, ordering);
@@ -542,12 +542,12 @@ class RedBlackTree {
     private static abstract class TreeIterator<A, B, R> extends AbstractAIterator<R> {
         private final AOption<A> to;
         private final boolean toInclusive;
-        private final Comparator<A> ordering;
+        private final Comparator<? super A> ordering;
 
         private final ArrayDeque<Tree<A,B>> stackOfNexts = new ArrayDeque<>();
         private Tree<A, B> lookahead;
 
-        TreeIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+        TreeIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
             this.to = to;
             this.toInclusive = toInclusive;
             this.ordering = ordering;
@@ -618,7 +618,7 @@ class RedBlackTree {
     }
 
     private static class EntriesIterator<A, B> extends TreeIterator<A, B, Map.Entry<A, B>> {
-        EntriesIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+        EntriesIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
             super(root, from, fromInclusive, to, toInclusive, ordering);
         }
 
@@ -628,7 +628,7 @@ class RedBlackTree {
     }
 
     private static class KeysIterator<A, B> extends TreeIterator<A, B, A> {
-        KeysIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+        KeysIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
             super(root, from, fromInclusive, to, toInclusive, ordering);
         }
 
@@ -638,7 +638,7 @@ class RedBlackTree {
     }
 
     private static class ValuesIterator<A, B> extends TreeIterator<A, B, B> {
-        ValuesIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+        ValuesIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
             super(root, from, fromInclusive, to, toInclusive, ordering);
         }
 
@@ -650,12 +650,12 @@ class RedBlackTree {
     private static abstract class ReverseTreeIterator<A, B, R> extends AbstractAIterator<R> {
         private final AOption<A> to;
         private final boolean toInclusive;
-        private final Comparator<A> ordering;
+        private final Comparator<? super A> ordering;
 
         private final ArrayDeque<Tree<A,B>> stackOfNexts = new ArrayDeque<>();
         private Tree<A, B> lookahead;
 
-        ReverseTreeIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+        ReverseTreeIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
             this.to = to;
             this.toInclusive = toInclusive;
             this.ordering = ordering;
@@ -719,7 +719,7 @@ class RedBlackTree {
     }
 
     private static class ReverseEntriesIterator<A,B> extends ReverseTreeIterator<A,B,Map.Entry<A,B>> {
-        ReverseEntriesIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+        ReverseEntriesIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
             super(root, from, fromInclusive, to, toInclusive, ordering);
         }
 
@@ -729,7 +729,7 @@ class RedBlackTree {
     }
 
     private static class ReverseKeysIterator<A,B> extends ReverseTreeIterator<A,B,A> {
-        public ReverseKeysIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<A> ordering) {
+        public ReverseKeysIterator (Tree<A, B> root, AOption<A> from, boolean fromInclusive, AOption<A> to, boolean toInclusive, Comparator<? super A> ordering) {
             super(root, from, fromInclusive, to, toInclusive, ordering);
         }
 

@@ -44,7 +44,7 @@ import java.util.stream.Collector;
  */
 public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASortedSet<T>, ACollectionDefaults<T,ATreeSet<T>>, ASetDefaults<T,ATreeSet<T>>, Serializable {
     private final RedBlackTree.Tree<T,Object> root;
-    private final Comparator<T> comparator;
+    private final Comparator<? super T> comparator;
 
     /**
      * Creates an empty {@link ATreeSet} with {@link Comparator#naturalOrder()}.
@@ -67,7 +67,7 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
      * @param <T> the new set's element type
      * @return an empty {@link ATreeSet}
      */
-    public static <T> ATreeSet<T> empty(Comparator<T> comparator) {
+    public static <T> ATreeSet<T> empty(Comparator<? super T> comparator) {
         return new ATreeSet<>(null, comparator);
     }
 
@@ -193,7 +193,7 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
      * @param <T> the set's element type
      * @return the new set
      */
-    public static <T> ATreeSet<T> from(T[] that, Comparator<T> comparator) {
+    public static <T> ATreeSet<T> from(T[] that, Comparator<? super T> comparator) {
         return fromIterator(Arrays.asList(that).iterator(), comparator);
     }
 
@@ -216,8 +216,8 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
      * @param <T> the set's element type
      * @return the new set
      */
-    public static <T> ATreeSet<T> from(Iterable<T> that, Comparator<T> comparator) {
-        return builder(comparator).addAll(that).build();
+    public static <T> ATreeSet<T> from(Iterable<T> that, Comparator<? super T> comparator) {
+        return ATreeSet.<T>builder(comparator).addAll(that).build();
     }
 
     /**
@@ -239,8 +239,8 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
      * @param <T> the set's element type
      * @return the new set
      */
-    public static <T> ATreeSet<T> fromIterator(Iterator<T> it, Comparator<T> comparator) {
-        return builder(comparator).addAll(it).build();
+    public static <T> ATreeSet<T> fromIterator(Iterator<T> it, Comparator<? super T> comparator) {
+        return ATreeSet.<T>builder(comparator).addAll(it).build();
     }
 
     /**
@@ -250,10 +250,10 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
      * @param <T> the builder's element type
      * @return an new {@link ACollectionBuilder}
      */
-    public static <T> Builder<T> builder(Comparator<T> comparator) {
+    public static <T> Builder<T> builder(Comparator<? super T> comparator) {
         return new Builder<>(comparator);
     }
-    private ATreeSet (RedBlackTree.Tree<T, Object> root, Comparator<T> comparator) {
+    private ATreeSet (RedBlackTree.Tree<T, Object> root, Comparator<? super T> comparator) {
         this.root = root;
         this.comparator = comparator;
     }
@@ -269,7 +269,7 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
         return builder(Comparator.<T>naturalOrder());
     }
 
-    @Override public Comparator<T> comparator () {
+    @Override public Comparator<? super T> comparator () {
         return comparator;
     }
 
@@ -501,9 +501,9 @@ public class ATreeSet<T> extends AbstractImmutableCollection<T> implements ASort
 
     public static class Builder<T> implements ACollectionBuilder<T,ATreeSet<T>> {
         private RedBlackTree.Tree<T,Object> root = null;
-        private final Comparator<T> comparator;
+        private final Comparator<? super T> comparator;
 
-        public Builder (Comparator<T> comparator) {
+        public Builder (Comparator<? super T> comparator) {
             this.comparator = comparator;
         }
 
