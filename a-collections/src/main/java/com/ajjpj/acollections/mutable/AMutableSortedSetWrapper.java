@@ -1,16 +1,14 @@
 package com.ajjpj.acollections.mutable;
 
-import com.ajjpj.acollections.ACollection;
-import com.ajjpj.acollections.ACollectionBuilder;
-import com.ajjpj.acollections.AIterator;
-import com.ajjpj.acollections.ASortedSet;
+import com.ajjpj.acollections.*;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
-import com.ajjpj.acollections.ASet;
+
+import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.ASetSupport;
 import com.ajjpj.acollections.util.AOption;
 
@@ -50,7 +48,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
      * @param <T> the set's element type
      * @return the new set
      */
-    public static <T> AMutableSortedSetWrapper<T> fromIterator(Iterator<T> it) {
+    public static <T extends Comparable<T>> AMutableSortedSetWrapper<T> fromIterator(Iterator<T> it) {
         return AMutableSortedSetWrapper.<T>builder(Comparator.naturalOrder()).addAll(it).build();
     }
 
@@ -61,7 +59,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
      * @param <T> the set's element type
      * @return the new set
      */
-    public static <T> AMutableSortedSetWrapper<T> from(T[] that) {
+    public static <T extends Comparable<T>> AMutableSortedSetWrapper<T> from(T[] that) {
         return fromIterator(Arrays.asList(that).iterator());
     }
 
@@ -72,7 +70,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
      * @param <T> the set's element type
      * @return the new set
      */
-    public static <T> AMutableSortedSetWrapper<T> from(Iterable<T> that) {
+    public static <T extends Comparable<T>> AMutableSortedSetWrapper<T> from(Iterable<T> that) {
         return fromIterator(that.iterator());
     }
 
@@ -83,7 +81,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
      * @param <T> the new set's element type
      * @return an empty set
      */
-    public static <T> AMutableSortedSetWrapper<T> empty() {
+    public static <T extends Comparable<T>> AMutableSortedSetWrapper<T> empty() {
         return AMutableSortedSetWrapper.<T>builder(Comparator.naturalOrder()).build();
     }
 
@@ -96,7 +94,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
      * @param <T> the new set's element type
      * @return an empty set
      */
-    public static <T> AMutableSortedSetWrapper<T> of() {
+    public static <T extends Comparable<T>> AMutableSortedSetWrapper<T> of() {
         return empty();
     }
 
@@ -110,7 +108,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
      * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
      * @return the new set
      */
-    public static <T> AMutableSortedSetWrapper<T> of(T o) {
+    public static <T extends Comparable<T>> AMutableSortedSetWrapper<T> of(T o) {
         return AMutableSortedSetWrapper.<T>builder(Comparator.naturalOrder()).add(o).build();
     }
 
@@ -125,7 +123,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
      * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
      * @return the new set
      */
-    public static <T> AMutableSortedSetWrapper<T> of(T o1, T o2) {
+    public static <T extends Comparable<T>> AMutableSortedSetWrapper<T> of(T o1, T o2) {
         return AMutableSortedSetWrapper.<T>builder(Comparator.naturalOrder()).add(o1).add(o2).build();
     }
 
@@ -141,7 +139,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
      * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
      * @return the new set
      */
-    public static <T> AMutableSortedSetWrapper<T> of(T o1, T o2, T o3) {
+    public static <T extends Comparable<T>> AMutableSortedSetWrapper<T> of(T o1, T o2, T o3) {
         return AMutableSortedSetWrapper.<T>builder(Comparator.naturalOrder()).add(o1).add(o2).add(o3).build();
     }
 
@@ -158,7 +156,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
      * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
      * @return the new set
      */
-    public static <T> AMutableSortedSetWrapper<T> of(T o1, T o2, T o3, T o4) {
+    public static <T extends Comparable<T>> AMutableSortedSetWrapper<T> of(T o1, T o2, T o3, T o4) {
         return AMutableSortedSetWrapper.<T>builder(Comparator.naturalOrder()).add(o1).add(o2).add(o3).add(o4).build();
     }
 
@@ -177,7 +175,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
      * @param <T> the new set's element type (can often be inferred from the parameter by the compiler)
      * @return the new set
      */
-    @SafeVarargs public static <T> AMutableSortedSetWrapper<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
+    @SafeVarargs public static <T extends Comparable<T>> AMutableSortedSetWrapper<T> of(T o1, T o2, T o3, T o4, T o5, T... others) {
         return AMutableSortedSetWrapper
                 .<T>builder(Comparator.naturalOrder())
                 .add(o1)
@@ -194,8 +192,8 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
     }
 
     @Override
-    public Comparator<T> comparator() {
-        return (Comparator<T>) inner.comparator();
+    public Comparator<? super T> comparator() {
+        return inner.comparator();
     }
 
     @Override
@@ -362,8 +360,10 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
     }
 
     @Override
-    public AMutableSortedSetWrapper.Builder<T> newBuilder() {
-        return AMutableSortedSetWrapper.builder(comparator());
+    public <U> AMutableSortedSetWrapper.Builder<U> newBuilder() {
+        //TODO this is somewhat hacky - but is there a better meaningful way to do this?
+        //noinspection unchecked
+        return AMutableSortedSetWrapper.builder((Comparator) comparator());
     }
 
     @Override
@@ -382,18 +382,33 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
     }
 
     @Override
-    public <U> ACollection<U> map(Function<T, U> f) {
-        return null;
+    public <U> AMutableSortedSetWrapper<U> map(Function<T, U> f) {
+        return ACollectionSupport.map(newBuilder(), this, f);
     }
 
     @Override
-    public <U> ACollection<U> flatMap(Function<T, Iterable<U>> f) {
-        return null;
+    public <U> AMutableSortedSetWrapper<U> flatMap(Function<T, Iterable<U>> f) {
+        return ACollectionSupport.flatMap(newBuilder(), this, f);
     }
 
     @Override
-    public <U> ACollection<U> collect(Predicate<T> filter, Function<T, U> f) {
-        return null;
+    public <U> AMutableSortedSetWrapper<U> collect(Predicate<T> filter, Function<T, U> f) {
+        return ACollectionSupport.collect(newBuilder(), this, filter, f);
+    }
+
+    @Override
+    public <K1> AMap<K1, AMutableSortedSetWrapper<T>> groupBy (Function<T, K1> keyExtractor) {
+        return ACollectionDefaults.super.groupBy(keyExtractor);
+    }
+
+    @Override
+    public AMutableSortedSetWrapper<T> filter (Predicate<T> f) {
+        return ACollectionDefaults.super.filter(f);
+    }
+
+    @Override
+    public AMutableSortedSetWrapper<T> filterNot (Predicate<T> f) {
+        return ACollectionDefaults.super.filterNot(f);
     }
 
     @Override
@@ -432,12 +447,13 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
     }
 
     @Override
-    public T[] toArray() {
+    public Object[] toArray () {
         return inner.toArray();
     }
 
     @Override
-    public T[] toArray(T[] a) {
+    public <T1> T1[] toArray (T1[] a) {
+        //noinspection SuspiciousToArrayCall
         return inner.toArray(a);
     }
 
