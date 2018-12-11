@@ -7,6 +7,7 @@ import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.ASetSupport;
 import com.ajjpj.acollections.util.AOption;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -26,7 +27,7 @@ import java.util.stream.Collector;
  *
  * @param <T> the set's element type.
  */
-public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDefaults<T, AMutableSortedSetWrapper<T>> {
+public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDefaults<T, AMutableSortedSetWrapper<T>>, Serializable {
 
     private final NavigableSet<T> inner;
 
@@ -258,7 +259,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
 
     @Override public AMutableSortedSetWrapper<T> take(int n) {
         Iterator<T> iterator = inner.iterator();
-        for (int i = 0; i< n && !iterator.hasNext(); n++){
+        for (int i = 0; i< n && iterator.hasNext(); n++){
             iterator.next();
         }
         while(iterator.hasNext()) {
@@ -453,6 +454,15 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
 
     @Override public void clear() {
         inner.clear();
+    }
+
+    @Override public int hashCode() {
+        return inner.hashCode();
+    }
+
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+    @Override public boolean equals (Object obj) {
+        return inner.equals(obj);
     }
 
     /**
