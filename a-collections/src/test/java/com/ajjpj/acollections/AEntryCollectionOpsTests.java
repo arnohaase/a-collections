@@ -3,6 +3,7 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
+import com.oracle.jrockit.jfr.management.NoSuchRecordingException;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -104,7 +105,7 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
 
     @Test @Override default void testHead () {
         doTest(v -> {
-            assertNull(v.mkColl().head());
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().head());
             assertEquals(entryOf(1), v.mkColl(1).head());
             if (v.iterationOrder123() != null)
                 assertEquals(v.mkColl(1, 2, 3).head(), v.iterationOrder123().head());
@@ -126,7 +127,7 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     }
     @Test @Override default void testFirst () {
         doTest(v -> {
-            assertNull(v.mkColl().first());
+            assertThrows(NoSuchElementException.class, () -> v.mkColl().first());
             assertEquals(entryOf(1), v.mkColl(1).first());
             if (v.iterationOrder123() != null)
                 assertEquals(v.mkColl(1, 2, 3).first(), v.iterationOrder123().first());

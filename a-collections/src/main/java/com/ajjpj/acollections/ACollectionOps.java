@@ -79,7 +79,7 @@ public interface ACollectionOps<T> {
     }
 
     /**
-     * Returns this collection's first element, or {@code null} if this collection is empty.
+     * Returns this collection's first element.
      *
      * <p> 'First' element means first element in iteration order, which differs a lot for different kinds of collections:
      * <ul>
@@ -90,7 +90,8 @@ public interface ACollectionOps<T> {
      *
      * {@code head()} is an alias for {@link #first()} reflecting functional programming naming conventions.
      *
-     * @return this collection's first element, of {@code null} if it is empty.
+     * @throws java.util.NoSuchElementException if the collection is empty4
+     * @return this collection's first element
      */
     T head();
 
@@ -105,7 +106,7 @@ public interface ACollectionOps<T> {
     AOption<T> headOption();
 
     /**
-     * Returns this collection's first element, or {@code null} if this collection is empty.
+     * Returns this collection's first element.
      *
      * <p> 'First' element means first element in iteration order, which differs a lot for different kinds of collections:
      * <ul>
@@ -114,7 +115,8 @@ public interface ACollectionOps<T> {
      *     <li> For an {@link AHashSet} or {@link AHashMap}, it can be any element.
      * </ul>
      *
-     * @return this collection's first element, of {@code null} if it is empty.
+     * @throws java.util.NoSuchElementException if the collection is empty
+     * @return this collection's first element
      */
     default T first() {
         return head();

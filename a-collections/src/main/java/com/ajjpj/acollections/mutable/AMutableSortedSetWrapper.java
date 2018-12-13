@@ -96,7 +96,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
      * @param <T> the new set's element type
      * @return an empty {@link AMutableSortedSetWrapper}
      */
-    public static <T extends Comparable<T>> AMutableSortedSetWrapper<T> empty(Comparator<? super T> comparator) {
+    public static <T> AMutableSortedSetWrapper<T> empty(Comparator<? super T> comparator) {
         return AMutableSortedSetWrapper.<T>builder(comparator).build();
     }
 
@@ -262,8 +262,10 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
     }
 
     @Override public AMutableSortedSetWrapper<T> take(int n) {
+        if (n >= size()) return this;
+
         Iterator<T> iterator = inner.iterator();
-        for (int i = 0; i< n && iterator.hasNext(); n++){
+        for (int i = 0; i<n; i++){
             iterator.next();
         }
         while(iterator.hasNext()) {
@@ -341,6 +343,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
     }
 
     @Override public AMutableSortedSetWrapper<T> subSet(T fromElement, boolean fromInclusive, T toElement, boolean toInclusive) {
+        if (comparator().compare(fromElement, toElement) > 0) return AMutableSortedSetWrapper.<T>empty(comparator());
         NavigableSet<T> rangeView = inner.subSet(fromElement, fromInclusive, toElement, toInclusive);
         return new AMutableSortedSetWrapper<>(rangeView);
     }

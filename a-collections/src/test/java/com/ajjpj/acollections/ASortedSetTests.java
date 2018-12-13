@@ -642,16 +642,26 @@ public interface ASortedSetTests extends ASetTests {
     }
     @Test default void testPollFirst() {
         doTest(v -> {
-            assertThrows(UnsupportedOperationException.class, () -> v.mkSortedSet().pollFirst());
-            assertThrows(UnsupportedOperationException.class, () -> v.mkSortedSet(1).pollFirst());
-            assertThrows(UnsupportedOperationException.class, () -> v.mkSortedSet(1, 2, 3).pollFirst());
+            if (isImmutable()) {
+                assertThrows(UnsupportedOperationException.class, () -> v.mkSortedSet().pollFirst());
+                assertThrows(UnsupportedOperationException.class, () -> v.mkSortedSet(1).pollFirst());
+                assertThrows(UnsupportedOperationException.class, () -> v.mkSortedSet(1, 2, 3).pollFirst());
+            }
+            else {
+                //TODO mutable
+            }
         });
     }
     @Test default void testPollLast() {
         doTest(v -> {
-            assertThrows(UnsupportedOperationException.class, () -> v.mkSortedSet().pollLast());
-            assertThrows(UnsupportedOperationException.class, () -> v.mkSortedSet(1).pollLast());
-            assertThrows(UnsupportedOperationException.class, () -> v.mkSortedSet(1, 2, 3).pollLast());
+            if(isImmutable()) {
+                assertThrows(UnsupportedOperationException.class, () -> v.mkSortedSet().pollLast());
+                assertThrows(UnsupportedOperationException.class, () -> v.mkSortedSet(1).pollLast());
+                assertThrows(UnsupportedOperationException.class, () -> v.mkSortedSet(1, 2, 3).pollLast());
+            }
+            else {
+                //TODO mutable
+            }
         });
     }
 
