@@ -7,8 +7,8 @@ import java.util.*;
 
 
 /**
- * TODO !!! dexx
- * inspired by dexx
+ * Implementation note: This class in particular is an optimization idea from
+ *  the <a href="https://github.com/andrewoma/dexx">Dexx collections library</a>.
  */
 class CompactHashMap<X extends CompactHashMap.EntryWithEquality> {
     interface EntryWithEquality {
