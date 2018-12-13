@@ -710,7 +710,7 @@ public interface ASortedMapTests extends AMapTests {
 
     @Test default void testFirstEntry() {
         doTest(v -> {
-            assertThrows (NoSuchElementException.class, () -> v.mkSortedMap().firstEntry());
+            assertNull (v.mkSortedMap().firstEntry());
             assertEquals (entryOf(1), v.mkSortedMap(1).firstEntry());
             if (v.isAscending()) {
                 assertEquals(entryOf(1), v.mkSortedMap(1, 2, 3).firstEntry());
@@ -722,7 +722,7 @@ public interface ASortedMapTests extends AMapTests {
     }
     @Test default void testLastEntry() {
         doTest(v -> {
-            assertThrows (NoSuchElementException.class, () -> v.mkSortedMap().lastEntry());
+            assertNull (v.mkSortedMap().lastEntry());
             assertEquals (entryOf(1), v.mkSortedMap(1).lastEntry());
             if (v.isAscending()) {
                 assertEquals(entryOf(3), v.mkSortedMap(1, 2, 3).lastEntry());

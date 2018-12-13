@@ -37,12 +37,197 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
         return new Builder<>(comparator);
     }
 
-    public static <K,V> AMutableSortedMapWrapper<K,V> fromIterator(Iterator<Map.Entry<K,V>> it, Comparator<? super K> comparator) {
-        final Builder<K,V> builder = builder(comparator);
-        builder.addAll(it);
-        return builder.build();
+    /**
+     * Convenience method for creating an empty {@link AMutableSortedMapWrapper} with {@link Comparator#naturalOrder()}. This can later be modified by
+     *  calling {@link #plus(Object,Object)} or {@link #minus(Object)}. For creating a map with known elements, calling one of the
+     *  {@code of} factory methods is usually more concise.
+     *
+     * @param <K> the new map's key type
+     * @param <V> the new map's value type
+     * @return an empty {@link AHashMap}
+     */
+    public static <K extends Comparable<K>,V> AMutableSortedMapWrapper<K,V> empty() {
+        return new AMutableSortedMapWrapper<>(new TreeMap<>(Comparator.<K>naturalOrder()));
     }
 
+    /**
+     * Convenience method for creating an empty {@link AMutableSortedMapWrapper}. This can later be modified by calling {@link #plus(Object,Object)} or
+     * {@link #minus(Object)}. For creating a map with known elements, calling one of the {@code of} factory methods is usually more concise.
+     *
+     * @param comparator the tree map's comparator
+     *
+     * @param <K> the new map's key type
+     * @param <V> the new map's value type
+     * @return an empty {@link AHashMap}
+     */
+    public static <K,V> AMutableSortedMapWrapper<K,V> empty(Comparator<? super K> comparator) {
+        return new AMutableSortedMapWrapper<>(new TreeMap<>(comparator));
+    }
+
+    /**
+     * Creates a new {@link AMutableSortedMapWrapper} based on an {@link Iterator}'s elements using {@link Comparator#naturalOrder()}.
+     *
+     * @param it the {@link Iterator} from which the new map is initialized
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    public static <K extends Comparable<K>,V> AMutableSortedMapWrapper<K,V> fromIterator(Iterator<? extends Entry<K,V>> it) {
+        return fromIterator(it, Comparator.naturalOrder());
+    }
+
+    /**
+     * Creates a new {@link AMutableSortedMapWrapper} based on an {@link Iterator}'s elements using a comparator provided by the caller.
+     *
+     * @param it         the {@link Iterator} from which the new map is initialized
+     * @param comparator the key comparator to use
+     *
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    public static <K,V> AMutableSortedMapWrapper<K,V> fromIterator(Iterator<? extends Entry<K,V>> it, Comparator<? super K> comparator) {
+        return AMutableSortedMapWrapper.<K,V> builder(comparator).addAll(it).build();
+    }
+
+    /**
+     * Creates a new {@link AMutableSortedMapWrapper} based on a {@link java.util.Map}'s elements using {@link Comparator#naturalOrder()}.
+     *
+     * @param m the {@link Map} from which the new map is initialized
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    public static <K extends Comparable<K>,V> AMutableSortedMapWrapper<K,V> fromMap(Map<K,V> m) {
+        return from(m.entrySet());
+    }
+
+    /**
+     * Creates a new {@link AMutableSortedMapWrapper} based on a {@link java.util.Map}'s elements using a comparator provided by the caller.
+     *
+     * @param m          the {@link Map} from which the new map is initialized
+     * @param comparator the key comparator to use
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    public static <K extends Comparable<K>,V> AMutableSortedMapWrapper<K,V> fromMap(Map<K,V> m, Comparator<? super K> comparator) {
+        return from(m.entrySet(), comparator);
+    }
+
+    /**
+     * Creates a new {@link AMutableSortedMapWrapper} based on an {@link Iterable}'s elements using {@link Comparator#naturalOrder()}.
+     *
+     * @param coll the {@link Iterable} from which the new map is initialized
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    public static <K extends Comparable<K>,V> AMutableSortedMapWrapper<K,V> from(Iterable<? extends Entry<K,V>> coll) {
+        return from(coll, Comparator.naturalOrder());
+    }
+
+    /**
+     * Creates a new {@link AMutableSortedMapWrapper} based on an {@link Iterator}'s elements using a comparator provided by the caller.
+     *
+     * @param it         the {@link Iterator} from which the new map is initialized
+     * @param comparator the key comparator to use
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    public static <K,V> AMutableSortedMapWrapper<K,V> from(Iterable<? extends Entry<K,V>> it, Comparator<? super K> comparator) {
+        return AMutableSortedMapWrapper.<K,V> builder(comparator).addAll(it).build();
+    }
+
+    /**
+     * This is an alias for {@link #empty()} for consistency with Java 9 conventions - it creates an empty {@link AMutableSortedMapWrapper}
+     *  using {@link Comparator#naturalOrder()}.
+     *
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return an empty {@link AMutableSortedMapWrapper}
+     */
+    public static <K extends Comparable<K>,V> AMutableSortedMapWrapper<K,V> of() {
+        return empty(Comparator.<K>naturalOrder());
+    }
+
+    /**
+     * Convenience factory method creating an {@link AMutableSortedMapWrapper} with exactly one entry using {@link Comparator#naturalOrder()}.
+     *
+     * @param k1 the single entry's key
+     * @param v1 the single entry's value
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link AMutableSortedMapWrapper}
+     */
+    public static <K extends Comparable<K>,V> AMutableSortedMapWrapper<K,V> of(K k1, V v1) {
+        return AMutableSortedMapWrapper.<K,V>builder().add(k1, v1).build();
+    }
+
+    /**
+     * Convenience factory method creating an {@link AMutableSortedMapWrapper} with exactly two entries using {@link Comparator#naturalOrder()}.
+     *
+     * @param k1 the first entry's key
+     * @param v1 the first entry's value
+     * @param k2 the second entry's key
+     * @param v2 the second entry's value
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link AMutableSortedMapWrapper}
+     */
+    public static <K extends Comparable<K>,V> AMutableSortedMapWrapper<K,V> of(K k1, V v1, K k2, V v2) {
+        return AMutableSortedMapWrapper.<K,V>builder().add(k1, v1).add(k2, v2).build();
+    }
+
+    /**
+     * Convenience factory method creating an {@link AMutableSortedMapWrapper} with three entries using {@link Comparator#naturalOrder()}.
+     *
+     * @param k1 the first entry's key
+     * @param v1 the first entry's value
+     * @param k2 the second entry's key
+     * @param v2 the second entry's value
+     * @param k3 the third entry's key
+     * @param v3 the third entry's value
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link AMutableSortedMapWrapper}
+     */
+    public static <K extends Comparable<K>,V> AMutableSortedMapWrapper<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return AMutableSortedMapWrapper.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).build();
+    }
+
+    /**
+     * Convenience factory method creating an {@link AMutableSortedMapWrapper} with four entries using {@link Comparator#naturalOrder()}.
+     *
+     * @param k1 the first entry's key
+     * @param v1 the first entry's value
+     * @param k2 the second entry's key
+     * @param v2 the second entry's value
+     * @param k3 the third entry's key
+     * @param v3 the third entry's value
+     * @param k4 the fourth entry's key
+     * @param v4 the fourth entry's value
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link AMutableSortedMapWrapper}
+     */
+    public static <K extends Comparable<K>,V> AMutableSortedMapWrapper<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+        return AMutableSortedMapWrapper.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).add(k4,v4).build();
+    }
+
+    /**
+     * This is an alias for {@link #from(Iterable)} for consistency with Java 9 conventions - it creates an AMutableSortedMapWrapper from an Iterable of
+     * {@link Map.Entry} using {@link Comparator#naturalOrder()}.
+     *
+     * @param coll the entries
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link AMutableSortedMapWrapper}
+     */
+    public static <K extends Comparable<K>,V> AMutableSortedMapWrapper<K,V> ofEntries(Iterable<Map.Entry<K,V>> coll) {
+        return from(coll);
+    }
     @Override public Comparator<? super K> comparator () {
         return inner.comparator();
     }
@@ -71,8 +256,10 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public AMutableSortedMapWrapper<K, V> take (int n) {
+        if (n >= size()) return this;
+
         Iterator<Map.Entry<K,V>> iterator = inner.entrySet().iterator();
-        for (int i = 0; i< n && iterator.hasNext(); n++){
+        for (int i = 0; i< n; i++){
             iterator.next();
         }
         while(iterator.hasNext()) {
@@ -83,7 +270,7 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public AMutableSortedMapWrapper<K, V> slice (int from, int to) {
-        return null; //TODO
+        return drop(from).take(to - Math.max(from, 0));
     }
 
     @Override public AOption<Entry<K, V>> smallest () {
@@ -103,17 +290,44 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public AIterator<Entry<K, V>> iterator (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive) {
-        return null;
+        if (from.isDefined() && to.isDefined()){
+            return AIterator.wrap(inner.subMap(from.get(), fromInclusive, to.get(), toInclusive).entrySet().iterator());
+        }
+        if (from.isDefined()){
+            return AIterator.wrap(inner.tailMap(from.get(), fromInclusive).entrySet().iterator());
+        }
+        if (to.isDefined()){
+            return AIterator.wrap(inner.headMap(to.get(), toInclusive).entrySet().iterator());
+        }
+        return AIterator.wrap(inner.entrySet().iterator());
     }
 
     @Override //TODO
     public AIterator<K> keysIterator (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive) {
-        return null;
+        if (from.isDefined() && to.isDefined()){
+            return AIterator.wrap(inner.subMap(from.get(), fromInclusive, to.get(), toInclusive).keySet().iterator());
+        }
+        if (from.isDefined()){
+            return AIterator.wrap(inner.tailMap(from.get(), fromInclusive).keySet().iterator());
+        }
+        if (to.isDefined()){
+            return AIterator.wrap(inner.headMap(to.get(), toInclusive).keySet().iterator());
+        }
+        return AIterator.wrap(inner.keySet().iterator());
     }
 
     @Override
     public AIterator<V> valuesIterator (AOption<K> from, boolean fromInclusive, AOption<K> to, boolean toInclusive) {
-        return null;
+        if (from.isDefined() && to.isDefined()){
+            return AIterator.wrap(inner.subMap(from.get(), fromInclusive, to.get(), toInclusive).values().iterator());
+        }
+        if (from.isDefined()){
+            return AIterator.wrap(inner.tailMap(from.get(), fromInclusive).values().iterator());
+        }
+        if (to.isDefined()){
+            return AIterator.wrap(inner.headMap(to.get(), toInclusive).values().iterator());
+        }
+        return AIterator.wrap(inner.values().iterator());
     }
 
     @Override public AMutableSortedMapWrapper<K, V> descendingMap () {
@@ -129,6 +343,7 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public AMutableSortedMapWrapper<K, V> subMap (K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
+        if (comparator().compare(fromKey, toKey)>0) return AMutableSortedMapWrapper.empty(comparator());
         return AMutableSortedMapWrapper.wrap(inner.subMap(fromKey, fromInclusive, toKey, toInclusive));
     }
 
@@ -141,17 +356,15 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public AMutableSortedMapWrapper<K, V> subMap (K fromKey, K toKey) {
-        //TODO
-        return null;
-//        return AMutableSortedMapWrapper.wrap(inner.subMap(fromKey, toKey));
+        return AMutableSortedMapWrapper.wrap(inner.subMap(fromKey, true, toKey, false));
     }
 
     @Override public AMutableSortedMapWrapper<K, V> headMap (K toKey) {
-        return null; //AMutableSortedMapWrapper.wrap(inner.headMap(toKey));
+        return AMutableSortedMapWrapper.wrap(inner.headMap(toKey, false));
     }
 
     @Override public AMutableSortedMapWrapper<K, V> tailMap (K fromKey) {
-        return null; //AMutableSortedMapWrapper.wrap(inner.tailMap(fromKey));
+        return AMutableSortedMapWrapper.wrap(inner.tailMap(fromKey, true));
     }
 
     @Override public boolean containsKey (Object key) {
@@ -182,11 +395,11 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public AMutableSortedMapWrapper<K, V> filterKeys (Predicate<K> f) {
-        return null;
+        return AMutableSortedMapWrapper.fromIterator(iterator().filter(e -> f.test(e.getKey())), comparator());
     }
 
     @Override public <U> AMutableSortedMapWrapper<K, U> mapValues (Function<V, U> f) {
-        return null;
+        return AMutableSortedMapWrapper.fromIterator(iterator().map(e -> new AbstractMap.SimpleImmutableEntry<>(e.getKey(), f.apply(e.getValue()))), comparator());
     }
 
     @Override public ASortedMap<K, V> withDefaultValue (V defaultValue) { //TODO
@@ -199,7 +412,7 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public ACollection<V> values () {
-        return null;
+        return new AMapSupport.ValuesCollection<>(this);
     }
 
     @Override public AIterator<K> keysIterator () {
@@ -218,12 +431,25 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
         throw new UnsupportedOperationException("Implementing this well goes beyond the boundaries of Java's type system.");
     }
 
+    @Override public <K1, V1> ACollectionBuilder<Entry<K1, V1>, ? extends ACollectionOps<Entry<K1, V1>>> newEntryBuilder () {
+        //noinspection unchecked
+        return new Builder(comparator());
+    }
+
     @Override public Entry<K, V> head () {
-        return smallest().orNull();
+        return smallest().get();
     }
 
     @Override public AOption<Entry<K, V>> headOption () {
         return smallest();
+    }
+
+    @Override public Entry<K, V> min () {
+        throw new UnsupportedOperationException("Map.Entry is not Comparable - first() may be what you want.");
+    }
+
+    @Override public Entry<K, V> max () {
+        throw new UnsupportedOperationException("Map.Entry is not Comparable - last() may be what you want.");
     }
 
     @Override public ALinkedList<Entry<K, V>> toLinkedList () {
@@ -272,6 +498,11 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
 
     @Override public <U> ACollection<U> collect (Predicate<Entry<K, V>> filter, Function<Entry<K, V>, U> f) {
         return ACollectionSupport.collect(AVector.builder(), this, filter, f);
+    }
+
+    @Override public <K1> AMap<K1, AMutableSortedMapWrapper<K, V>> groupBy (Function<Entry<K, V>, K1> keyExtractor) {
+        //noinspection unchecked
+        return (AMap<K1, AMutableSortedMapWrapper<K, V>>) AMapSupport.groupBy(this, keyExtractor);
     }
 
     @Override public boolean contains (Object o) {

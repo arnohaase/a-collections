@@ -439,11 +439,11 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     }
 
     @Override public Entry<K, V> firstEntry () {
-        return first();
+        return isEmpty() ? null : first();
     }
 
     @Override public Entry<K, V> lastEntry () {
-        return greatest().orElseThrow(NoSuchElementException::new);
+        return greatest().orNull();
     }
 
     @Override public Entry<K, V> pollFirstEntry () {
@@ -501,7 +501,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
 
     @Override public <K1, V1> ACollectionBuilder<Entry<K1, V1>, ATreeMap<K1, V1>> newEntryBuilder () {
         //noinspection unchecked
-        return new Builder(Comparator.naturalOrder());
+        return new Builder(comparator());
     }
 
     public static class Builder<K,V> implements ACollectionBuilder<Map.Entry<K,V>, ATreeMap<K,V>> {

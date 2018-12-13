@@ -6,6 +6,7 @@ import com.ajjpj.acollections.AMap;
 import com.ajjpj.acollections.internal.AMapSupport;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -42,12 +43,34 @@ abstract class AbstractImmutableMap<K,V> implements AMap<K,V> {
 
     //TODO javadoc: equals / hashCode compatible to j.u.*
     @Override public boolean equals (Object o) { //TODO test this
-        if (o instanceof Map) {
-            final Map<?,?> that = (Map<?, ?>) o;
-            return this.entrySet().equals(that.entrySet());
+        if (o == this)
+            return true;
+
+        if (!(o instanceof Map))
+            return false;
+        Map<?,?> m = (Map<?,?>) o;
+        if (m.size() != size())
+            return false;
+
+        try {
+            Iterator<Entry<K,V>> i = entrySet().iterator();
+            while (i.hasNext()) {
+                Entry<K,V> e = i.next();
+                K key = e.getKey();
+                V value = e.getValue();
+                if (value == null) {
+                    if (!(m.get(key)==null && m.containsKey(key)))
+                        return false;
+                } else {
+                    if (!value.equals(m.get(key)))
+                        return false;
+                }
+            }
+        } catch (ClassCastException | NullPointerException unused) {
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     @Override public int hashCode () { //TODO test this

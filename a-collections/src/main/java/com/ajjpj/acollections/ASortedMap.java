@@ -79,11 +79,11 @@ public interface ASortedMap<K,V> extends AMap<K,V>, NavigableMap<K,V> {
     ASortedMap<K,V> take (int n);
 
     /**
-     * This method returns a map with entries starting with 'index' {@code from} up to 'index' {@code until}
+     * This method returns a map with entries starting with index {@code from} up to index {@code to}
      *  (exclusively). More formally, this method is equivalent to
      *
      * <pre>
-     * {@code this.drop(from).take(to - from)}
+     * {@code this.drop(from).take(to - Math.max(from, 0))}
      * </pre>
      *
      * <p> {@code from} may be negative and {@code to} may be greater than {@code this.size()}, in which case they
