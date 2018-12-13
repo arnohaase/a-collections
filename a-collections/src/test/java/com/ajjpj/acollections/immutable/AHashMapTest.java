@@ -20,7 +20,7 @@ public class AHashMapTest implements AMapTests {
 
     @Override public Iterable<Variant> variants () {
         return Collections.singletonList(
-                new Variant(AHashMap::builder, null)
+                new Variant(false, AHashMap::builder, null)
         );
     }
 

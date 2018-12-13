@@ -250,8 +250,13 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
     }
 
     @Override public AMutableSortedSetWrapper<T> drop(int n) {
-        for (int i = 0 ; i<n && !inner.isEmpty();i++){
-            inner.remove(inner.first());
+        if (inner.size() <= n) {
+            inner.clear();
+        }
+        else {
+            for (int i = 0; i<n; i++){
+                inner.remove(inner.first());
+            }
         }
         return this;
     }

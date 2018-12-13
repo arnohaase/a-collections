@@ -50,7 +50,7 @@ public class EntrySetTests implements AEntryCollectionOpsTests {
 
     @Override public Iterable<Variant> variants () {
         return Collections.singletonList(
-                new Variant(Builder::new, null)
+                new Variant(false, Builder::new, null)
         );
     }
 }

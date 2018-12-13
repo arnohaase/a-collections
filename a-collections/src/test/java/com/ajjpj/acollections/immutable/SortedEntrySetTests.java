@@ -56,8 +56,8 @@ public class SortedEntrySetTests implements AEntryCollectionOpsTests {
 
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
-                new Variant(() -> new Builder(Comparator.naturalOrder()), AVector.of(1, 2, 3)),
-                new Variant(() -> new Builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
+                new Variant(true, () -> new Builder(Comparator.naturalOrder()), AVector.of(1, 2, 3)),
+                new Variant(true, () -> new Builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
         );
     }
 }

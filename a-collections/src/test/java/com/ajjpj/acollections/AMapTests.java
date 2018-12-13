@@ -114,13 +114,9 @@ public interface AMapTests extends AEntryCollectionOpsTests {
 
     @Test default void testContainsKey() {
         doTest(v -> {
-            //noinspection SuspiciousMethodCalls
-            assertFalse(v.mkMap().containsKey("abc"));
             assertFalse(v.mkMap().containsKey(1));
 
             assertTrue(v.mkMap(1).containsKey(1));
-            //noinspection SuspiciousMethodCalls
-            assertFalse(v.mkMap(1).containsKey("abc"));
 
             assertTrue(v.mkMap(1, 2, 3, 4).containsKey(1));
             assertTrue(v.mkMap(1, 2, 3, 4).containsKey(2));
@@ -133,14 +129,10 @@ public interface AMapTests extends AEntryCollectionOpsTests {
 
     @Test default void testGet() {
         doTest(v -> {
-            //noinspection SuspiciousMethodCalls
-            assertNull(v.mkMap().get("a"));
             assertNull(v.mkMap().get(1));
 
             assertEquals(3, v.mkMap(1).get(1).intValue());
             assertNull(v.mkMap(1).get(2));
-            //noinspection SuspiciousMethodCalls
-            assertNull(v.mkMap(1).get("a"));
 
             assertEquals(3, v.mkMap(1, 2, 3, 4).get(1).intValue());
             assertEquals(5, v.mkMap(1, 2, 3, 4).get(2).intValue());

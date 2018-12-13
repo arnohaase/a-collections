@@ -104,7 +104,7 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
 
     @Test @Override default void testHead () {
         doTest(v -> {
-            assertThrows(NoSuchElementException.class, () -> v.mkColl().head());
+            assertNull(v.mkColl().head());
             assertEquals(entryOf(1), v.mkColl(1).head());
             if (v.iterationOrder123() != null)
                 assertEquals(v.mkColl(1, 2, 3).head(), v.iterationOrder123().head());
@@ -126,7 +126,7 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     }
     @Test @Override default void testFirst () {
         doTest(v -> {
-            assertThrows(NoSuchElementException.class, () -> v.mkColl().first());
+            assertNull(v.mkColl().first());
             assertEquals(entryOf(1), v.mkColl(1).first());
             if (v.iterationOrder123() != null)
                 assertEquals(v.mkColl(1, 2, 3).first(), v.iterationOrder123().first());
@@ -466,10 +466,16 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     class Variant {
         private final Supplier<ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>>> builderFactory;
         private final AVector<Integer> iterationOrder123;
+        private final boolean isSorted;
 
-        public Variant (Supplier<ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>>> builderFactory, AVector<Integer> iterationOrder123) {
+        public Variant (boolean isSorted, Supplier<ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>>> builderFactory, AVector<Integer> iterationOrder123) {
+            this.isSorted = isSorted;
             this.builderFactory = builderFactory;
             this.iterationOrder123 = iterationOrder123;
+        }
+
+        public boolean isSorted() {
+            return isSorted;
         }
 
         ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>> newBuilder() {
