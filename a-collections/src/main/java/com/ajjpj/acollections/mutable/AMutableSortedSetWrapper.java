@@ -1,7 +1,6 @@
 package com.ajjpj.acollections.mutable;
 
 import com.ajjpj.acollections.*;
-import com.ajjpj.acollections.immutable.ATreeSet;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 import com.ajjpj.acollections.internal.ASetSupport;
@@ -465,6 +464,10 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
         return inner.equals(obj);
     }
 
+    @Override public String toString () {
+        return getClass().getSimpleName() + ":" + inner;
+    }
+
     /**
      * Returns the wrapped {@link NavigableSet} to which all modifications were applied.
      *
@@ -481,7 +484,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
      * Returns a {@link Collector} to collect {@link java.util.stream.Stream} elements into an AMutableSetWrapper.
      *
      * @param <T> the stream's element type
-     * @param comparator the comparator used for the underlying wrapped storted set
+     * @param comparator the comparator used for the underlying wrapped sorted set
      * @return a {@link Collector} to collect a stream's elements into an AMutableSetWrapper
      */
     public static <T> Collector<T, AMutableSortedSetWrapper.Builder<T>, AMutableSortedSetWrapper<T>> streamCollector(Comparator<? super T> comparator) {
@@ -497,7 +500,7 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
     }
 
     /**
-     * Returns a new {@link ACollectionBuilder} for building an AMutableSprtedSetWrapper efficiently and in a generic manner.
+     * Returns a new {@link ACollectionBuilder} for building an AMutableSortedSetWrapper efficiently and in a generic manner.
      *
      * @param <U> the builder's element type
      * @return an new {@link ACollectionBuilder}
