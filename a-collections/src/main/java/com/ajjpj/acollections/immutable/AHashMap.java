@@ -268,6 +268,14 @@ public class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements ACollect
         return builder();
     }
 
+    @Override public AMap<K, V> withDefaultValue (V defaultValue) {
+        return AMapSupport.wrapMapWithDefaultValue(this, new AMapSupport.SerializableConstantFunction<>(defaultValue));
+    }
+
+    @Override public AMap<K, V> withDerivedDefaultValue (Function<K, V> defaultProvider) {
+        return AMapSupport.wrapMapWithDefaultValue(this, defaultProvider);
+    }
+
     @Override public <U> ACollection<U> map (Function<Entry<K, V>, U> f) {
         return ACollectionSupport.map(AVector.builder(), this, f);
     }

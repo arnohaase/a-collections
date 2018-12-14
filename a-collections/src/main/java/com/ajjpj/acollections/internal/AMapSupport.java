@@ -5,6 +5,10 @@ import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.util.AOption;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -720,43 +724,99 @@ public class AMapSupport {
         }
     }
 
-    public static class MapWithDefaultValue<K,V> extends AbstractDelegatingMap<K,V> implements Serializable {
-        private static final long serialVersionUID = 1L;
-        private final V defaultValue;
+    public static <K,V> AMap<K,V> wrapMapWithDefaultValue(AMap<K,V> inner, Function<K,V> defaultProvider) {
+        //TODO Serializable?!
 
-        public MapWithDefaultValue (AMap<K, V> inner, V defaultValue) {
-            super(inner);
-            this.defaultValue = defaultValue;
-        }
-
-        @Override protected AMap<K,V> wrap (AMap<K,V> inner) {
-            return new MapWithDefaultValue<>(inner, defaultValue);
-        }
-
-        //TODO javadoc: default applies to get() only, not contains(), getOptional(), ...
-        @Override public V get (Object key) {
-            //noinspection unchecked
-            return inner.getOptional((K) key).orElse(defaultValue);
-        }
+        //noinspection unchecked
+        return (AMap<K, V>) Proxy.newProxyInstance(AMapSupport.class.getClassLoader(),
+                new Class[]{AMap.class, Serializable.class},
+                new MapWithDefaultValueInvocationHandler<>(inner, defaultProvider));
     }
 
-    public static class MapWithDerivedDefaultValue<K,V> extends AbstractDelegatingMap<K,V> implements Serializable {
-        private static final long serialVersionUID = 1L;
+    public static <K,V> ASortedMap<K,V> wrapSortedMapWithDefaultValue(ASortedMap<K,V> inner, Function<K,V> defaultProvider) {
+        //TODO Serializable?!
+
+        //noinspection unchecked
+        return (ASortedMap<K, V>) Proxy.newProxyInstance(AMapSupport.class.getClassLoader(),
+                new Class[]{ASortedMap.class, Serializable.class},
+                new SortedMapWithDefaultValueInvocationHandler<>(inner, defaultProvider));
+    }
+
+    private static final ASet<String> wrappedMapMethodNames = ASet.of("plus", "plusAll", "minus", "filter", "filterNot", "filterKeys");
+    private static final ASet<String> wrappedSortedMapMethodNames = wrappedMapMethodNames.plusAll(ASet.of("range", "drop", "take", "slice", "descendingMap", "subMap", "headMap", "tailMap"));
+
+
+    @SuppressWarnings("unchecked")
+    private static class MapWithDefaultValueInvocationHandler<K,V> implements InvocationHandler, Serializable {
+
+        private final AMap<K,V> inner;
         private final Function<K,V> defaultProvider;
 
-        public MapWithDerivedDefaultValue (AMap<K, V> inner, Function<K,V> defaultProvider) {
-            super(inner);
+        MapWithDefaultValueInvocationHandler (AMap<K, V> inner, Function<K,V> defaultProvider) {
+            this.inner = inner;
             this.defaultProvider = defaultProvider;
         }
 
-        @Override protected AMap<K,V> wrap (AMap<K,V> inner) {
-            return new MapWithDerivedDefaultValue<>(inner, defaultProvider);
+        @Override public Object invoke (Object proxy, Method method, Object[] args) throws Throwable {
+            if ("get".equals(method.getName()) && args.length == 1) {
+                return inner.getOptional((K) args[0]).orElse(defaultProvider.apply((K) args[0]));
+            }
+
+            try {
+                final Object resultRaw = method.invoke(inner, args);
+                if (wrappedMapMethodNames.contains(method.getName())) {
+                    return wrapMapWithDefaultValue((AMap) resultRaw, defaultProvider);
+                }
+                else {
+                    return resultRaw;
+                }
+            }
+            catch (InvocationTargetException e) {
+                throw e.getCause();
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static class SortedMapWithDefaultValueInvocationHandler<K,V> implements InvocationHandler, Serializable {
+
+        private final ASortedMap<K,V> inner;
+        private final Function<K,V> defaultProvider;
+
+        SortedMapWithDefaultValueInvocationHandler (ASortedMap<K, V> inner, Function<K,V> defaultProvider) {
+            this.inner = inner;
+            this.defaultProvider = defaultProvider;
         }
 
-        //TODO javadoc: default applies to get() only, not contains(), getOptional(), ...
-        @Override public V get (Object key) {
-            //noinspection unchecked
-            return inner.getOptional((K) key).orElseGet(() -> defaultProvider.apply((K) key));
+        @Override public Object invoke (Object proxy, Method method, Object[] args) throws Throwable {
+            if ("get".equals(method.getName()) && args.length == 1) {
+                return inner.getOptional((K) args[0]).orElse(defaultProvider.apply((K) args[0]));
+            }
+
+            try {
+                final Object resultRaw = method.invoke(inner, args);
+                if (wrappedSortedMapMethodNames.contains(method.getName())) {
+                    return wrapSortedMapWithDefaultValue((ASortedMap) resultRaw, defaultProvider);
+                }
+                else {
+                    return resultRaw;
+                }
+            }
+            catch (InvocationTargetException e) {
+                throw e.getCause();
+            }
+        }
+    }
+
+    public static class SerializableConstantFunction<K,V> implements Function<K,V>, Serializable {
+        private final V result;
+
+        public SerializableConstantFunction (V result) {
+            this.result = result;
+        }
+
+        @Override public V apply (K k) {
+            return result;
         }
     }
 }

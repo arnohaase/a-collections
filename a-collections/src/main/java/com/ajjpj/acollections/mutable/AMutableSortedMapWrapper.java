@@ -20,6 +20,7 @@ import java.util.function.Predicate;
  */
 public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollectionDefaults<Map.Entry<K,V>, AMutableSortedMapWrapper<K,V>>, Serializable {
     private final NavigableMap<K,V> inner;
+    private Function<K,V> defaultProvider = null;
 
     private AMutableSortedMapWrapper (NavigableMap<K, V> inner) {
         this.inner = Objects.requireNonNull(inner);
@@ -331,7 +332,7 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public AMutableSortedMapWrapper<K, V> descendingMap () {
-        return AMutableSortedMapWrapper.wrap(inner.descendingMap());
+        return AMutableSortedMapWrapper.wrap(inner.descendingMap()).withDerivedDefaultValue(defaultProvider);
     }
 
     @Override public AMutableSortedSetWrapper<K> navigableKeySet () {
@@ -343,28 +344,28 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public AMutableSortedMapWrapper<K, V> subMap (K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
-        if (comparator().compare(fromKey, toKey)>0) return AMutableSortedMapWrapper.empty(comparator());
-        return AMutableSortedMapWrapper.wrap(inner.subMap(fromKey, fromInclusive, toKey, toInclusive));
+        if (comparator().compare(fromKey, toKey)>0) return AMutableSortedMapWrapper.<K,V>empty(comparator()).withDerivedDefaultValue(defaultProvider);
+        return AMutableSortedMapWrapper.wrap(inner.subMap(fromKey, fromInclusive, toKey, toInclusive)).withDerivedDefaultValue(defaultProvider);
     }
 
     @Override public AMutableSortedMapWrapper<K, V> headMap (K toKey, boolean inclusive) {
-        return AMutableSortedMapWrapper.wrap(inner.headMap(toKey, inclusive));
+        return AMutableSortedMapWrapper.wrap(inner.headMap(toKey, inclusive)).withDerivedDefaultValue(defaultProvider);
     }
 
     @Override public AMutableSortedMapWrapper<K, V> tailMap (K fromKey, boolean inclusive) {
-        return AMutableSortedMapWrapper.wrap(inner.tailMap(fromKey, inclusive));
+        return AMutableSortedMapWrapper.wrap(inner.tailMap(fromKey, inclusive)).withDerivedDefaultValue(defaultProvider);
     }
 
     @Override public AMutableSortedMapWrapper<K, V> subMap (K fromKey, K toKey) {
-        return AMutableSortedMapWrapper.wrap(inner.subMap(fromKey, true, toKey, false));
+        return AMutableSortedMapWrapper.wrap(inner.subMap(fromKey, true, toKey, false)).withDerivedDefaultValue(defaultProvider);
     }
 
     @Override public AMutableSortedMapWrapper<K, V> headMap (K toKey) {
-        return AMutableSortedMapWrapper.wrap(inner.headMap(toKey, false));
+        return AMutableSortedMapWrapper.wrap(inner.headMap(toKey, false)).withDerivedDefaultValue(defaultProvider);
     }
 
     @Override public AMutableSortedMapWrapper<K, V> tailMap (K fromKey) {
-        return AMutableSortedMapWrapper.wrap(inner.tailMap(fromKey, true));
+        return AMutableSortedMapWrapper.wrap(inner.tailMap(fromKey, true)).withDerivedDefaultValue(defaultProvider);
     }
 
     @Override public boolean containsKey (Object key) {
@@ -372,6 +373,8 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public V get (Object key) {
+        if (defaultProvider != null) //noinspection unchecked
+            return getOptional((K) key).orElseGet(() -> defaultProvider.apply((K) key));
         return inner.get(key);
     }
 
@@ -395,20 +398,21 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public AMutableSortedMapWrapper<K, V> filterKeys (Predicate<K> f) {
-        return AMutableSortedMapWrapper.fromIterator(iterator().filter(e -> f.test(e.getKey())), comparator());
+        return AMutableSortedMapWrapper.fromIterator(iterator().filter(e -> f.test(e.getKey())), comparator()).withDerivedDefaultValue(defaultProvider);
     }
 
     @Override public <U> AMutableSortedMapWrapper<K, U> mapValues (Function<V, U> f) {
         return AMutableSortedMapWrapper.fromIterator(iterator().map(e -> new AbstractMap.SimpleImmutableEntry<>(e.getKey(), f.apply(e.getValue()))), comparator());
     }
 
-    @Override public ASortedMap<K, V> withDefaultValue (V defaultValue) { //TODO
-        return null;
+    @Override public AMutableSortedMapWrapper<K, V> withDefaultValue (V defaultValue) {
+        this.defaultProvider = new AMapSupport.SerializableConstantFunction<>(defaultValue);
+        return this;
     }
 
-    @Override
-    public ASortedMap<K, V> withDerivedDefaultValue (Function<K, V> defaultProvider) {
-        return null;
+    @Override public AMutableSortedMapWrapper<K, V> withDerivedDefaultValue (Function<K, V> defaultProvider) {
+        this.defaultProvider = defaultProvider;
+        return this;
     }
 
     @Override public ACollection<V> values () {
@@ -482,10 +486,10 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public AMutableSortedMapWrapper<K, V> filter(Predicate<Entry<K, V>> f) {
-        return AMutableSortedMapWrapper.fromIterator(iterator().filter(f), comparator());
+        return AMutableSortedMapWrapper.fromIterator(iterator().filter(f), comparator()).withDerivedDefaultValue(defaultProvider);
     }
     @Override public AMutableSortedMapWrapper<K, V> filterNot (Predicate<Entry<K, V>> f) {
-        return AMutableSortedMapWrapper.fromIterator(iterator().filterNot(f), comparator());
+        return AMutableSortedMapWrapper.fromIterator(iterator().filterNot(f), comparator()).withDerivedDefaultValue(defaultProvider);
     }
 
     @Override public <U> ACollection<U> map (Function<Entry<K, V>, U> f) {

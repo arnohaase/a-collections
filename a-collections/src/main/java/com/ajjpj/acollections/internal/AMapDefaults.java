@@ -23,13 +23,12 @@ public interface AMapDefaults<K,V,C extends AMap<K,V>> extends AMap<K,V> {
         return foldLeft((C) zero, (acc, el) -> f.test(el.getKey()) ? (C) acc.plus(el.getKey(), el.getValue()) : acc);
     }
 
-    @Override default AMap<K,V> withDefaultValue (V defaultValue) {
-        //noinspection unchecked
-        return new AMapSupport.MapWithDefaultValue<>(this, defaultValue);
-    }
-
-    @Override default AMap<K,V> withDerivedDefaultValue (Function<K, V> defaultProvider) {
-        //noinspection unchecked
-        return new AMapSupport.MapWithDerivedDefaultValue<>(this, defaultProvider);
-    }
+//    @Override default AMap<K,V> withDefaultValue (V defaultValue) {
+//        return AMapSupport.wrapMapWithDefaultValue(this, k -> defaultValue);
+//    }
+//
+//    @Override default AMap<K,V> withDerivedDefaultValue (Function<K, V> defaultProvider) {
+//        //noinspection unchecked
+//        return new AMapSupport.MapWithDerivedDefaultValue<>(this, defaultProvider);
+//    }
 }

@@ -3,6 +3,7 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
+import java.util.function.Function;
 
 
 /**
@@ -22,6 +23,9 @@ public interface ASortedMap<K,V> extends AMap<K,V>, NavigableMap<K,V> {
      * @return the comparator used by this map
      */
     Comparator<? super K> comparator();
+
+    @Override ASortedMap<K, V> withDefaultValue (V defaultValue);
+    @Override ASortedMap<K, V> withDerivedDefaultValue (Function<K, V> defaultProvider);
 
     /**
      * Counts all the nodes with keys greater than or equal to a lower bound and less than an upper bound. Both bounds are optional.

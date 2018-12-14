@@ -30,6 +30,7 @@ import java.util.function.*;
  */
 public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWrapper<K,V>>, ACollectionDefaults<Map.Entry<K,V>, AMutableMapWrapper<K,V>>, Serializable {
     private final Map<K,V> inner;
+    private Function<K,V> defaultProvider = null;
 
     /**
      * Convenience method for creating an empty map. For creating a map with known elements, calling one of the {@code of}
@@ -219,6 +220,16 @@ public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWr
         return inner;
     }
 
+    @Override public AMutableMapWrapper<K, V> withDefaultValue (V defaultValue) {
+        this.defaultProvider = new AMapSupport.SerializableConstantFunction<>(defaultValue);
+        return this;
+    }
+
+    @Override public AMutableMapWrapper<K, V> withDerivedDefaultValue (Function<K, V> defaultProvider) {
+        this.defaultProvider = defaultProvider;
+        return this;
+    }
+
     @Override public ATreeSet<Entry<K, V>> toSortedSet () {
         throw new UnsupportedOperationException("pass in a Comparator<Map.Entry> - Map.Entry has no natural order");
     }
@@ -228,6 +239,8 @@ public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWr
     }
 
     @Override public V get (Object key) {
+        if (defaultProvider != null) //noinspection unchecked
+            return getOptional((K) key).orElseGet(() -> defaultProvider.apply((K) key));
         return inner.get(key);
     }
 
@@ -246,13 +259,13 @@ public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWr
     }
 
     @Override public AMutableMapWrapper<K,V> filter (Predicate<Entry<K, V>> f) {
-        return AMutableMapWrapper.fromIterator(iterator().filter(f));
+        return AMutableMapWrapper.fromIterator(iterator().filter(f)).withDerivedDefaultValue(defaultProvider);
     }
     @Override public AMutableMapWrapper<K, V> filterNot (Predicate<Entry<K, V>> f) {
-        return AMutableMapWrapper.fromIterator(iterator().filterNot(f));
+        return AMutableMapWrapper.fromIterator(iterator().filterNot(f)).withDerivedDefaultValue(defaultProvider);
     }
     @Override public AMutableMapWrapper<K, V> filterKeys (Predicate<K> f) {
-        return AMapDefaults.super.filterKeys(f);
+        return AMapDefaults.super.filterKeys(f).withDerivedDefaultValue(defaultProvider);
     }
 
     @Override public <U> AMutableMapWrapper<K,U> mapValues (Function<V, U> f) {

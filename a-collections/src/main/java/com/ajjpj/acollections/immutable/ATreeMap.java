@@ -304,6 +304,14 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
         return RedBlackTree.get(root, key, comparator);
     }
 
+    @Override public ASortedMap<K, V> withDefaultValue (V defaultValue) {
+        return AMapSupport.wrapSortedMapWithDefaultValue(this, new AMapSupport.SerializableConstantFunction<>(defaultValue));
+    }
+
+    @Override public ASortedMap<K, V> withDerivedDefaultValue (Function<K, V> defaultProvider) {
+        return AMapSupport.wrapSortedMapWithDefaultValue(this, defaultProvider);
+    }
+
     @Override public <U> ACollection<U> map (Function<Entry<K, V>, U> f) {
         return ACollectionSupport.map(AVector.builder(), this, f);
     }
