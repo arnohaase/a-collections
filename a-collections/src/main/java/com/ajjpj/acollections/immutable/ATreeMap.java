@@ -334,6 +334,10 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
         return filter(f.negate());
     }
 
+    @Override public ATreeMap<K, V> filterKeys (Predicate<K> f) {
+        return AMapDefaults.super.filterKeys(f);
+    }
+
     @Override public <K1> AMap<K1, ATreeMap<K, V>> groupBy (Function<Entry<K, V>, K1> keyExtractor) {
         //noinspection unchecked
         return (AMap<K1, ATreeMap<K, V>>) AMapSupport.groupBy(this, keyExtractor);
@@ -475,6 +479,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     }
 
     @Override public ASortedMap<K, V> subMap (K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
+        if(comparator.compare(fromKey, toKey) > 0) throw new IllegalArgumentException();
         return new ATreeMap<>(RedBlackTree.range(root, fromKey, fromInclusive, toKey, toInclusive, comparator), comparator);
     }
 
@@ -487,6 +492,7 @@ public class ATreeMap<K,V> extends AbstractImmutableMap<K,V> implements ASortedM
     }
 
     @Override public ASortedMap<K, V> subMap (K fromKey, K toKey) {
+        if(comparator.compare(fromKey, toKey) > 0) throw new IllegalArgumentException();
         return subMap(fromKey, true, toKey, false);
     }
 

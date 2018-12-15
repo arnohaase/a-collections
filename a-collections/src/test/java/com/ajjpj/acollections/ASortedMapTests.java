@@ -15,6 +15,258 @@ import static org.junit.jupiter.api.Assertions.*;
 public interface ASortedMapTests extends AMapTests {
     void testComparator();
 
+    @Test default void testRangeMaintainsWithDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDefaultValue(99);
+
+            m = m
+                    .filter(this::isOdd)
+                    .filterNot(this::isEven);
+            assertEquals(2, m.size());
+
+            assertEquals(3, m.get(1).intValue());
+            assertEquals(7, m.get(3).intValue());
+            assertEquals(99, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testRangeMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDerivedDefaultValue(k -> 99);
+
+            m = m
+                    .filter(this::isOdd)
+                    .filterNot(this::isEven);
+            assertEquals(2, m.size());
+
+            assertEquals(3, m.get(1).intValue());
+            assertEquals(7, m.get(3).intValue());
+            assertEquals(99, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testDropMaintainsWithDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDefaultValue(99);
+
+            m = m.drop(1);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testDropMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDerivedDefaultValue(k -> 99);
+
+            m = m.drop(1);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testTakeMaintainsWithDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDefaultValue(99);
+
+            m = m.take(2);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testTakeMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDerivedDefaultValue(k -> 99);
+
+            m = m.take(2);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testSliceMaintainsWithDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDefaultValue(99);
+
+            m = m.slice(1, 3);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testSliceMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDerivedDefaultValue(k -> 99);
+
+            m = m.slice(1, 3);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testDescendingMapMaintainsWithDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDefaultValue(99);
+
+            m = m.descendingMap();
+            assertEquals(3, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testDescendingMapMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDerivedDefaultValue(k -> 99);
+
+            m = m.descendingMap();
+            assertEquals(3, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testSubMapWithFlagsMapMaintainsWithDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDefaultValue(99);
+
+            m = v.isAscending() ? m.subMap(2, true, 4, false) : m.subMap(2, true, 0, false);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testSubMapWithFlagsMapMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDerivedDefaultValue(k -> 99);
+
+            m = v.isAscending() ? m.subMap(2, true, 4, false) : m.subMap(2, true, 0, false);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testSubMapWithoutFlagsMapMaintainsWithDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDefaultValue(99);
+
+            m = v.isAscending() ? m.subMap(2, 4) : m.subMap(2, 0);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testSubMapWithoutFlagsMapMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDerivedDefaultValue(k -> 99);
+
+            m = v.isAscending() ? m.subMap(2, 4) : m.subMap(2, 0);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testHeadMapWithFlagsMapMaintainsWithDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDefaultValue(99);
+
+            m = m.headMap(v.isAscending() ? 3 : 1, false);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testHeadMapWithFlagsMapMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDerivedDefaultValue(k -> 99);
+
+            m = m.headMap(v.isAscending() ? 3 : 1, false);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testHeadMapWithoutFlagsMapMaintainsWithDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDefaultValue(99);
+
+            m = m.headMap(v.isAscending() ? 3 : 1);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testHeadMapWithoutFlagsMapMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDefaultValue(99);
+
+            m = m.headMap(v.isAscending() ? 3 : 1);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testTailMapWithFlagsMapMaintainsWithDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDefaultValue(99);
+
+            m = m.tailMap(2, true);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testTailMapWithFlagsMapMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDerivedDefaultValue(k -> 99);
+
+            m = m.tailMap(2, true);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testTailMapWithoutFlagsMapMaintainsWithDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDefaultValue(99);
+
+            m = m.tailMap(2);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+    @Test default void testTailMapWithoutFlagsMapMaintainsWithDerivedDefaultValue() {
+        doTest(v -> {
+            ASortedMap<Integer,Integer> m = v.mkSortedMap(1, 2, 3).withDerivedDefaultValue(k -> 99);
+
+            m = m.tailMap(2);
+            assertEquals(2, m.size());
+
+            assertEquals(5, m.get(2).intValue());
+            assertEquals(99, m.get(40).intValue());
+        });
+    }
+
+
     @Test default void testCountInRange1() {
         doTest(v -> {
             if (v.isAscending()) {
@@ -842,12 +1094,16 @@ public interface ASortedMapTests extends AMapTests {
                 assertEquals (AVector.of(entryOf(2), entryOf(4)),               v.mkSortedMap(2, 4, 6).subMap(2, true, 6, false).toVector());
                 assertEquals (AVector.of(entryOf(4), entryOf(6)),               v.mkSortedMap(2, 4, 6).subMap(2, false, 6, true).toVector());
                 assertEquals (AVector.of(entryOf(4)),                             v.mkSortedMap(2, 4, 6).subMap(2, false, 6, false).toVector());
+
+                assertThrows(IllegalArgumentException.class, () -> v.mkSortedMap(2, 4, 6).subMap(5, true, 3, false));
             }
             else {
                 assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).subMap(6, true, 2, true).toVector());
                 assertEquals (AVector.of(entryOf(6), entryOf(4)),               v.mkSortedMap(2, 4, 6).subMap(6, true, 2, false).toVector());
                 assertEquals (AVector.of(entryOf(4), entryOf(2)),               v.mkSortedMap(2, 4, 6).subMap(6, false, 2, true).toVector());
                 assertEquals (AVector.of(entryOf(4)),                             v.mkSortedMap(2, 4, 6).subMap(6, false, 2, false).toVector());
+
+                assertThrows(IllegalArgumentException.class, () -> v.mkSortedMap(2, 4, 6).subMap(3, true, 5, false));
             }
         });
     }
@@ -916,12 +1172,14 @@ public interface ASortedMapTests extends AMapTests {
             if (v.isAscending()) {
                 assertEquals (AVector.of(entryOf(2), entryOf(4)),               v.mkSortedMap(2, 4, 6).subMap(2, true, 6, false).toVector());
                 assertEquals (AVector.of(entryOf(2), entryOf(4), entryOf(6)), v.mkSortedMap(2, 4, 6).subMap(2, true, 7, false).toVector());
-                assertEquals (AVector.of(),                                         v.mkSortedMap(2, 4, 6).subMap(9, true, 0, false).toVector());
+
+                assertThrows(IllegalArgumentException.class, () -> v.mkSortedMap(2, 4, 6).subMap(5, 3));
             }
             else {
                 assertEquals (AVector.of(entryOf(6), entryOf(4)),               v.mkSortedMap(2, 4, 6).subMap(6, true, 2, false).toVector());
                 assertEquals (AVector.of(entryOf(6), entryOf(4), entryOf(2)), v.mkSortedMap(2, 4, 6).subMap(6, true, 1, false).toVector());
-                assertEquals (AVector.of(),                                         v.mkSortedMap(2, 4, 6).subMap(0, true, 9, false).toVector());
+
+                assertThrows(IllegalArgumentException.class, () -> v.mkSortedMap(2, 4, 6).subMap(3, 5));
             }
         });
     }

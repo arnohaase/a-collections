@@ -344,7 +344,6 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
     }
 
     @Override public AMutableSortedMapWrapper<K, V> subMap (K fromKey, boolean fromInclusive, K toKey, boolean toInclusive) {
-        if (comparator().compare(fromKey, toKey)>0) return AMutableSortedMapWrapper.<K,V>empty(comparator()).withDerivedDefaultValue(defaultProvider);
         return AMutableSortedMapWrapper.wrap(inner.subMap(fromKey, fromInclusive, toKey, toInclusive)).withDerivedDefaultValue(defaultProvider);
     }
 

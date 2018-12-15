@@ -11,9 +11,6 @@ todo
   * landing page
 
 * shotgun tests with different seeds
-* ASortedMap.withDefault... --> should return ASortedMap
-  * AbstractDelegatingMap --> dynamic proxy
-  * AMutableSortedMapWrapper: store default function directly --> getInner()
 
 * JSON support
 

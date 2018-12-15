@@ -4,6 +4,7 @@ import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 
 /**
@@ -23,6 +24,10 @@ public interface ASortedMap<K,V> extends AMap<K,V>, NavigableMap<K,V> {
      * @return the comparator used by this map
      */
     Comparator<? super K> comparator();
+
+    @Override ASortedMap<K, V> filter (Predicate<Entry<K, V>> f);
+    @Override ASortedMap<K, V> filterNot (Predicate<Entry<K, V>> f);
+    @Override ASortedMap<K, V> filterKeys (Predicate<K> f);
 
     @Override ASortedMap<K, V> withDefaultValue (V defaultValue);
     @Override ASortedMap<K, V> withDerivedDefaultValue (Function<K, V> defaultProvider);
