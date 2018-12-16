@@ -1,6 +1,7 @@
 package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.immutable.*;
+import com.ajjpj.acollections.internal.AMapSupport;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
 import com.oracle.jrockit.jfr.management.NoSuchRecordingException;
@@ -183,6 +184,13 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
             assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1, 2).toSortedSet());
         });
     }
+    @Test @Override default void testToSortedSetWithComparator() {
+        doTest(v -> {
+            assertEquals(ASortedSet.empty(), v.mkColl().toSortedSet(new AMapSupport.EntryComparator<>(Comparator.naturalOrder())));
+            assertEquals(ASet.of(entryOf(1)), v.mkColl(1).toSortedSet(new AMapSupport.EntryComparator<>(Comparator.naturalOrder())));
+            assertEquals(ASet.of(entryOf(1), entryOf(2)), v.mkColl(1, 2).toSortedSet(new AMapSupport.EntryComparator<>(Comparator.naturalOrder())));
+        });
+    }
 
     @Test @Override default void testToMutableList() {
         doTest(v -> {
@@ -199,6 +207,36 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
             assertTrue(v.mkColl().toMutableSet().isEmpty());
             assertEquals(AHashSet.of(entryOf(1)), v.mkColl(1).toMutableSet());
             assertEquals(AHashSet.of(entryOf(1), entryOf(2), entryOf(3), entryOf(4)), v.mkColl(1, 2, 3, 4).toMutableSet());
+        });
+    }
+    @Test @Override default void testToMutableSortedSet() {
+        doTest(v -> {
+            assertThrows(UnsupportedOperationException.class, () -> v.mkColl().toMutableSortedSet());
+            assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1).toMutableSortedSet());
+            assertThrows(UnsupportedOperationException.class, () -> v.mkColl(1, 2).toMutableSortedSet());
+        });
+    }
+    @Test @Override default void testToMutableSortedSetWithComparator() {
+        doTest(v -> {
+            assertEquals(ASortedSet.empty(), v.mkColl().toMutableSortedSet(new AMapSupport.EntryComparator<>(Comparator.naturalOrder())));
+            assertEquals(ASet.of(entryOf(1)), v.mkColl(1).toMutableSortedSet(new AMapSupport.EntryComparator<>(Comparator.naturalOrder())));
+            assertEquals(ASet.of(entryOf(1), entryOf(2)), v.mkColl(1, 2).toMutableSortedSet(new AMapSupport.EntryComparator<>(Comparator.naturalOrder())));
+        });
+    }
+
+    @Override @Test default void testToMap () {
+        doTest(v -> {
+            assertEquals(AHashMap.empty(), v.mkColl().toMap());
+            assertEquals(AHashMap.of(1, 3), v.mkColl(1).toMap());
+            assertEquals(AHashMap.of(1, 3, 2, 5, 3, 7), v.mkColl(1, 2, 3).toMap());
+        });
+    }
+
+    @Override @Test default void testToMutableMap () {
+        doTest(v -> {
+            assertEquals(AHashMap.empty(), v.mkColl().toMutableMap());
+            assertEquals(AHashMap.of(1, 3), v.mkColl(1).toMutableMap());
+            assertEquals(AHashMap.of(1, 3, 2, 5, 3, 7), v.mkColl(1, 2, 3).toMutableMap());
         });
     }
 

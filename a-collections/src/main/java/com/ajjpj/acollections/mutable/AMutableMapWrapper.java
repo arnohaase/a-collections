@@ -233,6 +233,9 @@ public class AMutableMapWrapper<K,V> implements AMapDefaults<K, V, AMutableMapWr
     @Override public ATreeSet<Entry<K, V>> toSortedSet () {
         throw new UnsupportedOperationException("pass in a Comparator<Map.Entry> - Map.Entry has no natural order");
     }
+    @Override public ATreeSet<Entry<K, V>> toMutableSortedSet () {
+        throw new UnsupportedOperationException("pass in a Comparator<Map.Entry> - Map.Entry has no natural order");
+    }
 
     @Override public boolean containsKey (Object key) {
         return inner.containsKey(key);

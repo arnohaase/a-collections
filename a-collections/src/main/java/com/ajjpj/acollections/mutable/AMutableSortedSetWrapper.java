@@ -45,7 +45,19 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
     }
 
     /**
-     * Creates a new set based on an iterator's elements.
+     * Creates a new set based on an iterator's elements based on a {@link Comparator} passed in.
+     *
+     * @param it the iterator from which the new set is initialized
+     * @param comparator the new set's comparator
+     * @param <T> the set's element type
+     * @return the new set
+     */
+    public static <T> AMutableSortedSetWrapper<T> fromIterator(Iterator<T> it, Comparator<T> comparator) {
+        return AMutableSortedSetWrapper.<T>builder(comparator).addAll(it).build();
+    }
+
+    /**
+     * Creates a new set based on an iterator's elements assuming {@link Comparator#naturalOrder()}.
      *
      * @param it the iterator from which the new set is initialized
      * @param <T> the set's element type
@@ -56,7 +68,19 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
     }
 
     /**
-     * Creates a new set based on an array's elements.
+     * Creates a new set based on an array's elements based on a {@link Comparator} passed in.
+     *
+     * @param that the array from which the new set is initialized
+     * @param comparator the new set's comparator
+     * @param <T> the set's element type
+     * @return the new set
+     */
+    public static <T> AMutableSortedSetWrapper<T> from(T[] that, Comparator<T> comparator) {
+        return fromIterator(Arrays.asList(that).iterator(), comparator);
+    }
+
+    /**
+     * Creates a new set based on an array's elements assuming {@link Comparator#naturalOrder()}.
      *
      * @param that the array from which the new set is initialized
      * @param <T> the set's element type
@@ -67,7 +91,19 @@ public class AMutableSortedSetWrapper<T> implements ASortedSet<T>, ACollectionDe
     }
 
     /**
-     * Creates a new set based on an Iterable's elements.
+     * Creates a new set based on an Iterable's elements using a {@link Comparator} passed in.
+     *
+     * @param that the Iterable from which the new set is initialized
+     * @param comparator the new set's comparator
+     * @param <T> the set's element type
+     * @return the new set
+     */
+    public static <T> AMutableSortedSetWrapper<T> from(Iterable<T> that, Comparator<T> comparator) {
+        return fromIterator(that.iterator(), comparator);
+    }
+
+    /**
+     * Creates a new set based on an Iterable's elements assuming {@link Comparator#naturalOrder()}.
      *
      * @param that the Iterable from which the new set is initialized
      * @param <T> the set's element type

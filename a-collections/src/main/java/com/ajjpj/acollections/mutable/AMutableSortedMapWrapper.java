@@ -467,8 +467,17 @@ public class AMutableSortedMapWrapper<K,V> implements ASortedMap<K,V>, ACollecti
         return ASet.from(this);
     }
 
+    @Override public ATreeSet<Entry<K, V>> toSortedSet () {
+        throw new UnsupportedOperationException("There is no natural order for Map.Entry");
+    }
     @Override public ATreeSet<Entry<K, V>> toSortedSet (Comparator<Entry<K, V>> comparator) {
-        throw new UnsupportedOperationException();
+        return ASortedSet.from(this, comparator);
+    }
+    @Override public ATreeSet<Entry<K, V>> toMutableSortedSet () {
+        throw new UnsupportedOperationException("There is no natural order for Map.Entry");
+    }
+    @Override public AMutableSortedSetWrapper<Entry<K, V>> toMutableSortedSet (Comparator<Entry<K, V>> comparator) {
+        return AMutableSortedSetWrapper.from(this, comparator);
     }
 
     @Override public <K1, V1> AMap<K1, V1> toMap () {

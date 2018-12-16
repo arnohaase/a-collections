@@ -209,6 +209,9 @@ public class AMapSupport {
         @Override public ATreeSet<Map.Entry<K,V>> toSortedSet () {
             throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
         }
+        @Override public ATreeSet<Map.Entry<K,V>> toMutableSortedSet () {
+            throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
+        }
 
         @Override public AHashSet<Map.Entry<K,V>> plus (Map.Entry<K,V> o) {
             return AHashSet.from(this).plus(o);
@@ -510,6 +513,9 @@ public class AMapSupport {
             return AHashSet.from(this);
         }
         @Override public ATreeSet<Map.Entry<K,V>> toSortedSet() {
+            throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
+        }
+        @Override public ATreeSet<Map.Entry<K,V>> toMutableSortedSet() {
             throw new UnsupportedOperationException("pass in a Comparator explicitly - Map.Entry has no natural order");
         }
 

@@ -3,9 +3,9 @@ package com.ajjpj.acollections.immutable;
 import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.ACollectionOps;
 import com.ajjpj.acollections.AMap;
-import com.ajjpj.acollections.internal.AMapSupport;
+import com.ajjpj.acollections.mutable.AMutableSortedSetWrapper;
 
-import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -14,6 +14,10 @@ abstract class AbstractImmutableMap<K,V> implements AMap<K,V> {
     @Override public ATreeSet<Entry<K, V>> toSortedSet () {
         throw new UnsupportedOperationException("pass in a Comparator<Map.Entry> - Map.Entry has no natural order");
     }
+    @Override public ATreeSet<Entry<K, V>> toMutableSortedSet () {
+        throw new UnsupportedOperationException("pass in a Comparator<Map.Entry> - Map.Entry has no natural order");
+    }
+
     @Override public <U> ACollectionBuilder<U, ? extends ACollectionOps<U>> newBuilder () {
         throw new UnsupportedOperationException("Implementing this well goes beyond the boundaries of Java's type system. Use static ATreeMap.builder() instead.");
     }

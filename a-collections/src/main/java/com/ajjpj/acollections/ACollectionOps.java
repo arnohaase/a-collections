@@ -2,7 +2,9 @@ package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
+import com.ajjpj.acollections.mutable.AMutableMapWrapper;
 import com.ajjpj.acollections.mutable.AMutableSetWrapper;
+import com.ajjpj.acollections.mutable.AMutableSortedSetWrapper;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Collection;
@@ -178,7 +180,7 @@ public interface ACollectionOps<T> {
 
     /**
      * This is a convenience method converting this collection into an immutable {@link AMap}. It expects the collection to consist of
-     *  {@link Map.Entry} (throwing a {@link ClassCastException} otherwise)
+     *  {@link Map.Entry} (throwing a {@link ClassCastException} otherwise).
      *
      * @param <K> the new map's key type (usually needs to be explicitly provided by the caller)
      * @param <V> the new map's value type (usually needs to be explicitly provided by the caller)
@@ -201,7 +203,35 @@ public interface ACollectionOps<T> {
      * @return an {@link AMutableSetWrapper} containing this collection's elements
      */
     AMutableSetWrapper<T> toMutableSet();
-    //TODO toMutableMap
+
+    /**
+     * This is the same as {@link #toMutableSortedSet(Comparator)}, but using {@link Comparator#naturalOrder()} implicitly. This method relies
+     *  on the collection's elements implementing {@link Comparable} (throwing a {@link ClassCastException} if they don't)
+     *
+     * @return an {@link AMutableSortedSetWrapper} with this collection's elements
+     */
+    default ATreeSet<T> toMutableSortedSet() {
+        //noinspection unchecked
+        return toSortedSet((Comparator) Comparator.naturalOrder());
+    }
+
+    /**
+     * This is a convenience method to convert any collection into a mutable {@link ASortedSet} based on a {@link Comparator} passed in
+     *  (more specifically, an {@link AMutableSortedSetWrapper} around a {@link java.util.TreeSet}) with this collection's elements.
+     *
+     * @return an {@link AMutableSortedSetWrapper} containing this collection's elements
+     */
+    AMutableSortedSetWrapper<T> toMutableSortedSet(Comparator<T> comparator);
+
+    /**
+     * This is a convenience method converting this collection into a mutable {@link AMap} (more specifically, an {@link AMutableMapWrapper}).
+     *  It expects the collection to consist of {@link Map.Entry} (throwing a {@link ClassCastException} otherwise).
+     *
+     * @param <K> the new map's key type (usually needs to be explicitly provided by the caller)
+     * @param <V> the new map's value type (usually needs to be explicitly provided by the caller)
+     * @return an {@link AMutableMapWrapper} with this collection's elements
+     */
+    <K,V> AMutableMapWrapper<K,V> toMutableMap();
 
     /**
      * Creates a new collection of the same collection type by applying a function to each element. The new collection's element type

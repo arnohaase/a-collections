@@ -1,14 +1,11 @@
 package com.ajjpj.acollections.immutable;
 
-import com.ajjpj.acollections.ASortedSet;
-import com.ajjpj.acollections.ASortedSetTests;
-import com.ajjpj.acollections.TestHelpers;
+import com.ajjpj.acollections.*;
+import com.ajjpj.acollections.internal.AMapSupport;
+import com.ajjpj.acollections.mutable.AMutableSortedSetWrapper;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -95,4 +92,22 @@ public class ATreeSetTest implements ASortedSetTests {
         );
     }
 
+    @Override public void testToMap () {
+        assertThrows(ClassCastException.class, () -> ATreeSet.of(1, 2, 3).toMap());
+
+        final ASet s = ATreeSet
+                .<Map.Entry<Integer,String>>empty(new AMapSupport.EntryComparator<>(Comparator.naturalOrder()))
+                .plus(new AbstractMap.SimpleImmutableEntry<>(1, "one"));
+
+        assertEquals(AMap.of(1, 3), s.toMap());
+    }
+    @Override public void testToMutableMap () {
+        assertThrows(ClassCastException.class, () -> ATreeSet.of(1, 2, 3).toMutableMap());
+
+        final ASet s = ATreeSet
+                .<Map.Entry<Integer,String>>empty(new AMapSupport.EntryComparator<>(Comparator.naturalOrder()))
+                .plus(new AbstractMap.SimpleImmutableEntry<>(1, "one"));
+
+        assertEquals(AMap.of(1, 3), s.toMutableMap());
+    }
 }

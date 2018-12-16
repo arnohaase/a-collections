@@ -68,7 +68,7 @@ public class AHashMapTest implements AMapTests {
         assertEquals(expected, AMap.fromMap(expected));
     }
 
-    @Test void testToMap() {
+    @Test public void testToMap() {
         // this test is here rather than in ACollectionOpsTests because those tests work on collections of Integer, and the functionality
         //  is generic enough to be sufficiently tested by just using AVector
         assertEquals(AHashMap.empty(), AVector.empty().toMap());

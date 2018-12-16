@@ -136,6 +136,16 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
         return (AOption<T>) ANone.INSTANCE;
     }
 
+    /**
+     * Returns the empty AOption.
+     * @param <T> The result's element type
+     * @return the empty AOption
+     */
+    public static <T> AOption<T> empty() {
+        //noinspection unchecked
+        return (AOption<T>) ANone.INSTANCE;
+    }
+
     @Override public String toString () {
         return ACollectionSupport.toString(AOption.class, this);
     }

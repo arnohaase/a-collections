@@ -6,7 +6,9 @@ import com.ajjpj.acollections.ACollectionOps;
 import com.ajjpj.acollections.AMap;
 import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
+import com.ajjpj.acollections.mutable.AMutableMapWrapper;
 import com.ajjpj.acollections.mutable.AMutableSetWrapper;
+import com.ajjpj.acollections.mutable.AMutableSortedSetWrapper;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.Collection;
@@ -66,6 +68,14 @@ public interface ACollectionDefaults<T, C extends ACollectionOps<T>> extends ACo
     }
     @Override default AMutableSetWrapper<T> toMutableSet () {
         return AMutableSetWrapper.from(this);
+    }
+    @Override default AMutableSortedSetWrapper<T> toMutableSortedSet (Comparator<T> comparator) {
+        return AMutableSortedSetWrapper.from(this, comparator);
+    }
+
+    @Override default <K, V> AMutableMapWrapper<K, V> toMutableMap () {
+        //noinspection unchecked
+        return AMutableMapWrapper.from((Iterable<Map.Entry<K,V>>)this);
     }
 
     @Override default C filter(Predicate<T> f) {

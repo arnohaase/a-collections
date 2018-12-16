@@ -1,17 +1,17 @@
 package com.ajjpj.acollections.mutable;
 
+import com.ajjpj.acollections.AMap;
 import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.ASortedSetTests;
 import com.ajjpj.acollections.TestHelpers;
+import com.ajjpj.acollections.immutable.AHashMap;
 import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ARange;
 import com.ajjpj.acollections.immutable.AVector;
+import com.ajjpj.acollections.internal.AMapSupport;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,8 +28,6 @@ public class AMutableSortedSetWrapperTest implements ASortedSetTests {
                 new Variant(() -> AMutableSortedSetWrapper.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
         );
     }
-
-    //TODO equals, hashCode, toString are missing
 
     @Test @Override  public void testComparator() {
         assertTrue (AMutableSortedSetWrapper.of(1, 2, 3).comparator().compare(1, 2) < 0);
@@ -52,6 +50,12 @@ public class AMutableSortedSetWrapperTest implements ASortedSetTests {
         assertEquals(AHashSet.of(1, 2, 3), AMutableSortedSetWrapper.from(Arrays.asList(1, 2, 3)));
         assertEquals(AHashSet.of(1, 2, 3), AMutableSortedSetWrapper.from(new Integer[] {1, 2, 3}));
         assertEquals(AHashSet.of(1, 2, 3), AMutableSortedSetWrapper.fromIterator(Arrays.asList(1, 2, 3).iterator()));
+
+        assertEquals(AVector.of(2, 1), AMutableSortedSetWrapper.empty(Comparator.<Integer>naturalOrder().reversed()).plus(1).plus(2).toVector());
+
+        assertEquals(AVector.of(3, 2, 1), AMutableSortedSetWrapper.from(Arrays.asList(1, 2, 3), Comparator.<Integer>naturalOrder().reversed()).toVector());
+        assertEquals(AVector.of(3, 2, 1), AMutableSortedSetWrapper.from(new Integer[] {1, 2, 3}, Comparator.<Integer>naturalOrder().reversed()).toVector());
+        assertEquals(AVector.of(3, 2, 1), AMutableSortedSetWrapper.fromIterator(Arrays.asList(1, 2, 3).iterator(), Comparator.<Integer>naturalOrder().reversed()).toVector());
     }
 
     @Override @Test public void testSerDeser () {
@@ -68,5 +72,24 @@ public class AMutableSortedSetWrapperTest implements ASortedSetTests {
         assertEquals(ASet.of(1, 2, 3, 4), Stream.of(1, 2, 3, 4).collect(AMutableSortedSetWrapper.streamCollector(Comparator.naturalOrder())));
         assertEquals(ASet.empty(), Stream.<Integer>of().collect(AMutableSortedSetWrapper.streamCollector(Comparator.naturalOrder())));
         assertEquals(ARange.create(0, 100000).toSet(), ARange.create(0, 100000).parallelStream().collect(AMutableSortedSetWrapper.streamCollector(Comparator.naturalOrder())));
+    }
+
+    @Override public void testToMap () {
+        assertThrows(ClassCastException.class, () -> AMutableSortedSetWrapper.of(1, 2, 3).toMap());
+
+        final ASet s = AMutableSortedSetWrapper
+                .<Map.Entry<Integer,String>>empty(new AMapSupport.EntryComparator<>(Comparator.naturalOrder()))
+                .plus(new AbstractMap.SimpleImmutableEntry<>(1, "one"));
+
+        assertEquals(AMap.of(1, 3), s.toMap());
+    }
+    @Override public void testToMutableMap () {
+        assertThrows(ClassCastException.class, () -> AMutableSortedSetWrapper.of(1, 2, 3).toMutableMap());
+
+        final ASet s = AMutableSortedSetWrapper
+                .<Map.Entry<Integer,String>>empty(new AMapSupport.EntryComparator<>(Comparator.naturalOrder()))
+                .plus(new AbstractMap.SimpleImmutableEntry<>(1, "one"));
+
+        assertEquals(AMap.of(1, 3), s.toMutableMap());
     }
 }

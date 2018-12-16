@@ -14,9 +14,14 @@ public interface ACollectionOpsTests {
     void testToVector();
     void testToSet();
     void testToSortedSet();
+    void testToSortedSetWithComparator();
+    void testToMap();
 
     void testToMutableList();
     void testToMutableSet();
+    void testToMutableSortedSet();
+    void testToMutableSortedSetWithComparator();
+    void testToMutableMap();
 
     void testSize();
     void testIsEmpty();

@@ -2,19 +2,20 @@ package com.ajjpj.acollections.util;
 
 import com.ajjpj.acollections.ACollectionOpsTests;
 import com.ajjpj.acollections.AIterator;
+import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.TestHelpers;
 import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.mutable.AMutableSetWrapper;
 import org.junit.jupiter.api.Test;
 
+import java.util.AbstractMap;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.ajjpj.acollections.util.AOption.none;
-import static com.ajjpj.acollections.util.AOption.some;
+import static com.ajjpj.acollections.util.AOption.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -46,6 +47,10 @@ public class AOptionTest implements ACollectionOpsTests {
         assertEquals(AOption.some(1), TestHelpers.serDeser(AOption.some(1)));
         assertEquals(AOption.some(2), TestHelpers.serDeser(AOption.some(2)));
         assertEquals(AOption.some(null), TestHelpers.serDeser(AOption.some(null)));
+    }
+
+    @Test void testEmpty() {
+        assertSame(none(), empty());
     }
 
     @Test void testStaticFactory() {
@@ -118,6 +123,11 @@ public class AOptionTest implements ACollectionOpsTests {
         assertEquals(AVector.of(1, 5, 9), some(5).toSortedSet().plus(1).plus(9).toVector());
         assertEquals(AVector.of(9, 5, 1), some(5).toSortedSet(Comparator.<Integer>naturalOrder().reversed()).plus(1).plus(9).toVector());
     }
+    @Override @Test public void testToSortedSetWithComparator () {
+        assertEquals(ASet.empty(), AOption.<Integer>empty().toSortedSet(Comparator.<Integer>naturalOrder().reversed()));
+        assertEquals(ASet.of(1), AOption.some(1).toSortedSet(Comparator.<Integer>naturalOrder().reversed()));
+        assertEquals(Comparator.naturalOrder().reversed(), AOption.some(1).toSortedSet(Comparator.<Integer>naturalOrder().reversed()).comparator());
+    }
     @Override @Test public void testToMutableList () {
         assertTrue(none().toMutableList().isEmpty());
         assertEquals(AMutableListWrapper.of(1), some(1).toMutableList());
@@ -125,6 +135,26 @@ public class AOptionTest implements ACollectionOpsTests {
     @Override @Test public void testToMutableSet () {
         assertTrue(none().toMutableSet().isEmpty());
         assertEquals(AMutableSetWrapper.of("a"), some("a").toMutableSet());
+    }
+    @Override @Test public void testToMap () {
+        assertEquals(AHashMap.empty(), AOption.empty().toMap());
+        assertEquals(AHashMap.of(1, "one"), AOption.some(new AbstractMap.SimpleImmutableEntry<>(1, "one")).toMap());
+        assertThrows(ClassCastException.class, () -> AOption.some(1).toMap());
+    }
+    @Override @Test public void testToMutableSortedSet () {
+        assertEquals(ASet.empty(), AOption.empty().toMutableSortedSet());
+        assertEquals(ASet.of(1), AOption.some(1).toMutableSortedSet());
+        assertEquals(Comparator.naturalOrder(), AOption.some(1).toMutableSortedSet().comparator());
+    }
+    @Override @Test public void testToMutableSortedSetWithComparator () {
+        assertEquals(ASet.empty(), AOption.<Integer>empty().toMutableSortedSet(Comparator.<Integer>naturalOrder().reversed()));
+        assertEquals(ASet.of(1), AOption.some(1).toMutableSortedSet(Comparator.<Integer>naturalOrder().reversed()));
+        assertEquals(Comparator.naturalOrder().reversed(), AOption.some(1).toMutableSortedSet(Comparator.<Integer>naturalOrder().reversed()).comparator());
+    }
+    @Override @Test public void testToMutableMap () {
+        assertEquals(AHashMap.empty(), AOption.empty().toMutableMap());
+        assertEquals(AHashMap.of(1, "one"), AOption.some(new AbstractMap.SimpleImmutableEntry<>(1, "one")).toMutableMap());
+        assertThrows(ClassCastException.class, () -> AOption.some(1).toMutableMap());
     }
 
     @Override @Test public void testSize () {
