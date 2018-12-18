@@ -3,7 +3,6 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.util.AUnchecker;
 
 import java.io.*;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 

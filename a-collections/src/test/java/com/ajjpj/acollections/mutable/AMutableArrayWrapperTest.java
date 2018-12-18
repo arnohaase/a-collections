@@ -20,7 +20,7 @@ public class AMutableArrayWrapperTest implements AListTests {
 
     @Override public Iterable<Variant> variants () {
         return Collections.singleton(
-                new Variant(AMutableArrayWrapper::builder, AVector.of(1, 2, 3))
+                new Variant(AMutableArrayWrapper.class, AMutableArrayWrapper::builder, AVector.of(1, 2, 3))
         );
     }
 

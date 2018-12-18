@@ -5,7 +5,11 @@ todo
     * introduction, persistent collections
     * java.util.Collection (both mutable / immutable) etc. --> drop-in replacement for use with existing APIs
     * building etc.
-  * package.java
+    * static methods
+    * convenience
+    * JSON
+
+
 
 * ajjpj.com
   * landing page
@@ -13,6 +17,12 @@ todo
 * shotgun tests with different seeds
 
 * JSON support
+    @Test default void testTodo() {
+        //TODO maps
+        //TODO interfaces
+        //TODO AOption
+        fail("todo");
+    }
 
 ---------------------------------------------------------------------------------------------------------------
 

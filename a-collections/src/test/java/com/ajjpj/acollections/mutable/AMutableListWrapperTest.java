@@ -20,7 +20,7 @@ public class AMutableListWrapperTest implements AListTests {
     @Override public Iterable<Variant> variants () {
         //noinspection ArraysAsListWithZeroOrOneArgument
         return Arrays.asList(
-                new Variant(AMutableListWrapper::builder, AVector.of(1, 2, 3))
+                new Variant(AMutableListWrapper.class, AMutableListWrapper::builder, AVector.of(1, 2, 3))
         );
     }
 

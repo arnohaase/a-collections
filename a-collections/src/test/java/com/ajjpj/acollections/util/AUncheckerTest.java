@@ -26,7 +26,7 @@ public class AUncheckerTest {
             throw new IOException("yo");
         };
 
-        assertThrows(IOException.class, () -> AUnchecker.executeUnchecked(r), "yo");
+        assertThrows(IOException.class, () -> AUnchecker.executeUncheckedVoid(r), "yo");
         assertEquals(AVector.of("i was here"), journal);
     }
 

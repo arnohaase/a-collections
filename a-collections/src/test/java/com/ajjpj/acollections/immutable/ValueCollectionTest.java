@@ -1,6 +1,7 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.*;
+import com.ajjpj.acollections.internal.AMapSupport;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -52,8 +53,8 @@ public class ValueCollectionTest implements ACollectionTests {
 
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
-                new Variant(() -> new ValueCollectionBuilder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
-                new Variant(() -> new ValueCollectionBuilder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
+                new Variant(AMapSupport.ValuesCollection.class, () -> new ValueCollectionBuilder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
+                new Variant(AMapSupport.ValuesCollection.class, () -> new ValueCollectionBuilder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
         );
     }
 }

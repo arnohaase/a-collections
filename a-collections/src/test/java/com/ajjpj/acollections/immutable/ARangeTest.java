@@ -197,7 +197,7 @@ public class ARangeTest implements AListTests {
 
     static class RangeVariant extends Variant {
         public RangeVariant () {
-            super(null, AVector.of(1, 2, 3));
+            super(ARange.class, null, AVector.of(1, 2, 3));
         }
 
         @Override public ACollection<Integer> mkColl (Integer... values) {

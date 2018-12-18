@@ -6,7 +6,7 @@ public interface AThrowingRunnable {
     void run() throws Throwable;
 
     default Runnable toRunnable() {
-        return () -> AUnchecker.executeUnchecked(this);
+        return () -> AUnchecker.executeUncheckedVoid(this);
     }
 
     static AThrowingRunnable fromRunnable(Runnable r) {

@@ -4,6 +4,7 @@ import com.ajjpj.acollections.ACollectionBuilder;
 import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.ASetTests;
 import com.ajjpj.acollections.TestHelpers;
+import com.ajjpj.acollections.internal.AMapSupport;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -49,7 +50,7 @@ public class KeySetTest implements ASetTests {
 
     @Override public Iterable<Variant> variants () {
         return Collections.singletonList(
-                new Variant(KeySetBuilder::new, null)
+                new Variant(AMapSupport.KeySet.class, KeySetBuilder::new, null)
         );
     }
 }

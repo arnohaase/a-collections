@@ -17,7 +17,7 @@ public class AVectorTest implements AListTests {
 
     @Override public Iterable<Variant> variants () {
         return Collections.singletonList(
-                new Variant(AVector::builder, AVector.of(1, 2, 3))
+                new Variant(AVector.class, AVector::builder, AVector.of(1, 2, 3))
         );
     }
 

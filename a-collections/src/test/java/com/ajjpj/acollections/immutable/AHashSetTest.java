@@ -17,7 +17,7 @@ public class AHashSetTest implements ASetTests {
 
     @Override public Iterable<Variant> variants () {
         return Collections.singletonList(
-                new Variant(AHashSet::builder, null)
+                new Variant(AHashSet.class, AHashSet::builder, null)
         );
     }
 

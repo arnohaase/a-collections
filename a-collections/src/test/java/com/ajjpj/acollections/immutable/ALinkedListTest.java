@@ -26,7 +26,7 @@ public class ALinkedListTest implements AListTests {
 
     @Override public Iterable<Variant> variants () {
         return Collections.singletonList(
-                new Variant(ALinkedList::builder, AVector.of(1, 2, 3))
+                new Variant(ALinkedList.class, ALinkedList::builder, AVector.of(1, 2, 3))
         );
     }
 

@@ -87,8 +87,8 @@ public class ATreeSetTest implements ASortedSetTests {
 
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
-                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
-                new Variant(() -> ATreeSet.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
+                new Variant(ATreeSet.class, () -> ATreeSet.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
+                new Variant(ATreeSet.class, () -> ATreeSet.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
         );
     }
 

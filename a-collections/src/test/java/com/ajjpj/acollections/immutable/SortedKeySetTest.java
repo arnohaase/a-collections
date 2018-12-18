@@ -73,8 +73,8 @@ public class SortedKeySetTest implements ASetTests {
 
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
-                new Variant(() -> new KeySetBuilder(Comparator.naturalOrder()), AVector.of(1, 2, 3)),
-                new Variant(() -> new KeySetBuilder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
+                new Variant(AMapSupport.SortedKeySet.class, () -> new KeySetBuilder(Comparator.naturalOrder()), AVector.of(1, 2, 3)),
+                new Variant(AMapSupport.SortedKeySet.class, () -> new KeySetBuilder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
         );
     }
 }

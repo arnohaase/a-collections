@@ -23,7 +23,7 @@ public class AMutableSetWrapperTest implements ASetTests {
 
     @Override public Iterable<Variant> variants () {
         return Collections.singletonList(
-                new Variant(AMutableSetWrapper::builder, null)
+                new Variant(AMutableSetWrapper.class, AMutableSetWrapper::builder, null)
         );
     }
 

@@ -38,7 +38,7 @@ public class AUnchecker {
      *
      * @param callback the callback to execute
      */
-    public static void executeUnchecked(AThrowingRunnable callback) {
+    public static void executeUncheckedVoid (AThrowingRunnable callback) {
         try {
             callback.run();
         }
@@ -54,7 +54,7 @@ public class AUnchecker {
      * @param <R>      the callback's result type
      * @return the callback's result
      */
-    public static <R> R executeUnchecked(Callable<R> callback) {
+    public static <R> R executeUnchecked (Callable<R> callback) {
         try {
             return callback.call();
         }
