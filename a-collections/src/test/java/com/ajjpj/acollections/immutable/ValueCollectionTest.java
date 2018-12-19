@@ -24,6 +24,14 @@ public class ValueCollectionTest implements ACollectionTests {
         // value collections really are not supposed to be compared
     }
 
+    @Override public void testJacksonFromJson () {
+        // nothing to be done - can not be deserialized from JSON
+    }
+
+    @Override public void testJacksonFromJsonSingleValue () {
+        // nothing to be done - can not be deserialized from JSON
+    }
+
     @Override @Test public void testSerDeser () {
         doTest(v -> {
             assertEquals(v.mkColl(), TestHelpers.serDeser(v.mkColl()));

@@ -1,19 +1,20 @@
-package com.ajjpj.acollections.util;
+package com.ajjpj.acollections.jackson;
 
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.Module;
 
 
-public class ACollectionsJacksonModule extends Module {
+public class ACollectionsModule extends Module {
+
     @Override public String getModuleName () {
         return getClass().getSimpleName();
     }
 
     @Override public Version version () {
-        return null;
+        return Version.unknownVersion();
     }
 
     @Override public void setupModule (SetupContext setupContext) {
-//        setupContext.addDeserializers();
+        setupContext.addDeserializers(new Deserializers());
     }
 }

@@ -21,7 +21,7 @@ todo
         //TODO maps
         //TODO interfaces
         //TODO AOption
-        fail("todo");
+        //TODO complex element type
     }
 
 ---------------------------------------------------------------------------------------------------------------

@@ -73,6 +73,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
             <artifactId>scala-library</artifactId>
             <version>2.12.7</version>
         </dependency>
+
+        <dependency> <!-- todo remove this -->
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-guava</artifactId>
+            <version>2.9.8</version>
+        </dependency>
     </dependencies>
 
     <properties>

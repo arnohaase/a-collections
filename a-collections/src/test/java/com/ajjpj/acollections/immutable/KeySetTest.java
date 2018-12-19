@@ -18,6 +18,14 @@ public class KeySetTest implements ASetTests {
         // nothing to be done - no static factories
     }
 
+    @Override public void testJacksonFromJson () {
+        // nothing to be done - can not be deserialized from JSON
+    }
+
+    @Override public void testJacksonFromJsonSingleValue () {
+        // nothing to be done - can not be deserialized from JSON
+    }
+
     @Override @Test public void testSerDeser () {
         doTest(v -> {
             assertEquals(v.mkSet(), TestHelpers.serDeser(v.mkSet()));

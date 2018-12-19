@@ -19,6 +19,14 @@ public class SortedKeySetTest implements ASetTests {
         // nothing to be done - no static factories
     }
 
+    @Override public void testJacksonFromJson () {
+        // nothing to be done - can not be deserialized from JSON
+    }
+
+    @Override public void testJacksonFromJsonSingleValue () {
+        // nothing to be done - can not be deserialized from JSON
+    }
+
     @Override public void testToMap () {
         assertThrows(ClassCastException.class, () -> new KeySetBuilder(Comparator.naturalOrder()).add(1).add(2).add(3).build().toMap());
 

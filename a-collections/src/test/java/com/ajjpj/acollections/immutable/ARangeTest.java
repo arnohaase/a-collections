@@ -22,6 +22,14 @@ public class ARangeTest implements AListTests {
         // nothing to be done - no static factories
     }
 
+    @Override public void testJacksonFromJson () {
+        // nothing to be done - can not be deserialized from JSON
+    }
+
+    @Override public void testJacksonFromJsonSingleValue () {
+        // nothing to be done - can not be deserialized from JSON
+    }
+
     @Override @Test public void testSerDeser () {
         assertEquals(ARange.empty(), TestHelpers.serDeser(ARange.empty()));
         assertNotSame(ARange.empty(), TestHelpers.serDeser(ARange.empty()));

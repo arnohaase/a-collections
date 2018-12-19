@@ -2,10 +2,14 @@ package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.internal.AMapSupport;
+import com.ajjpj.acollections.jackson.ACollectionsModule;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
 import com.ajjpj.acollections.util.AUnchecker;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -568,6 +572,8 @@ public interface ACollectionTests extends ACollectionOpsTests {
     @Test default void testJacksonToJson() {
         doTest(v -> AUnchecker.executeUncheckedVoid(() -> {
             final ObjectMapper om = new ObjectMapper();
+            om.registerModule(new ACollectionsModule());
+
             assertEquals("[]", om.writeValueAsString(v.mkColl()));
             assertEquals("[1]", om.writeValueAsString(v.mkColl(1)));
             assertEquals("[\"1\"]", om.writeValueAsString(v.mkColl(1).map(String::valueOf)));
@@ -577,6 +583,7 @@ public interface ACollectionTests extends ACollectionOpsTests {
     @Test default void testJacksonFromJson() {
         doTest(v -> AUnchecker.executeUncheckedVoid(() -> {
             final ObjectMapper om = new ObjectMapper();
+            om.registerModule(new ACollectionsModule());
 
             assertTrue(v.baseClass().isAssignableFrom(om.readValue("[]", v.baseClass()).getClass()));
             assertEquals(v.mkColl(), om.readValue("[]", v.baseClass()));
@@ -586,6 +593,27 @@ public interface ACollectionTests extends ACollectionOpsTests {
 
             assertTrue(v.baseClass().isAssignableFrom(om.readValue("[1,2,3]", v.baseClass()).getClass()));
             assertEquals(v.mkColl(1, 2, 3), om.readValue("[1,2,3]", v.baseClass()));
+
+            assertThrows(MismatchedInputException.class, () -> om.readValue("1", v.baseClass));
+        }));
+    }
+    @Test default void testJacksonFromJsonSingleValue() {
+        doTest(v -> AUnchecker.executeUncheckedVoid(() -> {
+            final ObjectMapper om = new ObjectMapper();
+            om.registerModule(new ACollectionsModule());
+            om.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+
+            assertTrue(v.baseClass().isAssignableFrom(om.readValue("[]", v.baseClass()).getClass()));
+            assertEquals(v.mkColl(), om.readValue("[]", v.baseClass()));
+
+            assertTrue(v.baseClass().isAssignableFrom(om.readValue("[1]", v.baseClass()).getClass()));
+            assertEquals(v.mkColl(1), om.readValue("[1]", v.baseClass()));
+
+            assertTrue(v.baseClass().isAssignableFrom(om.readValue("[1,2,3]", v.baseClass()).getClass()));
+            assertEquals(v.mkColl(1, 2, 3), om.readValue("[1,2,3]", v.baseClass()));
+
+            assertTrue(v.baseClass().isAssignableFrom(om.readValue("1", v.baseClass).getClass()));
+            assertEquals(v.mkColl(1), om.readValue("1", v.baseClass));
         }));
     }
 
