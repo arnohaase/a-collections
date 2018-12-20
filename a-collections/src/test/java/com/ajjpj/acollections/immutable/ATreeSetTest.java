@@ -92,22 +92,22 @@ public class ATreeSetTest implements ASortedSetTests {
         );
     }
 
-    @Override public void testToMap () {
+    @Test @Override public void testToMap () {
         assertThrows(ClassCastException.class, () -> ATreeSet.of(1, 2, 3).toMap());
 
         final ASet s = ATreeSet
                 .<Map.Entry<Integer,String>>empty(new AMapSupport.EntryComparator<>(Comparator.naturalOrder()))
                 .plus(new AbstractMap.SimpleImmutableEntry<>(1, "one"));
 
-        assertEquals(AMap.of(1, 3), s.toMap());
+        assertEquals(AMap.of(1, "one"), s.toMap());
     }
-    @Override public void testToMutableMap () {
+    @Test @Override public void testToMutableMap () {
         assertThrows(ClassCastException.class, () -> ATreeSet.of(1, 2, 3).toMutableMap());
 
         final ASet s = ATreeSet
                 .<Map.Entry<Integer,String>>empty(new AMapSupport.EntryComparator<>(Comparator.naturalOrder()))
                 .plus(new AbstractMap.SimpleImmutableEntry<>(1, "one"));
 
-        assertEquals(AMap.of(1, 3), s.toMutableMap());
+        assertEquals(AMap.of(1, "one"), s.toMutableMap());
     }
 }

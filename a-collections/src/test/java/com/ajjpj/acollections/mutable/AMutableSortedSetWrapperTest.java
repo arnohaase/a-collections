@@ -74,22 +74,22 @@ public class AMutableSortedSetWrapperTest implements ASortedSetTests {
         assertEquals(ARange.create(0, 100000).toSet(), ARange.create(0, 100000).parallelStream().collect(AMutableSortedSetWrapper.streamCollector(Comparator.naturalOrder())));
     }
 
-    @Override public void testToMap () {
+    @Test @Override public void testToMap () {
         assertThrows(ClassCastException.class, () -> AMutableSortedSetWrapper.of(1, 2, 3).toMap());
 
         final ASet s = AMutableSortedSetWrapper
                 .<Map.Entry<Integer,String>>empty(new AMapSupport.EntryComparator<>(Comparator.naturalOrder()))
                 .plus(new AbstractMap.SimpleImmutableEntry<>(1, "one"));
 
-        assertEquals(AMap.of(1, 3), s.toMap());
+        assertEquals(AMap.of(1, "one"), s.toMap());
     }
-    @Override public void testToMutableMap () {
+    @Test @Override public void testToMutableMap () {
         assertThrows(ClassCastException.class, () -> AMutableSortedSetWrapper.of(1, 2, 3).toMutableMap());
 
         final ASet s = AMutableSortedSetWrapper
                 .<Map.Entry<Integer,String>>empty(new AMapSupport.EntryComparator<>(Comparator.naturalOrder()))
                 .plus(new AbstractMap.SimpleImmutableEntry<>(1, "one"));
 
-        assertEquals(AMap.of(1, 3), s.toMutableMap());
+        assertEquals(AMap.of(1, "one"), s.toMutableMap());
     }
 }

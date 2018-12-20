@@ -19,15 +19,15 @@ public class SortedKeySetTest implements ASetTests {
         // nothing to be done - no static factories
     }
 
-    @Override public void testJacksonFromJson () {
+    @Override @Test public void testJacksonFromJson () {
         // nothing to be done - can not be deserialized from JSON
     }
 
-    @Override public void testJacksonFromJsonSingleValue () {
+    @Override @Test public void testJacksonFromJsonSingleValue () {
         // nothing to be done - can not be deserialized from JSON
     }
 
-    @Override public void testToMap () {
+    @Override @Test public void testToMap () {
         assertThrows(ClassCastException.class, () -> new KeySetBuilder(Comparator.naturalOrder()).add(1).add(2).add(3).build().toMap());
 
         //noinspection unchecked
@@ -37,9 +37,9 @@ public class SortedKeySetTest implements ASetTests {
                 ;
         final ASet s = m.keySet();
 
-        assertEquals(AMap.of(1, 3), s.toMap());
+        assertEquals(AMap.of(1, "one"), s.toMap());
     }
-    @Override public void testToMutableMap () {
+    @Override @Test public void testToMutableMap () {
         assertThrows(ClassCastException.class, () -> new KeySetBuilder(Comparator.naturalOrder()).add(1).add(2).add(3).build().toMutableMap());
 
         //noinspection unchecked
@@ -49,7 +49,7 @@ public class SortedKeySetTest implements ASetTests {
                 ;
         final ASet s = m.keySet();
 
-        assertEquals(AMap.of(1, 3), s.toMutableMap());
+        assertEquals(AMap.of(1, "one"), s.toMutableMap());
     }
 
     @Override @Test public void testSerDeser () {
