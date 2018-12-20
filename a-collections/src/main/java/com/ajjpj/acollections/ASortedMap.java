@@ -1,10 +1,14 @@
 package com.ajjpj.acollections;
 
-import com.ajjpj.acollections.mutable.AMutableMapWrapper;
+import com.ajjpj.acollections.immutable.AHashMap;
+import com.ajjpj.acollections.immutable.ATreeMap;
 import com.ajjpj.acollections.mutable.AMutableSortedMapWrapper;
 import com.ajjpj.acollections.util.AOption;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NavigableMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -16,8 +20,8 @@ import java.util.function.Predicate;
  *
  * <p> If the key type implements {@link Comparable}, {@link Comparator#naturalOrder()} can be used.
  *
- * @param <K> The AMap's key type
- * @param <V> The AMap's value type
+ * @param <K> The ASortedMap's key type
+ * @param <V> The ASortedMap's value type
  */
 public interface ASortedMap<K,V> extends AMap<K,V>, NavigableMap<K,V> {
     /**
@@ -32,6 +36,198 @@ public interface ASortedMap<K,V> extends AMap<K,V>, NavigableMap<K,V> {
      */
     static <K,V> AMutableSortedMapWrapper<K,V> wrap(NavigableMap<K,V> m) {
         return AMutableSortedMapWrapper.wrap(m);
+    }
+
+    /**
+     * Convenience method for creating an empty {@link ATreeMap} with {@link Comparator#naturalOrder()}. This can later be modified by
+     *  calling {@link #plus(Object,Object)} or {@link #minus(Object)}. For creating a map with known elements, calling one of the
+     *  {@code of} factory methods is usually more concise.
+     *
+     * @param <K> the new map's key type
+     * @param <V> the new map's value type
+     * @return an empty {@link AHashMap}
+     */
+    static <K extends Comparable<K>,V> ATreeMap<K,V> empty() {
+        return ATreeMap.empty();
+    }
+
+    /**
+     * Convenience method for creating an empty {@link ATreeMap}. This can later be modified by calling {@link #plus(Object,Object)} or
+     * {@link #minus(Object)}. For creating a map with known elements, calling one of the {@code of} factory methods is usually more concise.
+     *
+     * @param comparator the tree map's comparator
+     *
+     * @param <K> the new map's key type
+     * @param <V> the new map's value type
+     * @return an empty {@link AHashMap}
+     */
+    static <K,V> ATreeMap<K,V> empty(Comparator<? super K> comparator) {
+        return ATreeMap.empty(comparator);
+    }
+
+    /**
+     * Creates a new {@link ATreeMap} based on an {@link Iterator}'s elements using {@link Comparator#naturalOrder()}.
+     *
+     * @param it the {@link Iterator} from which the new map is initialized
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    static <K extends Comparable<K>,V> ATreeMap<K,V> fromIterator(Iterator<? extends Entry<K,V>> it) {
+        return fromIterator(it, Comparator.naturalOrder());
+    }
+
+    /**
+     * Creates a new {@link ATreeMap} based on an {@link Iterator}'s elements using a comparator provided by the caller.
+     *
+     * @param it         the {@link Iterator} from which the new map is initialized
+     * @param comparator the key comparator to use
+     *
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    static <K,V> ATreeMap<K,V> fromIterator(Iterator<? extends Entry<K,V>> it, Comparator<? super K> comparator) {
+        return ATreeMap.<K,V> builder(comparator).addAll(it).build();
+    }
+
+    /**
+     * Creates a new {@link ATreeMap} based on a {@link java.util.Map}'s elements using {@link Comparator#naturalOrder()}.
+     *
+     * @param m the {@link Map} from which the new map is initialized
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    static <K extends Comparable<K>,V> ATreeMap<K,V> fromMap(Map<K,V> m) {
+        return from(m.entrySet());
+    }
+
+    /**
+     * Creates a new {@link ATreeMap} based on a {@link java.util.Map}'s elements using a comparator provided by the caller.
+     *
+     * @param m          the {@link Map} from which the new map is initialized
+     * @param comparator the key comparator to use
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    static <K extends Comparable<K>,V> ATreeMap<K,V> fromMap(Map<K,V> m, Comparator<? super K> comparator) {
+        return from(m.entrySet(), comparator);
+    }
+
+    /**
+     * Creates a new {@link ATreeMap} based on an {@link Iterable}'s elements using {@link Comparator#naturalOrder()}.
+     *
+     * @param coll the {@link Iterable} from which the new map is initialized
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    static <K extends Comparable<K>,V> ATreeMap<K,V> from(Iterable<? extends Entry<K,V>> coll) {
+        return from(coll, Comparator.naturalOrder());
+    }
+
+    /**
+     * Creates a new {@link ATreeMap} based on an {@link Iterator}'s elements using a comparator provided by the caller.
+     *
+     * @param it         the {@link Iterator} from which the new map is initialized
+     * @param comparator the key comparator to use
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new map
+     */
+    static <K,V> ATreeMap<K,V> from(Iterable<? extends Entry<K,V>> it, Comparator<? super K> comparator) {
+        return ATreeMap.<K,V> builder(comparator).addAll(it).build();
+    }
+
+    /**
+     * This is an alias for {@link #empty()} for consistency with Java 9 conventions - it creates an empty {@link ATreeMap}
+     *  using {@link Comparator#naturalOrder()}.
+     *
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return an empty {@link ATreeMap}
+     */
+    static <K extends Comparable<K>,V> ATreeMap<K,V> of() {
+        return empty(Comparator.<K>naturalOrder());
+    }
+
+    /**
+     * Convenience factory method creating an {@link ATreeMap} with exactly one entry using {@link Comparator#naturalOrder()}.
+     *
+     * @param k1 the single entry's key
+     * @param v1 the single entry's value
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link ATreeMap}
+     */
+    static <K extends Comparable<K>,V> ATreeMap<K,V> of(K k1, V v1) {
+        return ATreeMap.<K,V>builder().add(k1, v1).build();
+    }
+
+    /**
+     * Convenience factory method creating an {@link ATreeMap} with exactly two entries using {@link Comparator#naturalOrder()}.
+     *
+     * @param k1 the first entry's key
+     * @param v1 the first entry's value
+     * @param k2 the second entry's key
+     * @param v2 the second entry's value
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link ATreeMap}
+     */
+    static <K extends Comparable<K>,V> ATreeMap<K,V> of(K k1, V v1, K k2, V v2) {
+        return ATreeMap.<K,V>builder().add(k1, v1).add(k2, v2).build();
+    }
+
+    /**
+     * Convenience factory method creating an {@link ATreeMap} with three entries using {@link Comparator#naturalOrder()}.
+     *
+     * @param k1 the first entry's key
+     * @param v1 the first entry's value
+     * @param k2 the second entry's key
+     * @param v2 the second entry's value
+     * @param k3 the third entry's key
+     * @param v3 the third entry's value
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link ATreeMap}
+     */
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return ATreeMap.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).build();
+    }
+
+    /**
+     * Convenience factory method creating an {@link ATreeMap} with four entries using {@link Comparator#naturalOrder()}.
+     *
+     * @param k1 the first entry's key
+     * @param v1 the first entry's value
+     * @param k2 the second entry's key
+     * @param v2 the second entry's value
+     * @param k3 the third entry's key
+     * @param v3 the third entry's value
+     * @param k4 the fourth entry's key
+     * @param v4 the fourth entry's value
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link ATreeMap}
+     */
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+        return ATreeMap.<K,V>builder().add(k1, v1).add(k2, v2).add(k3,v3).add(k4,v4).build();
+    }
+
+    /**
+     * This is an alias for {@link #from(Iterable)} for consistency with Java 9 conventions - it creates an ATreeMap from an Iterable of
+     * {@link Map.Entry} using {@link Comparator#naturalOrder()}.
+     *
+     * @param coll the entries
+     * @param <K> the map's key type
+     * @param <V> the map's value type
+     * @return the new {@link ATreeMap}
+     */
+    public static <K extends Comparable<K>,V> ATreeMap<K,V> ofEntries(Iterable<Map.Entry<K,V>> coll) {
+        return from(coll);
     }
 
 

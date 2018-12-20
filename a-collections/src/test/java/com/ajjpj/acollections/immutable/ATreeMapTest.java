@@ -1,13 +1,15 @@
 package com.ajjpj.acollections.immutable;
 
 import com.ajjpj.acollections.AMap;
+import com.ajjpj.acollections.ASortedMap;
 import com.ajjpj.acollections.ASortedMapTests;
 import com.ajjpj.acollections.TestHelpers;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class ATreeMapTest implements ASortedMapTests {
@@ -57,6 +59,38 @@ public class ATreeMapTest implements ASortedMapTests {
 
         assertEquals(expected, ATreeMap.fromMap(expected, Comparator.<Integer>naturalOrder().reversed()));
         assertEquals(Comparator.naturalOrder().reversed(), ATreeMap.fromMap(expected, Comparator.<Integer>naturalOrder().reversed()).comparator());
+    }
+    @Test void testStaticFactoriesInASortedMap() {
+        assertTrue(ASortedMap.empty().isEmpty());
+
+        AMap<Integer,String> expected = AMap.empty();
+        assertEquals(expected, ASortedMap.of());
+        expected = expected.plus(1, "1");
+        assertEquals(expected, ASortedMap.of(1,"1"));
+        expected = expected.plus(2, "2");
+        assertEquals(expected, ASortedMap.of(1,"1", 2, "2"));
+        expected = expected.plus(3, "3");
+        assertEquals(expected, ASortedMap.of(1,"1", 2, "2", 3, "3"));
+        expected = expected.plus(4, "4");
+        assertEquals(expected, ASortedMap.of(1,"1", 2, "2", 3, "3", 4, "4"));
+
+        assertEquals (AMap.of(5, "5"), ASortedMap.from(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5"))));
+        assertEquals (AMap.of(5, "5"), ASortedMap.fromIterator(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5")).iterator()));
+
+        assertEquals (AMap.of(5, "5"), ASortedMap.ofEntries(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5"))));
+
+        assertEquals(expected, ASortedMap.fromMap(expected));
+
+        assertTrue(ASortedMap.empty(Comparator.naturalOrder().reversed()).isEmpty());
+        assertEquals(Comparator.naturalOrder().reversed(), ASortedMap.empty(Comparator.naturalOrder().reversed()).comparator());
+
+        assertEquals (AMap.of(5, "5"), ASortedMap.from(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5")), Comparator.<Integer>naturalOrder().reversed()));
+        assertEquals (AMap.of(5, "5"), ASortedMap.fromIterator(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5")).iterator(), Comparator.<Integer>naturalOrder().reversed()));
+        assertEquals (Comparator.naturalOrder().reversed(), ASortedMap.from(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5")), Comparator.<Integer>naturalOrder().reversed()).comparator());
+        assertEquals (Comparator.naturalOrder().reversed(), ASortedMap.fromIterator(Collections.singletonList(new AbstractMap.SimpleImmutableEntry<>(5, "5")).iterator(), Comparator.<Integer>naturalOrder().reversed()).comparator());
+
+        assertEquals(expected, ASortedMap.fromMap(expected, Comparator.<Integer>naturalOrder().reversed()));
+        assertEquals(Comparator.naturalOrder().reversed(), ASortedMap.fromMap(expected, Comparator.<Integer>naturalOrder().reversed()).comparator());
     }
 
     @Override @Test public void testSerDeser () {
