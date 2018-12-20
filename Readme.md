@@ -251,26 +251,49 @@ understand their respective strengths and weaknesses.
 
 ### Java streams
 
+Java streams provide some (though not all) of the convenience API that a-collections
+brings, and streams are definitely an improvement over Java's naked `java.util.Collection`
+API.
 
+There are however two caveats when working with collections: 
 
-These copy operations incur some cost, but a-collection's classes are pretty
-well optimized, and the overhead is often outweighed by improved readability
-and robustness. 
+* There is often the initial call to `stream()` and a final call to `collect()`, 
+  adding clutter and reducing readability.
+* Streams provide no immutable collections.    
 
+That said, streams are an important part of Java's collection landscape. 
+Therefore `ACollection` classes implement `stream()` and provide `Collector`
+implementations.  
+
+Regarding efficiency (which is often named as a key advantage of Java streams): 
+Copy operations for immutable collections incur some cost, but a-collection's 
+classes are pretty well optimized and the overhead is often outweighed by 
+improved readability and robustness. 
 
 ### Guava
 
+Google's [Guava](https://github.com/google/guava) library comes with a wide range
+of collection classes, some of them immutable. The library is mature, widely used
+and well tested.
+
+It focuses on providing a wide range of different collection classes rather than 
+a wide API to add convenience when using them. And Guava's immutable collections
+are completely immutable rather than 'persistent' so that adding an element 
+requires copying the entire collection.
+
+Guava's strength is in providing a wide range of highly memory efficient collections 
+while a-collections focuses on convenience working with collections, both mutable
+and immutable. 
+
 ### Dexx
 
+The [Dexx](https://github.com/andrewoma/dexx) library is a port of large parts of
+Scala's standard library to Java and does an excellent job. 
 
+But other considerations aside, it does not integrate with Java's ecosystem (and does
+not appear to even try):
 
-
-* Scala collections
-* efficient copies
-
-
-## what's with the a-
-
-
-
-
+* Collection classes do not extend `java.util` interfaces, making them hard to 
+  use with third party APIs
+* There is no stream support
+* There appears to be no Jackson integration

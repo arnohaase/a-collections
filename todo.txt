@@ -1,23 +1,9 @@
 todo
 ----
-* Documentation
-  * README.md
-    * introduction, persistent collections
-    * java.util.Collection (both mutable / immutable) etc. --> drop-in replacement for use with existing APIs
-    * building etc.
-    * static methods
-    * convenience
-    * JSON
-    * maven coordinates
-
 * ajjpj.com
   * landing page
 
-* static methods for ASortedMap
-
 * shotgun tests with different seeds
-
----------------------------------------------------------------------------------------------------------------
 
 * Benchmark: tuning of RedBlackTree
 
