@@ -53,7 +53,7 @@ public class AMutableMapWrapperTest implements AMapTests {
 
     @Override public Iterable<Variant> variants () {
         return Collections.singletonList(
-                new Variant(false, AMutableMapWrapper::builder, null)
+                new Variant(AMutableMapWrapper.class, false, AMutableMapWrapper::builder, null)
         );
     }
 }

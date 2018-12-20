@@ -8,21 +8,12 @@ todo
     * static methods
     * convenience
     * JSON
-
-
+    * maven coordinates
 
 * ajjpj.com
   * landing page
 
 * shotgun tests with different seeds
-
-* JSON support
-    @Test default void testTodo() {
-        //TODO maps
-        //TODO interfaces
-        //TODO AOption
-        //TODO complex element type
-    }
 
 ---------------------------------------------------------------------------------------------------------------
 

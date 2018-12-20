@@ -62,8 +62,8 @@ public class AMutableSortedMapWrapperTest implements ASortedMapTests {
 
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
-                new Variant(true, () -> AMutableSortedMapWrapper.builder(Comparator.naturalOrder()), AVector.of(1, 2, 3)),
-                new Variant(true, () -> AMutableSortedMapWrapper.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
+                new Variant(AMutableSortedMapWrapper.class, true, () -> AMutableSortedMapWrapper.builder(Comparator.naturalOrder()), AVector.of(1, 2, 3)),
+                new Variant(AMutableSortedMapWrapper.class, true, () -> AMutableSortedMapWrapper.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
         );
     }
 }

@@ -1,7 +1,6 @@
 package com.ajjpj.acollections.util;
 
 import com.ajjpj.acollections.*;
-import com.ajjpj.acollections.immutable.AbstractImmutableCollection;
 import com.ajjpj.acollections.internal.ACollectionDefaults;
 import com.ajjpj.acollections.internal.ACollectionSupport;
 
@@ -59,7 +58,7 @@ import java.util.function.Supplier;
  *
  * @param <T> the element type
  */
-public abstract class AOption<T> extends AbstractImmutableCollection<T> implements ACollectionDefaults<T, AOption<T>>, Serializable {
+public abstract class AOption<T> implements ACollectionDefaults<T, AOption<T>>, Serializable {
     /**
      * Returns the contained element (if any), throwing a NoSuchElementException if this AOption is empty.
      * @throws NoSuchElementException if this AOption is empty
@@ -223,9 +222,12 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
     }
 
     @Override public <U> ACollectionBuilder<U, AOption<U>> newBuilder () {
-        // Using a builder for AOption may look weird and is not very efficient, but there is no reason not to have one for compatibility
-        //  reasons. There should however be optimized implementation for all generic, builder-based transformation methods.
+        return builder();
+    }
 
+    // Using a builder for AOption may look weird and is not very efficient, but there is no reason not to have one for compatibility
+    //  reasons. There should however be optimized implementation for all generic, builder-based transformation methods.
+    public static <U> ACollectionBuilder<U, AOption<U>> builder() {
         return new ACollectionBuilder<U, AOption<U>>() {
             private AOption<U> result = none();
 
@@ -239,8 +241,6 @@ public abstract class AOption<T> extends AbstractImmutableCollection<T> implemen
                 return result;
             }
         };
-
-
     }
 
     private static class ASome<T> extends AOption<T> {

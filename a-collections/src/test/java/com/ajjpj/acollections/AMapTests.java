@@ -3,6 +3,10 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.immutable.AHashMap;
 import com.ajjpj.acollections.immutable.AHashSet;
 import com.ajjpj.acollections.immutable.ATreeMap;
+import com.ajjpj.acollections.jackson.ACollectionsModule;
+import com.ajjpj.acollections.jackson.JacksonModuleTest;
+import com.ajjpj.acollections.util.AUnchecker;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -476,5 +480,20 @@ public interface AMapTests extends AEntryCollectionOpsTests {
             }
             //TODO else test mutable operations
         });
+    }
+
+    @Test default void testJacksonToJson() {
+        doTest(v -> AUnchecker.executeUncheckedVoid(() -> {
+            final ObjectMapper om = new ObjectMapper();
+            om.registerModule(new ACollectionsModule());
+
+            assertEquals("{}", om.writeValueAsString(v.mkMap()));
+            assertEquals("{\"1\":3}", om.writeValueAsString(v.mkMap(1).map(e -> new AbstractMap.SimpleImmutableEntry<>(e.getKey().toString(), e.getValue())).toMap()));
+        }));
+    }
+    @Test default void testJacksonFromJson() {
+        doTest(v -> AUnchecker.executeUncheckedVoid(() -> {
+            JacksonModuleTest.testMapFromJson(v.baseClass(), v.baseClass(), v.mkMap(1), v.mkMap(1, 2, 3));
+        }));
     }
 }

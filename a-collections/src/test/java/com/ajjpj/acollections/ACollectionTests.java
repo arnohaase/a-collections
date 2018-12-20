@@ -3,13 +3,11 @@ package com.ajjpj.acollections;
 import com.ajjpj.acollections.immutable.*;
 import com.ajjpj.acollections.internal.AMapSupport;
 import com.ajjpj.acollections.jackson.ACollectionsModule;
+import com.ajjpj.acollections.jackson.JacksonModuleTest;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.util.AOption;
 import com.ajjpj.acollections.util.AUnchecker;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -17,7 +15,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.ajjpj.acollections.util.AUnchecker.executeUncheckedVoid;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -582,38 +579,12 @@ public interface ACollectionTests extends ACollectionOpsTests {
     }
     @Test default void testJacksonFromJson() {
         doTest(v -> AUnchecker.executeUncheckedVoid(() -> {
-            final ObjectMapper om = new ObjectMapper();
-            om.registerModule(new ACollectionsModule());
-
-            assertTrue(v.baseClass().isAssignableFrom(om.readValue("[]", v.baseClass()).getClass()));
-            assertEquals(v.mkColl(), om.readValue("[]", v.baseClass()));
-
-            assertTrue(v.baseClass().isAssignableFrom(om.readValue("[1]", v.baseClass()).getClass()));
-            assertEquals(v.mkColl(1), om.readValue("[1]", v.baseClass()));
-
-            assertTrue(v.baseClass().isAssignableFrom(om.readValue("[1,2,3]", v.baseClass()).getClass()));
-            assertEquals(v.mkColl(1, 2, 3), om.readValue("[1,2,3]", v.baseClass()));
-
-            assertThrows(MismatchedInputException.class, () -> om.readValue("1", v.baseClass));
+            JacksonModuleTest.testCollectionFromJson(v.baseClass(), v.baseClass(), v.mkColl(1), v.mkColl(1, 2, 3));
         }));
     }
     @Test default void testJacksonFromJsonSingleValue() {
         doTest(v -> AUnchecker.executeUncheckedVoid(() -> {
-            final ObjectMapper om = new ObjectMapper();
-            om.registerModule(new ACollectionsModule());
-            om.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-
-            assertTrue(v.baseClass().isAssignableFrom(om.readValue("[]", v.baseClass()).getClass()));
-            assertEquals(v.mkColl(), om.readValue("[]", v.baseClass()));
-
-            assertTrue(v.baseClass().isAssignableFrom(om.readValue("[1]", v.baseClass()).getClass()));
-            assertEquals(v.mkColl(1), om.readValue("[1]", v.baseClass()));
-
-            assertTrue(v.baseClass().isAssignableFrom(om.readValue("[1,2,3]", v.baseClass()).getClass()));
-            assertEquals(v.mkColl(1, 2, 3), om.readValue("[1,2,3]", v.baseClass()));
-
-            assertTrue(v.baseClass().isAssignableFrom(om.readValue("1", v.baseClass).getClass()));
-            assertEquals(v.mkColl(1), om.readValue("1", v.baseClass));
+            JacksonModuleTest.testCollectionFromJsonSingleValue(v.baseClass(), v.baseClass(), v.mkColl(1), v.mkColl(1, 2, 3));
         }));
     }
 
@@ -626,17 +597,17 @@ public interface ACollectionTests extends ACollectionOpsTests {
     }
 
     class Variant {
-        private final Class<?> baseClass;
+        private final Class<? extends ACollection> baseClass;
         private final Supplier<ACollectionBuilder<Integer, ? extends ACollection<Integer>>> builderFactory;
         private final AVector<Integer> iterationOrder123;
 
-        public Variant (Class<?> baseClass, Supplier<ACollectionBuilder<Integer, ? extends ACollection<Integer>>> builderFactory, AVector<Integer> iterationOrder123) {
+        public Variant (Class<? extends ACollection> baseClass, Supplier<ACollectionBuilder<Integer, ? extends ACollection<Integer>>> builderFactory, AVector<Integer> iterationOrder123) {
             this.baseClass = baseClass;
             this.builderFactory = builderFactory;
             this.iterationOrder123 = iterationOrder123;
         }
 
-        public Class<?> baseClass() {
+        public Class<? extends ACollection> baseClass() {
             return baseClass;
         }
 

@@ -5,14 +5,16 @@ import com.ajjpj.acollections.AIterator;
 import com.ajjpj.acollections.ASet;
 import com.ajjpj.acollections.TestHelpers;
 import com.ajjpj.acollections.immutable.*;
+import com.ajjpj.acollections.jackson.ACollectionsModule;
 import com.ajjpj.acollections.mutable.AMutableListWrapper;
 import com.ajjpj.acollections.mutable.AMutableSetWrapper;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
-import java.util.AbstractMap;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 import java.util.function.Function;
 
 import static com.ajjpj.acollections.util.AOption.*;
@@ -23,6 +25,8 @@ public class AOptionTest implements ACollectionOpsTests {
     @Override @Test public void testStaticFactories() {
         // nothing to be done - no static factories
     }
+
+
 
     @Override @Test public void testEquals () {
         assertSame(AOption.none(), AOption.none());
@@ -277,6 +281,16 @@ public class AOptionTest implements ACollectionOpsTests {
         assertTrue(some(1).contains(1));
         assertFalse(some(1).contains(2));
     }
+    @Test public void testContainsAll () {
+        assertFalse(none().containsAll(AVector.of(1)));
+        assertFalse(none().containsAll(AVector.of(1, 2, 3)));
+        assertTrue(none().containsAll(AVector.empty()));
+
+        assertTrue(some(1).containsAll(AVector.of(1)));
+        assertFalse(some(1).containsAll(AVector.of(2)));
+        assertTrue(some(1).containsAll(AVector.empty()));
+        assertFalse(some(1).containsAll(AVector.of(1, 2)));
+    }
 
     @Override @Test public void testReduce () {
         assertThrows(NoSuchElementException.class, () -> none().reduce((a, b) -> null));
@@ -336,5 +350,135 @@ public class AOptionTest implements ACollectionOpsTests {
 
         assertEquals("a", some("a").mkString("|"));
         assertEquals("<a>", some("a").mkString("<", "|", ">"));
+    }
+
+    @Test public void testForEach () {
+        AOption.empty().forEach(i -> {
+            throw new RuntimeException("never called");
+        });
+
+        final AMutableListWrapper<Integer> trace = AMutableListWrapper.empty();
+        AOption.of(1).forEach(trace::add);
+        assertEquals (AVector.of(1), trace);
+    }
+
+    @Test void testJacksonToJson() throws IOException {
+        final ObjectMapper om = new ObjectMapper();
+        om.registerModule(new ACollectionsModule());
+
+        assertEquals("null", om.writeValueAsString(AOption.empty()));
+        assertEquals("1", om.writeValueAsString(AOption.of(1)));
+        assertEquals("\"1\"", om.writeValueAsString(AOption.of("1")));
+
+        final TestPerson p = new TestPerson();
+        assertEquals("{\"name\":null,\"spouse\":null}", om.writeValueAsString(p));
+        p.setName(AOption.some("Who"));
+        p.setSpouse(AOption.some(new TestPerson()));
+        assertEquals("{\"name\":\"Who\",\"spouse\":{\"name\":null,\"spouse\":null}}", om.writeValueAsString(p));
+    }
+    @Test void testJacksonToJsonInclusionNonNull() throws JsonProcessingException {
+        final ObjectMapper om = new ObjectMapper();
+        om.registerModule(new ACollectionsModule());
+
+        final TestPerson p = new TestPerson();
+        p.setName(AOption.empty());
+
+        om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        assertEquals("{\"name\":null}", om.writeValueAsString(p));
+    }
+    @Test void testJacksonToJsonInclusionNonAbsent() throws JsonProcessingException {
+        final ObjectMapper om = new ObjectMapper();
+        om.registerModule(new ACollectionsModule());
+
+        final TestPerson p = new TestPerson();
+        p.setName(AOption.empty());
+
+        om.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
+        assertEquals("{}", om.writeValueAsString(p));
+    }
+    @Test void testJacksonToJsonInclusionNonEmpty() throws JsonProcessingException {
+        final ObjectMapper om = new ObjectMapper();
+        om.registerModule(new ACollectionsModule());
+
+        final TestPerson p = new TestPerson();
+        p.setName(AOption.empty());
+
+        om.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        assertEquals("{}", om.writeValueAsString(p));
+    }
+    @Test void testJacksonFromJson() throws IOException {
+        final ObjectMapper om = new ObjectMapper();
+        om.registerModule(new ACollectionsModule());
+
+        assertEquals(AOption.of(1), om.readValue("1", AOption.class));
+        assertEquals(AOption.empty(), om.readValue("null", AOption.class));
+
+        {
+            final TestPerson p = om.readValue("{}", TestPerson.class);
+            assertNull(p.getName());
+            assertNull(p.getSpouse());
+        }
+        {
+            final TestPerson p = om.readValue("{\"name\":null}", TestPerson.class);
+            assertEquals(AOption.empty(), p.getName());
+            assertNull(p.getSpouse());
+        }
+        {
+            final TestPerson p = om.readValue("{\"spouse\":null}", TestPerson.class);
+            assertEquals(AOption.empty(), p.getSpouse());
+        }
+        {
+            final TestPerson p = om.readValue("{\"spouse\":{}}", TestPerson.class);
+            assertNull(p.getSpouse().get().getName());
+            assertNull(p.getSpouse().get().getSpouse());
+        }
+        {
+            final TestPerson p = om.readValue("{\"spouse\":{\"name\":null}}", TestPerson.class);
+            assertEquals(AOption.empty(), p.getSpouse().get().getName());
+        }
+        {
+            final TestPerson p = om.readValue("{\"spouse\":{\"name\":\"Who\"}}", TestPerson.class);
+            assertEquals(AOption.of("Who"), p.getSpouse().get().getName());
+        }
+    }
+
+    public static class TestPerson {
+        private AOption<String> name;
+        private AOption<TestPerson> spouse;
+
+        public AOption<String> getName () {
+            return name;
+        }
+
+        public void setName (AOption<String> name) {
+            this.name = name;
+        }
+
+        public AOption<TestPerson> getSpouse () {
+            return spouse;
+        }
+
+        public void setSpouse (AOption<TestPerson> spouse) {
+            this.spouse = spouse;
+        }
+
+        @Override public String toString () {
+            return "TestPerson{" +
+                    "name=" + name +
+                    ", spouse=" + spouse +
+                    '}';
+        }
+
+        @Override public boolean equals (Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            TestPerson that = (TestPerson) o;
+            return Objects.equals(name, that.name) &&
+                    Objects.equals(spouse, that.spouse);
+        }
+
+        @Override public int hashCode () {
+            return Objects.hash(name, spouse);
+        }
     }
 }

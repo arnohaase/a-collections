@@ -13,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ATreeMapTest implements ASortedMapTests {
     @Override public Iterable<Variant> variants () {
         return Arrays.asList(
-                new Variant(true, () -> ATreeMap.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
-                new Variant(true, () -> ATreeMap.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
+                new Variant(ATreeMap.class,true, () -> ATreeMap.builder(Comparator.<Integer>naturalOrder()), AVector.of(1, 2, 3)),
+                new Variant(ATreeMap.class,true, () -> ATreeMap.builder(Comparator.<Integer>naturalOrder().reversed()), AVector.of(3, 2, 1))
         );
     }
 

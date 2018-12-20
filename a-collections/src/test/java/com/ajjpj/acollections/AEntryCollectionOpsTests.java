@@ -502,14 +502,20 @@ public interface AEntryCollectionOpsTests extends ACollectionOpsTests {
     }
 
     class Variant {
+        private final Class<? extends AMap> baseClass;
         private final Supplier<ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>>> builderFactory;
         private final AVector<Integer> iterationOrder123;
         private final boolean isSorted;
 
-        public Variant (boolean isSorted, Supplier<ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>>> builderFactory, AVector<Integer> iterationOrder123) {
+        public Variant (Class<? extends AMap> baseClass, boolean isSorted, Supplier<ACollectionBuilder<Map.Entry<Integer,Integer>, ? extends ACollectionOps<Map.Entry<Integer,Integer>>>> builderFactory, AVector<Integer> iterationOrder123) {
+            this.baseClass = baseClass;
             this.isSorted = isSorted;
             this.builderFactory = builderFactory;
             this.iterationOrder123 = iterationOrder123;
+        }
+
+        public Class<? extends AMap> baseClass() {
+            return baseClass;
         }
 
         public boolean isSorted() {

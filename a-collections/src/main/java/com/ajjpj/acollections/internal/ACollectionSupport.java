@@ -42,15 +42,15 @@ public class ACollectionSupport {
         return coll.mkString(baseClass.getSimpleName() + "[", ", ", "]");
     }
 
-    public static <T, U, C extends ACollection<U>> C map(ACollectionBuilder<U, C> builder, Iterable<T> coll, Function<T,U> f) {
+    public static <T, U, C extends ACollectionOps<U>> C map(ACollectionBuilder<U, C> builder, Iterable<T> coll, Function<T,U> f) {
         for (T o: coll) builder.add(f.apply(o));
         return builder.build();
     }
-    public static <T, U, C extends ACollection<U>> C flatMap(ACollectionBuilder<U, C> builder, Iterable<T> coll, Function<T, Iterable<U>> f) {
+    public static <T, U, C extends ACollectionOps<U>> C flatMap(ACollectionBuilder<U, C> builder, Iterable<T> coll, Function<T, Iterable<U>> f) {
         for (T o: coll) builder.addAll(f.apply(o));
         return builder.build();
     }
-    public static <T, U, C extends ACollection<U>> C collect(ACollectionBuilder<U,C> builder, Iterable<T> coll, Predicate<T> filter, Function<T,U> f) {
+    public static <T, U, C extends ACollectionOps<U>> C collect(ACollectionBuilder<U,C> builder, Iterable<T> coll, Predicate<T> filter, Function<T,U> f) {
         for (T o: coll) if (filter.test(o)) builder.add(f.apply(o));
         return builder.build();
     }

@@ -352,7 +352,7 @@ public class AHashMap<K,V> extends AbstractImmutableMap<K,V> implements ACollect
 
 
     private static class MapEntryWithEquals<K,V> extends AbstractMap.SimpleImmutableEntry<K,V> implements CompactHashMap.EntryWithEquality {
-        private int keyHash = -123; // 'safe data race' - see String.hashCode() implementation
+        private int keyHash = -123; // 'safe data race' - see String.hashCode() implementation for an explanation
 
         MapEntryWithEquals (K key, V value) { super(key, value); }
 

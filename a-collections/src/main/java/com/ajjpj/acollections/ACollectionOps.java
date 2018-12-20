@@ -247,7 +247,7 @@ public interface ACollectionOps<T> {
      * @param <U> the resulting collection's element type
      * @return an {@link ACollection} of the same type
      */
-    <U> ACollection<U> map(Function<T,U> f);
+    <U> ACollectionOps<U> map(Function<T,U> f);
 
     /**
      * Creates a new collection of the same collection type by applying a function to each element. The difference to {@link #map(Function)}
@@ -280,7 +280,7 @@ public interface ACollectionOps<T> {
      * @param <U> the new elements' type
      * @return a new collection containing the flattened contents of the function's results for all elements
      */
-    <U> ACollection<U> flatMap(Function<T, Iterable<U>> f);
+    <U> ACollectionOps<U> flatMap(Function<T, Iterable<U>> f);
 
     /**
      * Filters the contents of this collection and applies a function to those elements passing the filter, so
@@ -294,7 +294,7 @@ public interface ACollectionOps<T> {
      * @param <U>    the new collection's element type.
      * @return a new collection containing the transformed elements that passed the filter
      */
-    <U> ACollection<U> collect(Predicate<T> filter, Function<T,U> f);
+    <U> ACollectionOps<U> collect(Predicate<T> filter, Function<T,U> f);
 
     /**
      * Applies a transformation function to the first element (in iteration order) matching a predicate.
