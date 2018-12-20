@@ -49,7 +49,7 @@ public interface AMap<K,V> extends Map<K,V>, ACollectionOps<Map.Entry<K,V>>, Ite
      * @param <V> the Map's value type
      * @return the wrapped Map
      */
-    static <K,V> AMap<K,V> wrap(Map<K,V> m) {
+    static <K,V> AMutableMapWrapper<K,V> wrap(Map<K,V> m) {
         return AMutableMapWrapper.wrap(m);
     }
 

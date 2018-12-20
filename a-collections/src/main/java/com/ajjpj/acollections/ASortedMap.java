@@ -1,5 +1,7 @@
 package com.ajjpj.acollections;
 
+import com.ajjpj.acollections.mutable.AMutableMapWrapper;
+import com.ajjpj.acollections.mutable.AMutableSortedMapWrapper;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
@@ -18,6 +20,21 @@ import java.util.function.Predicate;
  * @param <V> The AMap's value type
  */
 public interface ASortedMap<K,V> extends AMap<K,V>, NavigableMap<K,V> {
+    /**
+     * This is a convenience factory method wrapping an arbitrary (typically mutable) {@link java.util.NavigableMap} in an {@link AMutableSortedMapWrapper}.
+     *  This is a simple way to start using a-collections: Wrap an existing {@code NavigableMap} to add a rich API while maintaining 100% backwards
+     *  compatibility: operations on the wrapper are write-through, i.e. all changes are applied to the underlying {@code NavigableMap}.
+     *
+     * @param m the Map being wrapped
+     * @param <K> the Map's key type
+     * @param <V> the Map's value type
+     * @return the wrapped Map
+     */
+    static <K,V> AMutableSortedMapWrapper<K,V> wrap(NavigableMap<K,V> m) {
+        return AMutableSortedMapWrapper.wrap(m);
+    }
+
+
     /**
      * Returns the comparator used to compare keys to determine element ordering and equality
      *

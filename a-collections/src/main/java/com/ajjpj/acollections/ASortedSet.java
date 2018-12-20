@@ -1,6 +1,7 @@
 package com.ajjpj.acollections;
 
 import com.ajjpj.acollections.immutable.ATreeSet;
+import com.ajjpj.acollections.mutable.AMutableSortedSetWrapper;
 import com.ajjpj.acollections.util.AOption;
 
 import java.util.*;
@@ -14,6 +15,19 @@ import java.util.*;
  * @param <T> the set's element type
  */
 public interface ASortedSet<T> extends ASet<T>, NavigableSet<T> {
+
+    /**
+     * This is a convenience factory method wrapping an arbitrary (typically mutable) {@link java.util.NavigableSet} in an {@link AMutableSortedSetWrapper}.
+     *  This is a simple way to start using a-collections: Wrap an existing {@code Map} to add a rich API while maintaining 100% backwards
+     *  compatibility: operations on the wrapper are write-through, i.e. all changes are applied to the underlying {@code Map}.
+     *
+     * @param s the set being wrapped
+     * @param <T> the set's element type
+     * @return the wrapped Map
+     */
+    static <T> AMutableSortedSetWrapper<T> wrap(NavigableSet<T> s) {
+        return AMutableSortedSetWrapper.wrap(s);
+    }
 
     /**
      * Creates an empty {@link ATreeSet} with {@link Comparator#naturalOrder()}.

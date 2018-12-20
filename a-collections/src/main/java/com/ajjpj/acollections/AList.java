@@ -67,7 +67,7 @@ public interface AList<T> extends ACollection<T>, List<T> {
      * @param <T> the List's element type
      * @return the wrapped List
      */
-    static <T> AList<T> wrap(List<T> l) {
+    static <T> AMutableListWrapper<T> wrap(List<T> l) {
         return AMutableListWrapper.wrap(l);
     }
 

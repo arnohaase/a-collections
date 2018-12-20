@@ -13,6 +13,8 @@ todo
 * ajjpj.com
   * landing page
 
+* static methods for ASortedMap
+
 * shotgun tests with different seeds
 
 ---------------------------------------------------------------------------------------------------------------
