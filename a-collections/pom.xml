@@ -10,6 +10,7 @@
 
     <name>${project.artifactId}-${project.version}</name>
     <description>a-collection is a library of collection classes, most notably immutable collection classes with copy-on-write operations ("persistent" collections)</description>
+    <url>https://github.com/arnohaase/a-collections</url>
 
     <licenses>
         <license>
