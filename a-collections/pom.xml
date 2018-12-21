@@ -12,7 +12,7 @@
 
     <groupId>com.ajjpj.a-collections</groupId>
     <artifactId>a-collections</artifactId>
-    <version>0.10-SNAPSHOT</version>
+    <version>0.9</version>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}-${project.version}</name>
