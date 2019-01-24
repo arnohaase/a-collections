@@ -6,6 +6,8 @@ import com.ajjpj.acollections.mutable.AMutableSetWrapper;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 
 /**
@@ -172,6 +174,13 @@ public interface ASet<T> extends ACollection<T>, Set<T> {
 
 
     @Override <U> ACollectionBuilder<U, ? extends ASet<U>> newBuilder ();
+
+    <U> ASet<U> map(Function<T,U> f);
+    <U> ASet<U> flatMap(Function<T, Iterable<U>> f);
+    ASet<T> filter(Predicate<T> f);
+    ASet<T> filterNot(Predicate<T> f);
+    <U> ASet<U> collect(Predicate<T> filter, Function<T,U> f);
+
 
     /**
      * Returns an ASet containing all this set's elements as well as an additional element.

@@ -9,6 +9,10 @@ todo
 
 * sorted set tests for ATreeMap.entries, ATreeMap.keys
 
+* AMap#getOrElse
+* AMap: convenience factory for entries
+* ACollectionOps: toMap(KeyExtractor f)
+
 * subMap / subSet etc. inherited from NavigableMap / NavigableSet: views instead of eager copy
 * ASortedMap: reverseIterator()
 

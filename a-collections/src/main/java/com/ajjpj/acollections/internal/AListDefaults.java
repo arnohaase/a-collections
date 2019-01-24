@@ -112,7 +112,7 @@ public interface AListDefaults<T, C extends AList<T>> extends ACollectionDefault
         //noinspection unchecked
         return (C) sorted((Comparator) Comparator.naturalOrder());
     }
-    @Override default <X extends Comparable<X>> AList<T> sortedBy (Function<T, X> keyExtractor) {
+    @Override default <X extends Comparable<X>> C sortedBy (Function<T, X> keyExtractor) {
         return sorted(Comparator.comparing(keyExtractor));
     }
 

@@ -140,7 +140,8 @@ class CompactHashMap<X extends CompactHashMap.EntryWithEquality> {
         }
 
         @Override protected CompactHashMap<X> updated0(X kv, int level) {
-            if (kv.keyHash() == this.hash) {
+            final int hash = kv.keyHash();
+            if (hash == this.hash) {
                 return new HashMapCollision1<>(hash, kvs.updated(kv));
             } else {
                 return makeHashTrieMap(this.hash, this, hash, new HashMap1<>(kv), level, size() + 1);

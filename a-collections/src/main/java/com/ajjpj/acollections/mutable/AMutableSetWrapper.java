@@ -238,7 +238,7 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
         return AIterator.wrap(inner.iterator());
     }
 
-    @Override public <U> ACollectionBuilder<U, ? extends ASet<U>> newBuilder () {
+    @Override public <U> ACollectionBuilder<U, ? extends AMutableSetWrapper<U>> newBuilder () {
         return builder();
     }
 
@@ -246,15 +246,15 @@ public class AMutableSetWrapper<T> implements ASet<T>, ACollectionDefaults<T, AM
         return inner.isEmpty();
     }
 
-    @Override public <U> ACollection<U> map (Function<T, U> f) {
+    @Override public <U> AMutableSetWrapper<U> map (Function<T, U> f) {
         return ACollectionSupport.map(newBuilder(), this, f);
     }
 
-    @Override public <U> ACollection<U> flatMap (Function<T, Iterable<U>> f) {
+    @Override public <U> AMutableSetWrapper<U> flatMap (Function<T, Iterable<U>> f) {
         return ACollectionSupport.flatMap(newBuilder(), this, f);
     }
 
-    @Override public <U> ACollection<U> collect (Predicate<T> filter, Function<T, U> f) {
+    @Override public <U> AMutableSetWrapper<U> collect (Predicate<T> filter, Function<T, U> f) {
         return ACollectionSupport.collect(newBuilder(), this, filter, f);
     }
 

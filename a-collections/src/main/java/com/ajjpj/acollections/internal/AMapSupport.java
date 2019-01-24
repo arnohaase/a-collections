@@ -77,15 +77,15 @@ public class AMapSupport {
             return map.isEmpty();
         }
 
-        @Override public <U> ACollection<U> map (Function<T, U> f) {
+        @Override public <U> ASet<U> map (Function<T, U> f) {
             return ACollectionSupport.map(newBuilder(), this, f);
         }
 
-        @Override public <U> ACollection<U> flatMap (Function<T, Iterable<U>> f) {
+        @Override public <U> ASet<U> flatMap (Function<T, Iterable<U>> f) {
             return ACollectionSupport.flatMap(newBuilder(), this, f);
         }
 
-        @Override public <U> ACollection<U> collect (Predicate<T> filter, Function<T, U> f) {
+        @Override public <U> ASet<U> collect (Predicate<T> filter, Function<T, U> f) {
             return ACollectionSupport.collect(newBuilder(), this, filter, f);
         }
 
@@ -257,15 +257,15 @@ public class AMapSupport {
             return map.isEmpty();
         }
 
-        @Override public <U> ACollection<U> map (Function<Map.Entry<K,V>, U> f) {
+        @Override public <U> ASet<U> map (Function<Map.Entry<K,V>, U> f) {
             return ACollectionSupport.map(newBuilder(), this, f);
         }
 
-        @Override public <U> ACollection<U> flatMap (Function<Map.Entry<K,V>, Iterable<U>> f) {
+        @Override public <U> ASet<U> flatMap (Function<Map.Entry<K,V>, Iterable<U>> f) {
             return ACollectionSupport.flatMap(newBuilder(), this, f);
         }
 
-        @Override public <U> ACollection<U> collect (Predicate<Map.Entry<K,V>> filter, Function<Map.Entry<K,V>, U> f) {
+        @Override public <U> ASet<U> collect (Predicate<Map.Entry<K,V>> filter, Function<Map.Entry<K,V>, U> f) {
             return ACollectionSupport.collect(newBuilder(), this, filter, f);
         }
 
@@ -397,7 +397,7 @@ public class AMapSupport {
             return ACollectionSupport.flatMap(newBuilder(), this, f);
         }
 
-        @Override public <U> ACollection<U> collect (Predicate<T> filter, Function<T, U> f) {
+        @Override public <U> ATreeSet<U> collect (Predicate<T> filter, Function<T, U> f) {
             return ACollectionSupport.collect(newBuilder(), this, filter, f);
         }
 
@@ -608,7 +608,7 @@ public class AMapSupport {
             return ACollectionSupport.flatMap(newBuilder(), this, f);
         }
 
-        @Override public <U> ACollection<U> collect (Predicate<Map.Entry<K,V>> filter, Function<Map.Entry<K,V>, U> f) {
+        @Override public <U> ATreeSet<U> collect (Predicate<Map.Entry<K,V>> filter, Function<Map.Entry<K,V>, U> f) {
             return ACollectionSupport.collect(newBuilder(), this, filter, f);
         }
 
