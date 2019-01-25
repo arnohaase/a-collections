@@ -158,6 +158,14 @@ public abstract class AOption<T> implements ACollectionDefaults<T, AOption<T>>, 
     }
 
     /**
+     * Returns true if and only if this AOption holds a element.
+     * @return true if and only if this AOption holds a element.
+     */
+    public boolean isPresent() {
+        return nonEmpty();
+    }
+
+    /**
      * Returns this AOption itself because that matches the inherited semantics of {@link ACollectionOps#headOption()}.
      * @return this AOption itself
      */

@@ -5,7 +5,7 @@
 
     <groupId>com.ajjpj.a-collections</groupId>
     <artifactId>a-collections-project</artifactId>
-    <version>0.9-SNAPSHOT</version>
+    <version>0.9.2</version>
     <packaging>pom</packaging>
 
     <modules>
