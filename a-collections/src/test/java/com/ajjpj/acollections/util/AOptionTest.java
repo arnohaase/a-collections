@@ -92,6 +92,7 @@ public class AOptionTest implements ACollectionOpsTests {
 
     @Test void testToOptional() {
         assertEquals(Optional.empty(), none().toOptional());
+        assertEquals(Optional.empty(), some(null).toOptional());
         assertEquals(Optional.of("a"), some("a").toOptional());
     }
 

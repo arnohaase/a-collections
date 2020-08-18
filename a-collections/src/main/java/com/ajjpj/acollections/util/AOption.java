@@ -289,7 +289,7 @@ public abstract class AOption<T> implements ACollectionDefaults<T, AOption<T>>, 
         }
 
         @Override public Optional<T> toOptional () {
-            return Optional.of(el);
+            return Optional.ofNullable(el);
         }
 
         @Override public AIterator<T> iterator () {
